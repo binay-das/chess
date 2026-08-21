@@ -82,4 +82,70 @@ router.post("/signup", async (req: Request, res: Response) => {
 })
 
 
+router.post("/signin", async (req: Request, res: Response) => {
+    try {
+        const { email, username, password } = req.body;
+        const identifier = email || username;
+
+
+        const user = await prisma.user.findFirst({
+            where: {
+                OR: [
+                    { email },
+                    { username }
+                ]
+            }
+        })
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid Credentials"
+            })
+        }
+
+        const isPasswordValid: boolean = await bcrypt.compare(
+            password,
+            user.passwordHash
+        );
+
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid Credentials"
+            })
+        }
+
+        const token = jwt.sign(
+            {
+                userId: user.id,
+                username: user.username,
+                email: user.email,
+            },
+            process.env.JWT_SECRET! as string,
+            { expiresIn: process.env.JWT_EXPIRES_IN! as jwt.SignOptions["expiresIn"] }
+        )
+
+        return res.status(200).json({
+            success: true,
+            message: "User signed in successfully",
+            token,
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                rating: user.rating,
+                createdAt: user.createdAt
+            }
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error
+        })
+    }
+})
+
+
 export default router
