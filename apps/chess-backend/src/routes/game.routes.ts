@@ -153,4 +153,4 @@ router.get("/:id/moves", async (req: Request, res: Response) => {
     }
 })
 
-router.post("/create",)
+export default router;
