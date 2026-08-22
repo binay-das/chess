@@ -1,14 +1,18 @@
+import { GameResult, PieceColor } from "../../generated/prisma/enums";
 import { prisma } from "../lib/prisma";
 
 
 export async function persistCompletedGame(room: any) {
+    const { roomCode, players, game, createdAt } = room;
+
     try {
         if (!room || !room.game) {
             console.error("[GameService] Cannot persist game: Room or game state missing.");
             return;
         }
 
-        const { roomCode, players, game, createdAt } = room;
+
+
         const whitePlayer = players.find((p: any) => p.color === "w");
         const blackPlayer = players.find((p: any) => p.color === "b");
         if (!whitePlayer || !blackPlayer) {
@@ -16,43 +20,42 @@ export async function persistCompletedGame(room: any) {
             return;
         }
 
-        let resultEnum = "DRAW"
+        let resultEnum: GameResult = GameResult.DRAW;
 
         if (game.isDraw) {
             switch (game.drawReason) {
                 case "stalemate":
-                    resultEnum = "STALEMATE";
+                    resultEnum = GameResult.STALEMATE;
                     break;
                 case "threefold":
-                    resultEnum = "REPETITION";
+                    resultEnum = GameResult.REPETITION;
                     break;
                 case "insufficient":
-                    resultEnum = "INSUFFICIENT_MATERIAL";
+                    resultEnum = GameResult.INSUFFICIENT_MATERIAL;
                     break;
                 case "50-move":
-                    resultEnum = "FIFTY_MOVE";
+                    resultEnum = GameResult.FIFTY_MOVE;
                     break;
                 default:
-                    resultEnum = "DRAW";
+                    resultEnum = GameResult.DRAW;
                     break;
-
             }
         } else if (game.winnerId) {
             if (game.winReason === "checkmate") {
-                resultEnum = "CHECKMATE";
+                resultEnum = GameResult.CHECKMATE;
             } else if (game.winReason === "resign") {
-                resultEnum = "RESIGNED";
+                resultEnum = GameResult.RESIGNED;
             } else {
                 if (whitePlayer && game.winnerId === whitePlayer.userId) {
-                    resultEnum = "WHITE_WIN"
-                } else {
-                    resultEnum = "BLACK_WIN"
+                    resultEnum = GameResult.WHITE_WIN;
+                } else if (blackPlayer && game.winnerId === blackPlayer.userId) {
+                    resultEnum = GameResult.BLACK_WIN;
                 }
             }
 
         }
 
-        const currentTurnEnum = game.turn === "white" ? "WHITE" : "BLACK";
+        const currentTurnEnum: PieceColor = game.turn === "white" ? PieceColor.WHITE : PieceColor.BLACK;
 
         const persistedGame = await prisma.game.create({
             data: {
