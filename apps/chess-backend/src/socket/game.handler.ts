@@ -1,6 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { reconnectPlayer } from "./room.manager";
 import { persistCompletedGame } from "../services/game.service";
+import { Room, RoomPlayer } from "../types/room";
 
 
 export function gameHandler(io: Server, socket: Socket) {
@@ -60,7 +61,7 @@ export function gameHandler(io: Server, socket: Socket) {
                 return;
             }
 
-            const player = room.players.find((p) => p.userId === userId);
+            const player = room.players.find((p: RoomPlayer) => p.userId === userId);
             if (!player) {
                 socket.emit("game:error", { error: "You are not a player in this game" });
                 return;
@@ -171,8 +172,67 @@ export function gameHandler(io: Server, socket: Socket) {
             }
         } catch (error) {
             console.error("[Game] Error executing move:", error);
-            socket.emit("game:error", { error: error.message || "Failed to execute move" });
+            // @ts-ignore
+            socket.emit("game:error", { error: error.message || "Failed to process resignation" });
         }
 
+    })
+
+
+    socket.on("game:resign", async (payload: {
+        roomCode: string, room: Room
+    }) => {
+        try {
+            if (!payload || !payload.roomCode) {
+                socket.emit("game:error", { error: "Room code is required to resign" });
+                return;
+            }
+            const room = payload.room;
+            if (!room || !room.game || room.status !== "playing") {
+                socket.emit("game:error", { error: "No active game to resign from" });
+                return;
+            }
+
+            const player = room.players.find((p: RoomPlayer) => p.userId === userId);
+            if (!player) {
+                socket.emit("game:error", { error: "You are not a player in this game" });
+                return;
+            }
+
+
+
+            const opponent = room.players.find((p: RoomPlayer) => p.userId !== userId);
+
+            room.status = "finished";
+            room.game.winnerId = opponent?.userId;
+
+            room.game.winReason = "resign"
+
+            io.to(room.roomCode).emit("game:resigned", {
+                roomCode: room.roomCode,
+                resignedBy: userId,
+                resignedUsername: username,
+            });
+
+            io.to(room.roomCode).emit("game:over", {
+                roomCode: room.roomCode,
+                winnerId: opponent?.userId,
+                winnerUsername: opponent?.username,
+                winReason: "resign",
+                fen: room.game.fen,
+                pgn: room.game.pgn,
+            });
+
+            console.log(`[Game] ${username} resigned in room ${room.roomCode}. Winner: ${opponent?.username}`);
+
+            // Persist completed game to database asynchronously
+            persistCompletedGame(room).catch((err) =>
+                console.error("[GameService] Error persisting resigned game:", err)
+            );
+        } catch (error) {
+            console.error("[Game] Error processing resignation:", error);
+            // @ts-ignore
+            socket.emit("game:error", { error: error.message || "Failed to process resignation" });
+        }
     })
 }
