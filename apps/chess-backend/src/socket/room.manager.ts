@@ -173,3 +173,44 @@ export const leaveRoom = (roomCode: string, userId: string) => {
 
     return { success: true, room, roomDeleted: false, wasActiveGame, winnerId };
 }
+
+
+export const reconnectPlayer = (userId: string, newSocketId: string, roomCode: string) => {
+
+
+    let room;
+
+
+    roomCode = roomCode.trim();
+    room = rooms.find((r) => r.roomCode === roomCode);
+
+    if (!room) {
+        return {
+            success: false,
+            message: "Room not found",
+            room: null
+        }
+    }
+
+    const player = room.players.find(
+        (p) => p.userId === userId
+    )
+
+    if (!player) {
+        return {
+            success: false,
+            message: "Player not found in the room",
+            room: null
+        }
+    }
+
+    player.socketId = newSocketId;
+    player.isDisconnected = false;
+
+
+    return { success: true, room, player };
+
+
+
+
+}
