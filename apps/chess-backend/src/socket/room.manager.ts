@@ -1,40 +1,12 @@
 import { generateRoomCode } from "../lib/roomId"
-
-export interface RoomPlayer {
-    userId: string;
-    username: string;
-    socketId: string;
-    color: "white" | "black";
-    joinedAt: Date;
-    isDisconnected?: boolean;
-}
-
-export interface MoveRecord {
-    from: string;
-    to: string;
-    san: string;
-    promotion?: string;
-    piece?: string;
-    captured?: string;
-    by: string;
-    fenAfterMove: string;
-    timestamp: Date;
-}
-
-export interface Room {
-    roomCode: string;
-    hostId: string;
-    players: RoomPlayer[];
-    status: "waiting" | "playing" | "finished";
-    createdAt: Date;
-}
+import type { Room, RoomPlayer } from "../types/room";
 
 let rooms: Room[] = [];
 
 export const createRoom = (hostUserId: string, hostUsername: string, hostSocketId: string) => {
     const roomCode = generateRoomCode();
 
-    const newRoom = {
+    const newRoom: Room = {
         roomCode,
         hostId: hostUserId,
         players: [{
@@ -49,7 +21,6 @@ export const createRoom = (hostUserId: string, hostUsername: string, hostSocketI
         createdAt: new Date()
     }
 
-    // @ts-ignore
     rooms.push(newRoom);
 
     return newRoom;
@@ -214,3 +185,5 @@ export const reconnectPlayer = (userId: string, newSocketId: string, roomCode: s
 
 
 }
+
+
