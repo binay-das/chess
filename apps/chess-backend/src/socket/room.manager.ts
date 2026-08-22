@@ -1,7 +1,8 @@
+import { Chess } from "chess.js";
 import { generateRoomCode } from "../lib/roomId"
 import type { Room, RoomPlayer } from "../types/room";
 
-let rooms: Room[] = [];
+let rooms: Map<string, Room> = new Map();
 
 export const createRoom = (hostUserId: string, hostUsername: string, hostSocketId: string) => {
     const roomCode = generateRoomCode();
@@ -21,16 +22,21 @@ export const createRoom = (hostUserId: string, hostUsername: string, hostSocketI
         createdAt: new Date()
     }
 
-    rooms.push(newRoom);
+    rooms.set(roomCode, newRoom);
 
     return newRoom;
 }
 
 
-export const joinRoom = (roomCode: string, userId: string, username: string, socketId: string) => {
+export const joinRoom = (
+    roomCode: string,
+    userId: string,
+    username: string,
+    socketId: string) => {
+
     const roomCodeTrimmed = roomCode.trim();
 
-    const room = rooms.find((room) => room.roomCode === roomCodeTrimmed);
+    const room = rooms.get(roomCodeTrimmed)
     if (!room) {
         return {
             success: false,
@@ -42,19 +48,16 @@ export const joinRoom = (roomCode: string, userId: string, username: string, soc
 
     if (existingPlayerIdx !== -1) {
         const existingPlayer = room.players[existingPlayerIdx];
-        // @ts-ignore
-        existingPlayer.socketId = socketId;
-        // @ts-ignore
-        existingPlayer.isDisconnected = false;
-
-        return {
-            success: true,
-            message: "Reconnected to existing game",
-            room
+        if (existingPlayer) {
+            existingPlayer.socketId = socketId;
+            existingPlayer.isDisconnected = false;
         }
+
+        return { success: true, room, gameStarted: room.status === "playing" };
+
     }
 
-    if (room.players.length == 2) {
+    if (room.players.length >= 2) {
         return {
             success: false,
             message: "Room is already full (maximum 2 players allowed)",
@@ -63,8 +66,6 @@ export const joinRoom = (roomCode: string, userId: string, username: string, soc
 
     const fistPlayerColor = room?.players[0]?.color;
     const assignedColor = fistPlayerColor === "white" ? "black" : "white";
-
-
 
 
     const newPlayer: RoomPlayer = {
@@ -100,60 +101,93 @@ export const joinRoom = (roomCode: string, userId: string, username: string, soc
 export const leaveRoom = (roomCode: string, userId: string) => {
     const roomIdTrimmed = roomCode.trim();
 
-    const room = rooms.find((room) => room.roomCode === roomIdTrimmed);
+    const room = rooms.get(roomIdTrimmed);
     if (!room) {
         return {
             success: false,
-            message: "Room not found"
-        }
+            error: "Room not found",
+            roomDeleted: false
+        };
+
     }
 
-    const existingPlayerIdx = room.players.findIndex((player) => player.userId === userId);
+    const playerIdx = room.players.findIndex((player) => player.userId === userId);
 
-    if (existingPlayerIdx === -1) {
+    if (playerIdx === -1) {
         return {
             success: false,
-            message: "Player not found in the room"
+            error: "Player not found in the room",
+            roomDeleted: false
         }
     }
 
-    const player = room.players[existingPlayerIdx];
+    // const player = room.players[playerIdx];
 
     const wasActiveGame = room.status === "playing";
     let winnerId: string | undefined;
 
+
+    room.players.splice(playerIdx, 1);
+
     if (wasActiveGame && room.players.length === 1 && room.game) {
         const remainingPlayer = room.players[0];
-        winnerId = remainingPlayer.userId;
+        winnerId = remainingPlayer?.userId;
         room.status = "finished";
         room.game.winnerId = winnerId;
         room.game.winReason = "disconnect";
     }
     if (room.players.length === 0) {
-        rooms = rooms.filter((r) => r.roomCode !== roomIdTrimmed);
-        return { success: true, roomDeleted: true, wasActiveGame, winnerId };
+        rooms.delete(roomIdTrimmed);
+
+        return {
+            success: true,
+            roomDeleted: true,
+            wasActiveGame,
+            winnerId
+        };
     }
 
     if (room.hostId === userId && room.players.length > 0) {
-        room.hostId = room.players[0].userId;
+        room.hostId = room.players[0]?.userId as string;
     }
 
     if (!wasActiveGame) {
         room.status = "waiting";
     }
 
-    return { success: true, room, roomDeleted: false, wasActiveGame, winnerId };
+    return {
+        success: true,
+        room,
+        roomDeleted: false,
+        wasActiveGame,
+        winnerId
+    };
 }
 
 
-export const reconnectPlayer = (userId: string, newSocketId: string, roomCode: string) => {
+export const reconnectPlayer = (
+    userId: string,
+    newSocketId: string,
+    roomCode?: string
+) => {
 
 
     let room;
 
 
-    roomCode = roomCode.trim();
-    room = rooms.find((r) => r.roomCode === roomCode);
+    if (roomCode) {
+        room = rooms.get(roomCode);
+    } else {
+        function getUserRoom(userId: string): Room | undefined {
+            for (const room of rooms.values()) {
+                if (room.players.some((p) => p.userId === userId)) {
+                    return room;
+                }
+            }
+            return undefined;
+        }
+        room = getUserRoom(userId);
+    }
 
     if (!room) {
         return {
@@ -185,5 +219,4 @@ export const reconnectPlayer = (userId: string, newSocketId: string, roomCode: s
 
 
 }
-
 
