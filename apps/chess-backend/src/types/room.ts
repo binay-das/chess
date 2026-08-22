@@ -5,6 +5,7 @@ interface RoomPlayer {
     username: string;
     socketId: string;
     color: "white" | "black";
+    joinedAt?: Date;
     isDisconnected: boolean;
 }
 

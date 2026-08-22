@@ -5,6 +5,8 @@ import type { Room, RoomPlayer } from "../types/room";
 let rooms: Map<string, Room> = new Map();
 
 export const createRoom = (hostUserId: string, hostUsername: string, hostSocketId: string) => {
+    leaveUserRooms(hostUserId, hostSocketId);
+    
     const roomCode = generateRoomCode();
 
     const newRoom: Room = {
@@ -64,6 +66,8 @@ export const joinRoom = (
         }
     }
 
+    leaveUserRooms(userId, socketId);
+
     const fistPlayerColor = room?.players[0]?.color;
     const assignedColor = fistPlayerColor === "white" ? "black" : "white";
 
@@ -98,7 +102,7 @@ export const joinRoom = (
 }
 
 
-export const leaveRoom = (roomCode: string, userId: string) => {
+export const leaveRoom = (roomCode: string, userId: string, socketId?: string) => {
     const roomIdTrimmed = roomCode.trim();
 
     const room = rooms.get(roomIdTrimmed);
@@ -111,7 +115,7 @@ export const leaveRoom = (roomCode: string, userId: string) => {
 
     }
 
-    const playerIdx = room.players.findIndex((player) => player.userId === userId);
+    const playerIdx = room.players.findIndex((player) => player.userId === userId || player.socketId === socketId);
 
     if (playerIdx === -1) {
         return {
@@ -218,5 +222,48 @@ export const reconnectPlayer = (
 
 
 
+}
+
+
+export const markPlayerDisconnected = (
+    userId: string,
+    socketId: string
+) => {
+    for (const [code, room] of rooms.entries()) {
+        const player = room.players.find(
+            (p) => p.userId === userId && p.socketId === socketId
+        )
+
+        if (player) {
+            player.isDisconnected = true;
+            return {
+                roomCode: code,
+                room
+            }
+        }
+    }
+}
+
+export const leaveUserRooms = (
+    userId: string,
+    socketId: string
+) => {
+    const results = []
+
+    for (const [code, room] of rooms.entries()) {
+        const isUserInRoom = room.players.some(
+            (p) => p.userId === userId || p.socketId === socketId
+        );
+
+        if (isUserInRoom) {
+            const result = leaveRoom(code, userId, socketId);
+            results.push({
+                roomCode: code,
+                result
+            })
+        }
+    }
+
+    return results;
 }
 
