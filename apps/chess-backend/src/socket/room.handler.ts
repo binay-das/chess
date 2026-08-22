@@ -1,5 +1,6 @@
 import { Server, Socket } from "socket.io";
-import { createRoom, joinRoom, leaveRoom } from "./room.manager";
+import { createRoom, joinRoom, leaveRoom, leaveUserRooms } from "./room.manager";
+import { persistCompletedGame } from "../services/game.service";
 
 
 export function roomHandler(io: Server, socket: Socket) {
@@ -119,4 +120,48 @@ export function roomHandler(io: Server, socket: Socket) {
             socket.emit("room:error", { error: error.message || "Failed to leave room" });
         }
     });
+}
+
+
+export function handleRoomDisconnect(io: Socket, socket: Socket) {
+    const { userId, username } = socket.data.user;
+
+    const results = leaveUserRooms(userId, socket.id);
+
+    for (const { roomCode, result } of results) {
+        socket.leave(roomCode);
+
+        if (result.success && !result.roomDeleted && result.room) {
+            io.to(roomCode).emit("room:player_left", {
+                leftUser: {
+                    userId, username
+                },
+                reason: "disconnected",
+                room: result.room
+            })
+
+            io.to(roomCode).emit("room:state", { room: result.room });
+
+            // broadcast game over
+            if (result.wasActiveGame && result.winnerId) {
+                const remainingPlayer = result.room.players.find(
+                    (p) => p.userId === result.winnerId
+                )
+                io.to(roomCode).emit("game:over", {
+                    roomCode,
+                    winnerId: result.winnerId,
+                    winnerUsername: remainingPlayer?.username,
+                    winReason: "disconnect",
+                    fen: result.room.game?.fen,
+                    pgn: result.room.game?.pgn,
+                });
+
+                // persist game
+                persistCompletedGame(result.room).catch((err) => {
+                    console.error("[GameService] Error persisting disconnected game:", err)
+                })
+            }
+
+        }
+    }
 }
