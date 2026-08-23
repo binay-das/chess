@@ -152,4 +152,46 @@ router.post("/signin", async (req: Request, res: Response) => {
 })
 
 
+router.get("/me", async (req: Request, res: Response) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized"
+            })
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { id: req.user.userId },
+            select: {
+                id: true,
+                username: true,
+                email: true,
+                rating: true,
+                createdAt: true,
+                updatedAt: true,
+            }
+        });
+        if(!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            })
+        }
+        return res.status(200).json({
+            success: true,
+            message: "User fetched successfully",
+            user
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error
+        })
+    }
+})
+
+
 export default router
