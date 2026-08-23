@@ -5,6 +5,16 @@ import { connectSocket, getSocket } from "../services/socket";
 import { JoinRoomModal } from "../components/JoinRoomModal";
 import { Trophy, AlertCircle, Gamepad2, Award, XCircle, Zap, Plus, KeyRound } from "lucide-react";
 
+interface GameHistoryItem {
+    id: string;
+    whitePlayer: { id: string; username: string };
+    blackPlayer: { id: string; username: string };
+    winnerId?: string;
+    result: string;
+    createdAt: string;
+}
+
+
 interface UserStats {
     totalGames: number;
     wins: number;
@@ -28,7 +38,7 @@ export const DashboardPage = () => {
 
     const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
     const [stats, setStats] = useState<UserStats | null>(null);
-
+    const [recentGames, setRecentGames] = useState<GameHistoryItem[]>([]);
     const [loadingHistory, setLoadingHistory] = useState(true);
 
     const loadDasboardData = async () => {
@@ -338,7 +348,7 @@ export const DashboardPage = () => {
             </div>
 
             {/* Previous Games Table Section */}
-            {/* <div className="space-y-4">
+            <div className="space-y-4">
                 <h2 className="text-xl font-bold tracking-tight text-slate-900">Previous Games</h2>
                 {loadingHistory ? (
                     <div className="p-8 text-center text-slate-400">Loading match history...</div>
@@ -402,7 +412,7 @@ export const DashboardPage = () => {
                         </table>
                     </div>
                 )}
-            </div> */}
+            </div>
 
             <JoinRoomModal isOpen={isJoinModalOpen} onClose={() => setIsJoinModalOpen(false)} />
         </div>
