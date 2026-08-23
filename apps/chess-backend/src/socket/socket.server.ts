@@ -2,6 +2,7 @@ import { Server as HttpServer } from "http";
 import { Server as SocketIOServer } from "socket.io";
 import { roomHandler } from "./room.handler";
 import { gameHandler } from "./game.handler";
+import { socketAuthMiddleware } from "./socket.auth";
 
 interface User {
     userId: string,
@@ -25,6 +26,9 @@ export const initSocketServer = (
             methods: ["GET", "POST"]
         }
     });
+
+    io.use(socketAuthMiddleware);
+
 
     io.on("connection", (socket) => {
         const { userId, username, email } = socket.data.user;
