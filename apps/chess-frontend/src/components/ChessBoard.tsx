@@ -2,6 +2,7 @@ import { Chess, type PieceSymbol, type Square } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import { useGameStore } from "../store/GameStore";
 import { useEffect, useMemo, useState } from "react";
+import { getSocket } from "../services/socket";
 
 interface CapturedPieces {
     white: PieceSymbol[];
@@ -101,31 +102,97 @@ export const ChessBoardComponent = () => {
         return true;
     };
 
-    const handleSquareClick = (square: string) => {
-        setMoveFrom(square as Square);
-        getMoveOptions(square as Square);
+    const makeMove = (from: Square, to: Square) => {
+        if (!roomCode || status !== "playing") {
+            return false;
+        }
+
+        try {
+            const tempGame = new Chess(game.fen());
+            const move = tempGame.move({
+                from, to, promotion: "q"
+            });
+
+
+            if (!move) {
+                return false;
+            }
+
+            const socket = getSocket();
+
+
+            socket.emit("game:move", {
+                roomCode,
+                from,
+                to,
+                promotion: "q",
+            });
+
+            return true;
+
+
+        } catch (error) {
+            return false;
+        }
+    }
+
+    const onSquareClick = ({ square }: { square: string }) => {
+        if (!isMyTurn) {
+            return;
+        }
+
+        const sq = square as Square;
+
+        if (!moveFrom) {
+            const hasMoves = getMoveOptions(sq);
+            if (hasMoves) {
+                setMoveFrom(sq);
+                return;
+            }
+        }
+
+        const success = makeMove(moveFrom, sq);
+
+        if (!success) {
+
+        }
+        setMoveFrom(null);
+        setOptionsSquares({});
+
+
+    }
+
+    const onPieceDrop = ({
+        sourceSquare,
+        targetSquare,
+    }: {
+        sourceSquare: string;
+        targetSquare: string | null;
+    }) => {
+        if (!isMyTurn || !targetSquare) return false;
+        const success = makeMove(sourceSquare as Square, targetSquare as Square);
+        if (!success) {
+
+        }
+        setMoveFrom(null);
+        setOptionsSquares({});
+        return success;
     };
 
     return (
         <div className="flex flex-col items-center justify-center gap-4 p-4 w-full max-w-xl mx-auto">
-            <div className="flex items-center justify-between w-full border border-slate-200 rounded-xl p-4 bg-white shadow-xs">
-                <div>
-                    <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Room Code</span>
-                    <p className="text-sm font-bold text-slate-900">{roomCode || "Local / Demo"}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-500">Turn:</span>
-                    <span className={`px-2.5 py-1 text-xs font-bold rounded-md capitalize ${
-                        turn === "white" ? "bg-slate-100 text-slate-900 border border-slate-300" : "bg-slate-900 text-white"
-                    }`}>
-                        {turn} {isMyTurn ? "(Your turn)" : ""}
+            <div className="chessboard-status-header">
+                <div className={`turn-indicator ${isMyTurn ? "turn-my-turn" : "turn-waiting"}`}>
+                    <span className="turn-pulse"></span>
+                    <span>
+                        {status !== "playing"
+                            ? "Game Not Started"
+                            : isMyTurn
+                                ? "Your Turn!"
+                                : `Opponent's Turn (${turn})`}
                     </span>
-                    {isCheck && (
-                        <span className="px-2.5 py-1 text-xs font-bold rounded-md bg-red-100 text-red-700 animate-pulse">
-                            CHECK!
-                        </span>
-                    )}
                 </div>
+                {isCheck && <span className="check-badge">CHECK!</span>}
             </div>
 
             <div className="w-full flex items-center justify-between text-xs font-medium text-slate-600 px-1">
@@ -135,15 +202,22 @@ export const ChessBoardComponent = () => {
                 </span>
             </div>
 
-            <div className="w-full aspect-square border-4 border-slate-800 rounded-lg overflow-hidden shadow-2xl bg-slate-100">
-                <Chessboard
-                    position={fen}
-                    onSquareClick={handleSquareClick}
-                    customSquareStyles={optionSquares}
-                    boardOrientation={playerColor === "black" ? "black" : "white"}
-                    arePiecesDraggable={isMyTurn}
-                />
-            </div>
+            <Chessboard
+                options={{
+                    position: game.fen(),
+                    onPieceDrop,
+                    onSquareClick,
+                    boardOrientation: playerColor,
+                    squareStyles: optionSquares,
+                    boardStyle: {
+                        borderRadius: "12px",
+                        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.6)",
+                    },
+                    darkSquareStyle: { backgroundColor: "#769656" },
+                    lightSquareStyle: { backgroundColor: "#eeeed2" },
+                    allowDragging: isMyTurn
+                }}
+            />
 
             <div className="w-full flex items-center justify-between text-xs font-medium text-slate-600 px-1">
                 <span>White Captured:</span>
