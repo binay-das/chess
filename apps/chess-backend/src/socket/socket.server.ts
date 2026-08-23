@@ -1,5 +1,7 @@
 import { Server as HttpServer } from "http";
 import { Server as SocketIOServer } from "socket.io";
+import { roomHandler } from "./room.handler";
+import { gameHandler } from "./game.handler";
 
 interface User {
     userId: string,
@@ -26,6 +28,12 @@ export const initSocketServer = (
 
     io.on("connection", (socket) => {
         const { userId, username, email } = socket.data.user;
+
+        console.log("=====================================")
+        console.log("[Socket] User connected:", username, userId);
+
+        roomHandler(io!, socket);
+        gameHandler(io!, socket);
 
         const existingUser = users.find(
             (u) => u.userId === userId
