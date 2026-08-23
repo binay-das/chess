@@ -7,11 +7,13 @@ import { Room, RoomPlayer } from "../types/room";
 export function gameHandler(io: Server, socket: Socket) {
     const { userId, username } = socket.data.user;
 
-    socket.on("game:reconnect", (payload: { roomCode: string }) => {
+    socket.on("game:reconnect", (payload?: { roomCode?: string }) => {
         try {
-            const res = reconnectPlayer(userId, socket.id, payload.roomCode);
+            console.log("Socket before: ", socket.id)
+            console.log("Payload before: ", payload)
+            console.log("UserId before: ", userId)
+            const res = reconnectPlayer(userId, socket.id, payload?.roomCode);
             if (!res.success || !res.room || !res.player) {
-                socket.emit("game:error", { error: res.message || "No active game found to reconnect" });
                 return;
             }
 
@@ -51,7 +53,7 @@ export function gameHandler(io: Server, socket: Socket) {
 
     socket.on("game:move", async (payload: { roomCode: string, from: string, to: string, promotion?: string, room: any }) => {
         try {
-            if (!payload.roomCode || !payload.from || !payload.to) {
+            if (!payload || !payload.roomCode || !payload.from || !payload.to) {
                 socket.emit("game:error", { error: "Invalid move data" });
                 return;
             }

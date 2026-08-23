@@ -267,3 +267,16 @@ export const leaveUserRooms = (
     return results;
 }
 
+export const sanitizeRoom = (room: Room | null | undefined) => {
+    if (!room) return null;
+    const { game, ...restRoom } = room;
+    if (!game) {
+        return { ...restRoom };
+    }
+    const { chess, ...restGame } = game;
+    return {
+        ...restRoom,
+        game: restGame,
+    };
+};
+

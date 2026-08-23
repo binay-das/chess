@@ -1,10 +1,13 @@
 import { Server, Socket } from "socket.io";
-import { createRoom, joinRoom, leaveRoom, leaveUserRooms } from "./room.manager";
+import { createRoom, joinRoom, leaveRoom, leaveUserRooms, sanitizeRoom } from "./room.manager";
 import { persistCompletedGame } from "../services/game.service";
 
 
 export function roomHandler(io: Server, socket: Socket) {
     const { userId, username } = socket.data.user;
+    console.log("=====================================")
+
+    console.log("[Room] Room handler initialized for user", username, userId);
 
 
     socket.on("room:create", () => {
@@ -17,10 +20,10 @@ export function roomHandler(io: Server, socket: Socket) {
             socket.emit("room:created", {
                 message: "Room created successfully",
                 roomCode: room.roomCode,
-                room
+                room: sanitizeRoom(room)
             });
 
-            io.to(room.roomCode).emit("room:state", { room });
+            io.to(room.roomCode).emit("room:state", { room: sanitizeRoom(room) });
 
         } catch (error) {
             console.log(error);
@@ -48,15 +51,15 @@ export function roomHandler(io: Server, socket: Socket) {
             socket.emit("room:joined", {
                 message: "Joined room successfully",
                 roomCode: room?.roomCode as string,
-                room
+                room: sanitizeRoom(room)
             });
 
             io.to(room?.roomCode as string).emit("room:player_joined", {
                 joinedUser: { userId, username },
-                room
+                room: sanitizeRoom(room)
             });
 
-            io.to(room?.roomCode as string).emit("room:state", { room });
+            io.to(room?.roomCode as string).emit("room:state", { room: sanitizeRoom(room) });
             if (result.gameStarted && room?.game) {
                 console.log(`[Game] Game started in room ${room?.roomCode as string}! White to move.`);
                 io.to(room?.roomCode as string).emit("game:started", {
@@ -95,10 +98,10 @@ export function roomHandler(io: Server, socket: Socket) {
             if (result.success && !result.roomDeleted && result.room) {
                 io.to(roomCode).emit("room:player_left", {
                     leftUser: { userId, username },
-                    room: result.room,
+                    room: sanitizeRoom(result.room),
                 });
 
-                io.to(roomCode).emit("room:state", { room: result.room });
+                io.to(roomCode).emit("room:state", { room: sanitizeRoom(result.room) });
 
                 // Broadcast Game Over if leave happened during active game
                 if (result.wasActiveGame && result.winnerId) {
@@ -137,10 +140,10 @@ export function handleRoomDisconnect(io: Socket, socket: Socket) {
                     userId, username
                 },
                 reason: "disconnected",
-                room: result.room
+                room: sanitizeRoom(result.room)
             })
 
-            io.to(roomCode).emit("room:state", { room: result.room });
+            io.to(roomCode).emit("room:state", { room: sanitizeRoom(result.room) });
 
             // broadcast game over
             if (result.wasActiveGame && result.winnerId) {
