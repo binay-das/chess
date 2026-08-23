@@ -1,5 +1,7 @@
 import { Request, Response, Router } from "express";
 import { prisma } from "../lib/prisma";
+import { validate } from "../middleware/validate.middleware";
+import { getGameByIdSchema, getGameMovesSchema } from "../types/game";
 
 
 const router: Router = Router()
@@ -43,7 +45,7 @@ router.get("/", async (req: Request, res: Response) => {
     }
 })
 
-router.get("/:id", async (req: Request, res: Response) => {
+router.get("/:id", validate(getGameByIdSchema), async (req: Request, res: Response) => {
     try {
         // @ts-ignore
         const userId = req.user!.userId;
@@ -97,7 +99,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 })
 
 
-router.get("/:id/moves", async (req: Request, res: Response) => {
+router.get("/:id/moves", validate(getGameMovesSchema), async (req: Request, res: Response) => {
     try {
         // @ts-ignore
         const userId = req.user!.userId;
