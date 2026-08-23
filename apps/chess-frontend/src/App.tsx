@@ -7,22 +7,25 @@ import { SignUpPage } from "./pages/SignUpPage";
 import { ChessBoardComponent } from "./components/ChessBoard";
 import type { User } from "./api/auth";
 import { DashboardPage } from "./pages/DashboardPage";
+import { useAuthStore } from "./store/AuthStore";
 
 export function App() {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string>("");
 
   useEffect(() => {
-    const savedToken = localStorage.getItem("chess_token");
-    const savedUser = localStorage.getItem("chess_user");
+    const savedToken = localStorage.getItem("token");
+    const savedUser = localStorage.getItem("user");
 
     if (savedToken && savedUser) {
       try {
+        const parsedUser = JSON.parse(savedUser);
         setToken(savedToken);
-        setUser(JSON.parse(savedUser));
+        setUser(parsedUser);
+        useAuthStore.getState().setAuth(parsedUser as any, savedToken);
       } catch (err) {
-        localStorage.removeItem("chess_token");
-        localStorage.removeItem("chess_user");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
       }
     }
   }, []);
@@ -30,15 +33,17 @@ export function App() {
   const handleAuthSuccess = (userData: User, authToken: string) => {
     setUser(userData);
     setToken(authToken);
-    localStorage.setItem("chess_token", authToken);
-    localStorage.setItem("chess_user", JSON.stringify(userData));
+    useAuthStore.getState().setAuth(userData as any, authToken);
+    localStorage.setItem("token", authToken);
+    localStorage.setItem("user", JSON.stringify(userData));
   };
 
   const handleSignOut = () => {
     setUser(null);
     setToken("");
-    localStorage.removeItem("chess_token");
-    localStorage.removeItem("chess_user");
+    useAuthStore.getState().logout();
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   };
 
   return (
