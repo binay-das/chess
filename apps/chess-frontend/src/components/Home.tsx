@@ -1,13 +1,13 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { ArrowRight, ShieldCheck, Zap, Award, Swords } from "lucide-react";
 import type { User } from "../api/auth";
 
 interface HomeProps {
-  onNavigate: (tab: "home" | "signin" | "signup" | "dashboard") => void;
   user: User | null;
 }
 
-export const Home: React.FC<HomeProps> = ({ onNavigate, user }) => {
+export const Home: React.FC<HomeProps> = ({ user }) => {
   return (
     <div className="mx-auto flex max-w-4xl flex-col items-center gap-8 py-12 text-center">
       <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3.5 py-1 text-xs font-medium text-slate-600 shadow-xs">
@@ -26,26 +26,26 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, user }) => {
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         {user ? (
-          <button
+          <Link
+            to="/dashboard"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-slate-800 hover:shadow-lg active:scale-95"
-            onClick={() => onNavigate("dashboard")}
           >
             Go to Dashboard <ArrowRight className="h-4 w-4" />
-          </button>
+          </Link>
         ) : (
           <>
-            <button
+            <Link
+              to="/signup"
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-slate-800 hover:shadow-lg active:scale-95"
-              onClick={() => onNavigate("signup")}
             >
               Create Account <ArrowRight className="h-4 w-4" />
-            </button>
-            <button
+            </Link>
+            <Link
+              to="/signin"
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-medium text-slate-700 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-50 active:scale-95"
-              onClick={() => onNavigate("signin")}
             >
               Sign In
-            </button>
+            </Link>
           </>
         )}
       </div>
