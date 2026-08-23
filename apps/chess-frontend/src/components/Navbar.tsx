@@ -34,6 +34,17 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onSignOut }) => {
           Home
         </Link>
 
+        <Link
+          to="/game"
+          className={`rounded-md px-3.5 py-1.5 text-sm font-medium transition-all ${
+            currentPath === "/game"
+              ? "bg-slate-100 font-semibold text-slate-900"
+              : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          }`}
+        >
+          Play Game
+        </Link>
+
         {user ? (
           <>
             <Link

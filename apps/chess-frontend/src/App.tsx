@@ -5,6 +5,7 @@ import { Home } from "./components/Home";
 import { SignInPage } from "./pages/SignInPage";
 import { SignUpPage } from "./pages/SignUpPage";
 import { Dashboard } from "./components/Dashboard";
+import { ChessBoardComponent } from "./components/ChessBoard";
 import type { User } from "./api/auth";
 
 export function App() {
@@ -69,12 +70,13 @@ export function App() {
               )
             }
           />
+          <Route path="/game" element={<ChessBoardComponent />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
 
       <footer className="border-t border-slate-100 py-6 text-center text-xs text-slate-400">
-        {new Date().getFullYear()} ChessArena • Built with Tailwind CSS & React
+        {new Date().getFullYear()} ChessArena
       </footer>
     </div>
   );
