@@ -81,6 +81,14 @@ export const GameScreen = () => {
         }
     };
 
+    const handleRespondRematch = (accept: boolean) => {
+        if (roomCode) {
+            const socket = getSocket();
+            socket.emit("game:rematch_respond", { roomCode, accept });
+            setRematchOfferedBy(null);
+        }
+    };
+
     const opponentColor = playerColor === "white" ? "black" : "white";
 
     return (
@@ -286,6 +294,39 @@ export const GameScreen = () => {
                     </div>
                 </div>
             )}
+
+
+            {/* Rematch Offered Modal */}
+            {rematchOfferedBy && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+                    <div className="relative w-full max-w-sm space-y-4 rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-2xl">
+                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-800">
+                            <RotateCcw className="h-8 w-8" />
+                        </div>
+                        <div className="space-y-1">
+                            <h2 className="text-xl font-bold tracking-tight text-slate-900">Rematch Offered</h2>
+                            <p className="text-xs text-slate-500">
+                                {rematchOfferedBy.username} wants a rematch! Colors will be swapped.
+                            </p>
+                        </div>
+                        <div className="flex gap-3 pt-2">
+                            <button
+                                onClick={() => handleRespondRematch(true)}
+                                className="flex-1 rounded-xl bg-slate-900 py-2.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-slate-800 cursor-pointer"
+                            >
+                                Accept Rematch
+                            </button>
+                            <button
+                                onClick={() => handleRespondRematch(false)}
+                                className="flex-1 rounded-xl border border-slate-200 bg-white py-2.5 text-xs font-semibold text-slate-700 shadow-xs transition-all hover:bg-slate-50 cursor-pointer"
+                            >
+                                Decline
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
 
 
 
