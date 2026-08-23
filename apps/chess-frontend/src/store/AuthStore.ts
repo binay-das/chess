@@ -48,20 +48,28 @@ export const useAuthStore = create<AuthState>((set) => ({
                 isLoading: true
             });
 
-            const res = await fetch("/auth/me", {
-                headers: { "Content-Type": "application/json" }
-            })
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
 
-            const user = res.data.user;
-            localStorage.setItem("user", JSON.stringify(user))
+            if (!res.ok) {
+                throw new Error("Failed to fetch user");
+            }
+
+            const data = await res.json();
+            const user = data.user;
+            localStorage.setItem("user", JSON.stringify(user));
             set({
                 user,
                 isAuthenticated: true,
                 isLoading: false,
                 error: null
-            })
+            });
         } catch (error) {
-            console.error("Failed to fetch current user:", err);
+            console.error("Failed to fetch current user:", error);
             localStorage.removeItem("token");
             localStorage.removeItem("user");
             set({
