@@ -4,6 +4,7 @@ import { useGameStore } from "../store/GameStore";
 import { connectSocket, getSocket } from "../services/socket";
 import { JoinRoomModal } from "../components/JoinRoomModal";
 import { Trophy, AlertCircle, Gamepad2, Award, XCircle, Zap, Plus, KeyRound } from "lucide-react";
+import { GameScreen } from "../components/GameScreen";
 
 interface GameHistoryItem {
     id: string;
@@ -234,7 +235,9 @@ export const DashboardPage = () => {
         socket.emit("room:create");
     };
 
-
+    if (roomCode) {
+        return <GameScreen />;
+    }
 
     return (
         <div className="mx-auto max-w-5xl space-y-8 px-4 py-8 sm:px-6">
