@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getSocket } from "../services/socket";
-import { X } from "lucide-react";
+import { X, AlertCircle } from "lucide-react";
 
 interface JoinRoomModalProps {
   isOpen: boolean;
@@ -32,7 +32,7 @@ export const JoinRoomModal = ({ isOpen, onClose }: JoinRoomModalProps) => {
           className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 cursor-pointer"
           onClick={onClose}
         >
-          <X />
+          <X className="h-4 w-4" />
         </button>
 
         <div className="mb-6 text-center">
@@ -41,8 +41,9 @@ export const JoinRoomModal = ({ isOpen, onClose }: JoinRoomModalProps) => {
         </div>
 
         {error && (
-          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-center text-xs font-medium text-red-600">
-            {error}
+          <div className="mb-4 flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-center text-xs font-medium text-red-600">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span>{error}</span>
           </div>
         )}
 

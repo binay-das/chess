@@ -4,9 +4,9 @@ import { Navbar } from "./components/Navbar";
 import { Home } from "./components/Home";
 import { SignInPage } from "./pages/SignInPage";
 import { SignUpPage } from "./pages/SignUpPage";
-import { Dashboard } from "./components/Dashboard";
 import { ChessBoardComponent } from "./components/ChessBoard";
 import type { User } from "./api/auth";
+import { DashboardPage } from "./pages/DashboardPage";
 
 export function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -60,11 +60,7 @@ export function App() {
             path="/dashboard"
             element={
               user ? (
-                <Dashboard
-                  user={user}
-                  token={token}
-                  onSignOut={handleSignOut}
-                />
+                <DashboardPage />
               ) : (
                 <Navigate to="/signin" replace />
               )
