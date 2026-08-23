@@ -1,11 +1,15 @@
 import { io, Socket } from "socket.io-client";
+import { useAuthStore } from "../store/AuthStore";
+
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
 
 let socket: Socket | null = null;
 
 export const getSocket = (): Socket => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token") || useAuthStore.getState().token;
+
   if (!socket) {
-    socket = io(import.meta.env.VITE_SOCKET_URL!, {
+    socket = io(SOCKET_URL, {
       auth: { token },
       autoConnect: false,
     });
