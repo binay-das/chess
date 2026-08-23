@@ -2,13 +2,15 @@ import { Router, Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { validate } from "../middleware/validate.middleware";
+import { signInInputSchema, signUpInputSchema } from "../types/auth";
 
 
 
 
 const router: Router = Router();
 
-router.post("/signup", async (req: Request, res: Response) => {
+router.post("/signup", validate(signUpInputSchema), async (req: Request, res: Response) => {
     try {
         const { username, email, password } = req.body;
 
@@ -84,7 +86,7 @@ router.post("/signup", async (req: Request, res: Response) => {
 })
 
 
-router.post("/signin", async (req: Request, res: Response) => {
+router.post("/signin", validate(signInInputSchema), async (req: Request, res: Response) => {
     try {
         const { email, username, password } = req.body;
         const identifier = email || username;
@@ -93,8 +95,8 @@ router.post("/signin", async (req: Request, res: Response) => {
         const user = await prisma.user.findFirst({
             where: {
                 OR: [
-                    { email },
-                    { username }
+                    { email: identifier },
+                    { username: identifier }
                 ]
             }
         })
@@ -154,14 +156,15 @@ router.post("/signin", async (req: Request, res: Response) => {
 
 router.get("/me", async (req: Request, res: Response) => {
     try {
+        // @ts-ignore
         if (!req.user) {
             return res.status(401).json({
                 success: false,
                 message: "Unauthorized"
             })
         }
-
         const user = await prisma.user.findUnique({
+            //@ts-ignore
             where: { id: req.user.userId },
             select: {
                 id: true,
@@ -172,7 +175,7 @@ router.get("/me", async (req: Request, res: Response) => {
                 updatedAt: true,
             }
         });
-        if(!user) {
+        if (!user) {
             return res.status(404).json({
                 success: false,
                 message: "User not found"
