@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { validate } from "../middleware/validate.middleware";
 import { signInInputSchema, signUpInputSchema } from "../types/auth";
+import { authenticate } from "../middleware/auth.middleware";
 
 
 
@@ -154,9 +155,8 @@ router.post("/signin", validate(signInInputSchema), async (req: Request, res: Re
 })
 
 
-router.get("/me", async (req: Request, res: Response) => {
+router.get("/me", authenticate, async (req: Request, res: Response) => {
     try {
-        // @ts-ignore
         if (!req.user) {
             return res.status(401).json({
                 success: false,
@@ -164,7 +164,6 @@ router.get("/me", async (req: Request, res: Response) => {
             })
         }
         const user = await prisma.user.findUnique({
-            //@ts-ignore
             where: { id: req.user.userId },
             select: {
                 id: true,
