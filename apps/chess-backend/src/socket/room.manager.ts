@@ -280,3 +280,8 @@ export const sanitizeRoom = (room: Room | null | undefined) => {
     };
 };
 
+export const getRoom = (roomCode: string): Room | undefined => {
+    if (!roomCode) return undefined;
+    return rooms.get(roomCode.trim());
+};
+

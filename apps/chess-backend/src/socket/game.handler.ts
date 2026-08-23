@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { reconnectPlayer } from "./room.manager";
+import { reconnectPlayer, sanitizeRoom, getRoom } from "./room.manager";
 import { persistCompletedGame } from "../services/game.service";
 import { Room, RoomPlayer } from "../types/room";
 
@@ -43,7 +43,7 @@ export function gameHandler(io: Server, socket: Socket) {
             })
             io.to(room.roomCode).emit("game:player_reconnected", {
                 reconnectedUser: { userId, username, color: player.color },
-                room,
+                room: sanitizeRoom(room),
             });
         } catch (error: any) {
             console.error("[Game] Error processing game reconnection:", error);
@@ -51,14 +51,14 @@ export function gameHandler(io: Server, socket: Socket) {
         }
     })
 
-    socket.on("game:move", async (payload: { roomCode: string, from: string, to: string, promotion?: string, room: any }) => {
+    socket.on("game:move", async (payload: { roomCode: string, from: string, to: string, promotion?: string }) => {
         try {
             if (!payload || !payload.roomCode || !payload.from || !payload.to) {
                 socket.emit("game:error", { error: "Invalid move data" });
                 return;
             }
-            const room = payload.room;
-            if (room.status !== "playing") {
+            const room = getRoom(payload.roomCode);
+            if (!room || !room.game || room.status !== "playing") {
                 socket.emit("game:error", { error: "Game is not active" });
                 return;
             }
@@ -181,15 +181,13 @@ export function gameHandler(io: Server, socket: Socket) {
     })
 
 
-    socket.on("game:resign", async (payload: {
-        roomCode: string, room: Room
-    }) => {
+    socket.on("game:resign", async (payload: { roomCode: string }) => {
         try {
             if (!payload || !payload.roomCode) {
                 socket.emit("game:error", { error: "Room code is required to resign" });
                 return;
             }
-            const room = payload.room;
+            const room = getRoom(payload.roomCode);
             if (!room || !room.game || room.status !== "playing") {
                 socket.emit("game:error", { error: "No active game to resign from" });
                 return;
