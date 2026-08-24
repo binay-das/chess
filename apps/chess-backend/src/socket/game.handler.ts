@@ -256,5 +256,43 @@ export function gameHandler(io: Server, socket: Socket) {
         }
     });
 
-    
+    socket.on("game:draw_respond", async (payload: { roomCode: string; accept: boolean }) => {
+        try {
+            if (!payload?.roomCode) return;
+            const room = getRoom(payload.roomCode);
+            if (!room || room.status !== "playing") return;
+
+            const opponent = room.players.find((p) => p.userId !== userId);
+
+            if (payload.accept) {
+                room.status = "finished";
+                if (room.game) {
+                    room.game.isDraw = true;
+                    room.game.drawReason = "agreement";
+                }
+
+                io.to(room.roomCode).emit("game:over", {
+                    roomCode: room.roomCode,
+                    isDraw: true,
+                    drawReason: "agreement",
+                    fen: room.game?.fen,
+                    pgn: room.game?.pgn,
+                });
+
+                persistCompletedGame(room).catch((err) =>
+                    console.error("[GameService] Error persisting draw game:", err)
+                );
+            } else {
+                if (opponent) {
+                    const opponentSocket = io.sockets.sockets.get(opponent.socketId);
+                    if (opponentSocket) {
+                        opponentSocket.emit("game:draw_declined");
+                    }
+                }
+            }
+        } catch (err) {
+            console.error("[Game] Error handling draw respond:", err);
+        }
+    });
+
 }
