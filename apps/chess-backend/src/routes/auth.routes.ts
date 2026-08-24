@@ -93,6 +93,10 @@ router.post("/signin", validate(signInInputSchema), async (req: Request, res: Re
         const identifier = email || username;
 
 
+        console.log("=====================================")
+
+        console.log("[Sign in] Identifier:", identifier);
+
         const user = await prisma.user.findFirst({
             where: {
                 OR: [

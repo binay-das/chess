@@ -44,29 +44,22 @@ export const DashboardPage = () => {
 
     const loadDasboardData = async () => {
         try {
-            const response = await fetch('/api/users/stats');
-            if (!response.ok) {
-                throw new Error('Failed to fetch stats');
-            }
-            const data = await response.json();
-            setStats(data);
+            const token = localStorage.getItem("token");
+            if (!token) return;
 
-            const [statRes, gameRes] = await Promise.all([
-                fetch('/users/stats'),
-                fetch('/games')
-            ]);
+            const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+            const response = await fetch(`${baseUrl}/users/profile`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
 
-            if (!statRes.ok || !gameRes.ok) {
-            }
-
-            if (statRes.ok) {
-                const statData = await statRes.json();
-                setStats(statData.data);
-            }
-
-            if (gameRes.ok) {
-                const gameData = await gameRes.json();
-                setStats(gameData.data);
+            if (response.ok) {
+                const result = await response.json();
+                if (result.data?.stats) {
+                    setStats(result.data.stats);
+                }
             }
         } catch (error) {
             console.error("Error fetching dashboard data:", error);

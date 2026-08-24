@@ -1,7 +1,7 @@
-import { Request, Response, Router } from "express";
-import { authenticate } from "../middleware/auth.middleware";
 import { prisma } from "../lib/prisma";
+import { Request, Response, Router } from "express";
 import { calculatePlayerStats } from "../lib/playerStats";
+import { authenticate } from "../middleware/auth.middleware";
 
 
 const router: Router = Router();
@@ -10,6 +10,11 @@ router.get("/profile", authenticate, async (req: Request, res: Response) => {
     try {
         const userId = req.user?.userId;
 
+        if (!userId) {
+            return res.status(401).json({
+                message: "Unauthorized, userId not found"
+            });
+        }
 
         const user = await prisma.user.findUnique({
             where: {
@@ -29,7 +34,7 @@ router.get("/profile", authenticate, async (req: Request, res: Response) => {
             });
         }
 
-        const stats = await calculatePlayerStats(userId as string);
+        const stats = await calculatePlayerStats(userId);
 
         return res.status(200).json({
             message: "User profile fetched successfully",

@@ -10,25 +10,27 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { useAuthStore } from "./store/AuthStore";
 
 export function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string>("");
-
-  useEffect(() => {
-    const savedToken = localStorage.getItem("token");
+  const [user, setUser] = useState<User | null>(() => {
     const savedUser = localStorage.getItem("user");
-
-    if (savedToken && savedUser) {
+    if (savedUser) {
       try {
-        const parsedUser = JSON.parse(savedUser);
-        setToken(savedToken);
-        setUser(parsedUser);
-        useAuthStore.getState().setAuth(parsedUser as any, savedToken);
-      } catch (err) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        return JSON.parse(savedUser);
+      } catch {
+        return null;
       }
     }
-  }, []);
+    return null;
+  });
+
+  const [token, setToken] = useState<string>(() => {
+    return localStorage.getItem("token") || "";
+  });
+
+  useEffect(() => {
+    if (token && user) {
+      useAuthStore.getState().setAuth(user as any, token);
+    }
+  }, [token, user]);
 
   const handleAuthSuccess = (userData: User, authToken: string) => {
     setUser(userData);
@@ -71,7 +73,6 @@ export function App() {
               )
             }
           />
-          <Route path="/game" element={<ChessBoardComponent />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

@@ -55,6 +55,18 @@ export const useAuthStore = create<AuthState>((set) => ({
                 }
             });
 
+            if (res.status === 401) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                set({
+                    user: null,
+                    token: null,
+                    isAuthenticated: false,
+                    isLoading: false,
+                });
+                return;
+            }
+
             if (!res.ok) {
                 throw new Error("Failed to fetch user");
             }
@@ -70,12 +82,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             });
         } catch (error) {
             console.error("Failed to fetch current user:", error);
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
             set({
-                user: null,
-                token: null,
-                isAuthenticated: false,
                 isLoading: false,
             });
         }
