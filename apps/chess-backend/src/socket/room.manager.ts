@@ -155,7 +155,7 @@ export const leaveRoom = (roomCode: string, userId: string, socketId?: string) =
         room.hostId = room.players[0]?.userId as string;
     }
 
-    if (!wasActiveGame) {
+    if (room.status !== "finished" && !wasActiveGame) {
         room.status = "waiting";
     }
 

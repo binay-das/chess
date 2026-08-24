@@ -13,10 +13,10 @@ export async function persistCompletedGame(room: any) {
 
 
 
-        const whitePlayer = players.find((p: any) => p.color === "w");
-        const blackPlayer = players.find((p: any) => p.color === "b");
+        const whitePlayer = players.find((p: any) => p.color === "white" || p.color === "w");
+        const blackPlayer = players.find((p: any) => p.color === "black" || p.color === "b");
         if (!whitePlayer || !blackPlayer) {
-            console.error("[GameService] Cannot persist game: Players missing.");
+            console.error("[GameService] Cannot persist game: Players missing.", players);
             return;
         }
 
@@ -66,14 +66,14 @@ export async function persistCompletedGame(room: any) {
                 status: "FINISHED",
                 turn: currentTurnEnum,
                 fen: game.fen,
-                pgn: game.pgn,
+                pgn: game.pgn || "",
                 result: resultEnum,
-                startedAt: createdAt,
+                startedAt: createdAt || new Date(),
                 endedAt: new Date(),
                 moves: {
-                    create: game.moveHistory.map((m: any, idx: any) => {
+                    create: (game.moveHistory || []).map((m: any, idx: any) => {
                         const player = players.find((p: any) => p.userId === m.by);
-                        const playerColorEnum = player?.color;
+                        const playerColorEnum = (player?.color === "white" || player?.color === "w") ? PieceColor.WHITE : PieceColor.BLACK;
 
                         return {
                             moveNumber: idx + 1,
@@ -81,10 +81,8 @@ export async function persistCompletedGame(room: any) {
                             fromSquare: m.from,
                             toSquare: m.to,
                             san: m.san,
-                            fenAfterMove: game.fen
+                            fenAfterMove: m.fenAfterMove || game.fen
                         }
-
-
                     })
                 }
             },

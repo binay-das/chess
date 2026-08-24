@@ -47,18 +47,35 @@ export const DashboardPage = () => {
             const token = localStorage.getItem("token");
             if (!token) return;
 
-            const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-            const response = await fetch(`${baseUrl}/users/profile`, {
+            const baseUrl = import.meta.env.VITE_API_URL;
+            
+            // Fetch Profile & Stats
+            const profileRes = await fetch(`${baseUrl}/users/profile`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
             });
 
-            if (response.ok) {
-                const result = await response.json();
+            if (profileRes.ok) {
+                const result = await profileRes.json();
                 if (result.data?.stats) {
                     setStats(result.data.stats);
+                }
+            }
+
+            // Fetch Games History
+            const gamesRes = await fetch(`${baseUrl}/games`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (gamesRes.ok) {
+                const result = await gamesRes.json();
+                if (result.games) {
+                    setRecentGames(result.games);
                 }
             }
         } catch (error) {
@@ -69,8 +86,10 @@ export const DashboardPage = () => {
     }
 
     useEffect(() => {
-        loadDasboardData();
-    }, []);
+        if (status === "idle") {
+            loadDasboardData();
+        }
+    }, [status]);
 
 
     useEffect(() => {
@@ -103,9 +122,14 @@ export const DashboardPage = () => {
         const onRoomState = (data: any) => {
             const room = data.room || data;
             if (room && room.roomCode) {
+                const currentStatus = useGameStore.getState().status;
+                const statusToSet = (room.status === "finished" || (currentStatus === "finished" && room.status !== "playing"))
+                    ? "finished"
+                    : room.status;
+
                 setRoomState({
                     roomCode: room.roomCode,
-                    status: room.status,
+                    status: statusToSet,
                     players: room.players || [],
                     currentUserId: user.id,
                     game: room.game,
