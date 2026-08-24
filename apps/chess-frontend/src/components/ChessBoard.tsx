@@ -83,7 +83,7 @@ export const ChessBoardComponent = () => {
             return false;
         }
 
-        const newSquares = {};
+        const newSquares: Record<string, { background?: string; borderRadius?: string }> = {};
 
         moves.forEach((move) => {
             newSquares[move.to] = {
@@ -149,17 +149,11 @@ export const ChessBoardComponent = () => {
                 setMoveFrom(sq);
                 return;
             }
+        } else {
+            makeMove(moveFrom, sq);
+            setMoveFrom(null);
+            setOptionsSquares({});
         }
-
-        const success = makeMove(moveFrom, sq);
-
-        if (!success) {
-
-        }
-        setMoveFrom(null);
-        setOptionsSquares({});
-
-
     }
 
     const onPieceDrop = ({

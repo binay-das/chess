@@ -4,7 +4,6 @@ import { Navbar } from "./components/Navbar";
 import { Home } from "./components/Home";
 import { SignInPage } from "./pages/SignInPage";
 import { SignUpPage } from "./pages/SignUpPage";
-import { ChessBoardComponent } from "./components/ChessBoard";
 import type { User } from "./api/auth";
 import { DashboardPage } from "./pages/DashboardPage";
 import { useAuthStore } from "./store/AuthStore";
