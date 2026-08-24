@@ -210,11 +210,9 @@ export const ChessBoardComponent = () => {
                     boardOrientation: playerColor,
                     squareStyles: optionSquares,
                     boardStyle: {
-                        borderRadius: "12px",
+                        borderRadius: "6px",
                         boxShadow: "0 10px 30px rgba(0, 0, 0, 0.6)",
                     },
-                    darkSquareStyle: { backgroundColor: "#769656" },
-                    lightSquareStyle: { backgroundColor: "#eeeed2" },
                     allowDragging: isMyTurn
                 }}
             />
