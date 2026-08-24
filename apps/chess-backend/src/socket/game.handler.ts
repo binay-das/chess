@@ -317,4 +317,58 @@ export function gameHandler(io: Server, socket: Socket) {
         }
     });
 
+
+
+
+    socket.on("game:rematch_respond", (payload: { roomCode: string; accept: boolean }) => {
+        try {
+            if (!payload?.roomCode) return;
+            const room = getRoom(payload.roomCode);
+            if (!room) return;
+
+            const opponent = room.players.find((p) => p.userId !== userId);
+
+            if (payload.accept) {
+                // Swap player colors
+                room.players.forEach((p) => {
+                    p.color = p.color === "white" ? "black" : "white";
+                });
+
+                // Start fresh game
+                const { Chess } = require("chess.js");
+                const newChess = new Chess();
+                room.status = "playing";
+                room.game = {
+                    chess: newChess,
+                    fen: newChess.fen(),
+                    pgn: "",
+                    turn: "white",
+                    moveHistory: [],
+                    isDraw: false
+                };
+
+                io.to(room.roomCode).emit("room:state", { room: sanitizeRoom(room) });
+                io.to(room.roomCode).emit("game:started", {
+                    roomCode: room.roomCode,
+                    fen: room.game.fen,
+                    turn: room.game.turn,
+                    players: room.players.map((p) => ({
+                        userId: p.userId,
+                        username: p.username,
+                        color: p.color,
+                    })),
+                });
+            } else {
+                if (opponent) {
+                    const opponentSocket = io.sockets.sockets.get(opponent.socketId);
+                    if (opponentSocket) {
+                        opponentSocket.emit("game:rematch_declined");
+                    }
+                }
+            }
+        } catch (err) {
+            console.error("[Game] Error handling rematch respond:", err);
+        }
+    });
+
 }
