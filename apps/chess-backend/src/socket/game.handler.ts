@@ -295,4 +295,26 @@ export function gameHandler(io: Server, socket: Socket) {
         }
     });
 
+
+
+    socket.on("game:rematch_request", (payload: { roomCode: string }) => {
+        try {
+            if (!payload?.roomCode) return;
+            const room = getRoom(payload.roomCode);
+            if (!room) return;
+
+            const opponent = room.players.find((p) => p.userId !== userId);
+            if (opponent) {
+                const opponentSocket = io.sockets.sockets.get(opponent.socketId);
+                if (opponentSocket) {
+                    opponentSocket.emit("game:rematch_offered", {
+                        offeredBy: { userId, username }
+                    });
+                }
+            }
+        } catch (err) {
+            console.error("[Game] Error handling rematch request:", err);
+        }
+    });
+
 }
