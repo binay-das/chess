@@ -234,5 +234,27 @@ export function gameHandler(io: Server, socket: Socket) {
             // @ts-ignore
             socket.emit("game:error", { error: error.message || "Failed to process resignation" });
         }
-    })
+    });
+
+    socket.on("game:draw_offer", (payload: { roomCode: string }) => {
+        try {
+            if (!payload?.roomCode) return;
+            const room = getRoom(payload.roomCode);
+            if (!room || room.status !== "playing") return;
+
+            const opponent = room.players.find((p) => p.userId !== userId);
+            if (opponent) {
+                const opponentSocket = io.sockets.sockets.get(opponent.socketId);
+                if (opponentSocket) {
+                    opponentSocket.emit("game:draw_offered", {
+                        offeredBy: { userId, username }
+                    });
+                }
+            }
+        } catch (err) {
+            console.error("[Game] Error handling draw offer:", err);
+        }
+    });
+
+    
 }
