@@ -48,7 +48,7 @@ export const DashboardPage = () => {
             if (!token) return;
 
             const baseUrl = import.meta.env.VITE_API_URL;
-            
+
             // Fetch Profile & Stats
             const profileRes = await fetch(`${baseUrl}/users/profile`, {
                 headers: {
@@ -72,8 +72,10 @@ export const DashboardPage = () => {
                 }
             });
 
+
             if (gamesRes.ok) {
                 const result = await gamesRes.json();
+                console.log("gamesRes", result.games);
                 if (result.games) {
                     setRecentGames(result.games);
                 }
@@ -86,9 +88,9 @@ export const DashboardPage = () => {
     }
 
     useEffect(() => {
-        if (status === "idle") {
-            loadDasboardData();
-        }
+        // if (status === "idle") {
+        loadDasboardData();
+        // }
     }, [status]);
 
 
@@ -385,7 +387,6 @@ export const DashboardPage = () => {
                                     <th className="px-4 py-3">Black Player</th>
                                     <th className="px-4 py-3">Result</th>
                                     <th className="px-4 py-3">Date</th>
-                                    <th className="px-4 py-3">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
@@ -398,7 +399,6 @@ export const DashboardPage = () => {
                                         <tr
                                             key={game.id}
                                             className="cursor-pointer hover:bg-slate-50 transition-colors"
-                                        // onClick={() => setSelectedReplayGameId(game.id)}
                                         >
                                             <td className="px-4 py-3">
                                                 <span className={isWhite ? "font-bold text-slate-900" : ""}>

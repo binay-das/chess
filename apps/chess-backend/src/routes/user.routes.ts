@@ -47,3 +47,5 @@ router.get("/profile", authenticate, async (req: Request, res: Response) => {
         })
     }
 })
+
+export default router;
