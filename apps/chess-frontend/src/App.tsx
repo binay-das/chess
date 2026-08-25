@@ -54,7 +54,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0c0c0b] font-sans text-[#f5f2eb] antialiased">
+    <div className="min-h-screen bg-(--bg-main) font-sans text-(--text-primary) transition-colors duration-200 antialiased">
       <Navbar user={user} onSignOut={handleSignOut} />
 
       <Routes>

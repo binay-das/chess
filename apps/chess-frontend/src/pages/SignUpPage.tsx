@@ -55,31 +55,31 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onSuccess }) => {
   };
 
   return (
-    <main className="relative flex min-h-[calc(100vh-72px)] overflow-hidden bg-[#0c0c0b] text-[#f5f2eb]">
+    <main className="relative flex min-h-[calc(100vh-72px)] overflow-hidden bg-(--bg-main) text-(--text-primary) transition-colors duration-200">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute right-[15%] top-[10%] h-137.5 w-137.5 rounded-full bg-[#c7a96b]/5 blur-[150px]" />
+        <div className="absolute right-[15%] top-[10%] h-137.5 w-137.5 rounded-full bg-(--glow-amber) blur-[150px]" />
 
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.03)_1px,transparent_0)] bg-size-[32px_32px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,var(--dot-pattern)_1px,transparent_0)] bg-size-[32px_32px]" />
       </div>
 
       <div className="relative mx-auto grid w-full max-w-7xl items-center gap-16 px-6 py-16 lg:grid-cols-2 lg:px-10">
         <div className="hidden lg:block">
-          <div className="mb-8 flex items-center gap-3 text-[10px] font-semibold tracking-[0.3em] text-white/30">
+          <div className="mb-8 flex items-center gap-3 text-[10px] font-semibold tracking-[0.3em] text-(--text-muted-30)">
             Join the arena
           </div>
 
-          <h1 className="max-w-xl font-serif text-7xl leading-[0.9] tracking-[-0.045em] text-[#f4f0e7]">
+          <h1 className="max-w-xl font-serif text-7xl leading-[0.9] tracking-[-0.045em] text-(--text-heading)">
             Make your
             <br />
-            <span className="italic text-[#c7a96b]">move.</span>
+            <span className="italic text-(--accent-gold)">move.</span>
           </h1>
 
-          <p className="mt-8 max-w-md text-base leading-7 text-white/35">
+          <p className="mt-8 max-w-md text-base leading-7 text-(--text-muted-35)">
             Create your player profile and step onto the board. Find opponents,
             play live, and build your rating one game at a time.
           </p>
 
-          <div className="mt-12 space-y-5 border-t border-white/8 pt-7">
+          <div className="mt-12 space-y-5 border-t border-(--border-8) pt-7">
             <Stat
               number="01"
               title="Create your identity"
@@ -102,27 +102,27 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onSuccess }) => {
 
         <div className="mx-auto w-full max-w-md">
           <div className="mb-10 lg:hidden">
-            <div className="mb-5 flex items-center gap-3 text-[10px] font-semibold tracking-[0.3em] text-white/30">
+            <div className="mb-5 flex items-center gap-3 text-[10px] font-semibold tracking-[0.3em] text-(--text-muted-30)">
               Join the arena
             </div>
 
             <h1 className="font-serif text-5xl tracking-[-0.04em]">
               Make your{" "}
-              <span className="italic text-[#c7a96b]">move.</span>
+              <span className="italic text-(--accent-gold)">move.</span>
             </h1>
           </div>
 
-          <div className="border border-white/9 bg-[#11110f] p-7 sm:p-9">
+          <div className="border border-(--border-9) bg-(--bg-surface-1) p-7 sm:p-9">
             <div className="mb-8">
-              <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#c7a96b]">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-(--accent-gold)">
                 Create account
               </div>
 
-              <h2 className="mt-3 font-serif text-3xl tracking-tight text-white">
+              <h2 className="mt-3 font-serif text-3xl tracking-tight text-(--text-heading)">
                 Step onto the board.
               </h2>
 
-              <p className="mt-2 text-sm leading-6 text-white/30">
+              <p className="mt-2 text-sm leading-6 text-(--text-muted-30)">
                 Set up your player profile and start playing.
               </p>
             </div>
@@ -177,10 +177,10 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onSuccess }) => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="group mt-2 flex w-full cursor-pointer items-center justify-center gap-3 bg-[#e9e4d8] py-3.5 text-sm font-bold text-[#11110f] transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+                className="group mt-2 flex w-full cursor-pointer items-center justify-center gap-3 bg-(--btn-primary-bg) py-3.5 text-sm font-bold text-(--btn-primary-text) transition-colors hover:bg-(--btn-primary-hover) disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSubmitting ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#11110f]/30 border-t-[#11110f]" />
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-(--btn-primary-text)/30 border-t-(--btn-primary-text)" />
                 ) : (
                   <>
                     <UserPlus className="h-4 w-4" />
@@ -191,18 +191,18 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onSuccess }) => {
               </button>
             </form>
 
-            <div className="mt-7 border-t border-white/10 pt-6 text-center text-xs text-white/30">
+            <div className="mt-7 border-t border-(--border-10) pt-6 text-center text-xs text-(--text-muted-30)">
               Already have an account?{" "}
               <Link
                 to="/signin"
-                className="font-semibold text-[#c7a96b] transition-colors hover:text-[#e0c98e]"
+                className="font-semibold text-(--accent-gold) transition-colors hover:text-(--accent-gold-hover)"
               >
                 Sign in
               </Link>
             </div>
           </div>
 
-          <div className="mt-5 flex items-center justify-center gap-2 text-[9px] uppercase tracking-[0.2em] text-white/15">
+          <div className="mt-5 flex items-center justify-center gap-2 text-[9px] uppercase tracking-[0.2em] text-(--text-muted-15)">
             <Crown className="h-3 w-3" />
             Your game starts here
           </div>
@@ -225,16 +225,16 @@ const Stat: React.FC<StatProps> = ({
 }) => {
   return (
     <div className="flex gap-5">
-      <span className="pt-0.5 font-mono text-[9px] text-[#c7a96b]/60">
+      <span className="pt-0.5 font-mono text-[9px] text-(--accent-gold)/60">
         {number}
       </span>
 
       <div>
-        <h3 className="text-xs font-semibold text-white/70">
+        <h3 className="text-xs font-semibold text-(--text-muted-70)">
           {title}
         </h3>
 
-        <p className="mt-1 max-w-sm text-xs leading-5 text-white/25">
+        <p className="mt-1 max-w-sm text-xs leading-5 text-(--text-muted-25)">
           {description}
         </p>
       </div>
@@ -252,16 +252,16 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
   ({ label, error, ...props }, ref) => {
     return (
       <div>
-        <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
+        <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.2em] text-(--text-muted-35)">
           {label}
         </label>
 
         <input
           ref={ref}
           {...props}
-          className={`w-full border bg-[#0c0c0b] px-4 py-3.5 text-sm text-white outline-none transition-colors placeholder:text-white/15 ${error
+          className={`w-full border bg-(--bg-input) px-4 py-3.5 text-sm text-(--text-primary) outline-none transition-colors placeholder:text-(--text-muted-15) ${error
               ? "border-red-400/50 focus:border-red-400"
-              : "border-white/10 focus:border-[#c7a96b]/70"
+              : "border-(--border-10) focus:border-(--accent-gold)"
             }`}
         />
 

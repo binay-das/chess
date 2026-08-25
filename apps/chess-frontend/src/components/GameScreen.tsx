@@ -99,18 +99,18 @@ export const GameScreen = () => {
   const opponentColor = playerColor === "white" ? "black" : "white";
 
   return (
-    <main className="min-h-[calc(100vh-72px)] bg-[#0c0c0b] text-[#f5f2eb]">
+    <main className="min-h-[calc(100vh-72px)] bg-(--bg-main) text-(--text-primary) transition-colors duration-200">
       <div className="mx-auto max-w-375 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-        <header className="mb-6 flex flex-col gap-5 border-b border-white/10 pb-6 lg:flex-row lg:items-end lg:justify-between">
+        <header className="mb-6 flex flex-col gap-5 border-b border-(--border-10) pb-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <div className="mb-3 flex items-center gap-3">
-              <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-[#c7a96b]">
+              <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-(--accent-gold)">
                 Live match
               </span>
             </div>
 
             <div className="flex flex-wrap items-center gap-4">
-              <h1 className="font-serif text-3xl tracking-[-0.035em] text-white sm:text-4xl">
+              <h1 className="font-serif text-3xl tracking-[-0.035em] text-(--text-heading) sm:text-4xl">
                 The board
               </h1>
 
@@ -118,20 +118,20 @@ export const GameScreen = () => {
                 type="button"
                 onClick={copyRoomCode}
                 title="Click to copy room code"
-                className="group flex cursor-pointer items-center gap-3.5 border border-[#c7a96b]/30 bg-[#11110f] px-4 py-2.5 transition-colors hover:border-[#c7a96b]/60 hover:bg-white/5"
+                className="group flex cursor-pointer items-center gap-3.5 border border-(--accent-gold)/30 bg-(--bg-surface-1) px-4 py-2.5 transition-colors hover:border-(--accent-gold)/60 hover:bg-(--border-5)"
               >
-                <span className="text-[9px] font-semibold uppercase tracking-[0.22em] text-[#c7a96b]">
+                <span className="text-[9px] font-semibold uppercase tracking-[0.22em] text-(--accent-gold)">
                   Room
                 </span>
 
-                <span className="font-mono text-sm font-bold tracking-[0.28em] text-white">
+                <span className="font-mono text-sm font-bold tracking-[0.28em] text-(--text-primary)">
                   {roomCode}
                 </span>
 
                 {copied ? (
-                  <Check className="h-4 w-4 text-[#c7a96b]" />
+                  <Check className="h-4 w-4 text-(--accent-gold)" />
                 ) : (
-                  <Copy className="h-4 w-4 text-white/35 transition-colors group-hover:text-white/80" />
+                  <Copy className="h-4 w-4 text-(--text-muted-35) transition-colors group-hover:text-(--text-muted-80)" />
                 )}
               </button>
             </div>
@@ -143,7 +143,7 @@ export const GameScreen = () => {
                 <button
                   type="button"
                   onClick={handleOfferDraw}
-                  className="flex cursor-pointer items-center gap-2 border border-white/10 bg-[#11110f] px-3.5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/55 transition-colors hover:border-white/20 hover:bg-white/5 hover:text-white"
+                  className="flex cursor-pointer items-center gap-2 border border-(--border-10) bg-(--bg-surface-1) px-3.5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-(--text-muted-55) transition-colors hover:border-(--border-20) hover:bg-(--border-5) hover:text-(--text-primary)"
                 >
                   <Handshake className="h-3.5 w-3.5" />
                   Draw
@@ -163,7 +163,7 @@ export const GameScreen = () => {
             <button
               type="button"
               onClick={handleLeaveRoom}
-              className="flex cursor-pointer items-center gap-2 border border-white/10 bg-white/5 px-3.5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60 transition-colors hover:border-white/20 hover:bg-white/10 hover:text-white"
+              className="flex cursor-pointer items-center gap-2 border border-(--border-10) bg-(--border-5) px-3.5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-(--text-muted-60) transition-colors hover:border-(--border-20) hover:bg-(--border-10) hover:text-(--text-primary)"
             >
               <LogOut className="h-3.5 w-3.5" />
               Leave
@@ -189,19 +189,19 @@ export const GameScreen = () => {
         )}
 
         {status === "waiting" && (
-          <div className="mb-6 flex items-center gap-3 border border-[#c7a96b]/20 bg-[#c7a96b]/5 px-4 py-3 text-xs text-white/70">
+          <div className="mb-6 flex items-center gap-3 border border-(--accent-gold)/20 bg-(--accent-gold)/5 px-4 py-3 text-xs text-(--text-muted-70)">
             <span className="relative flex h-2 w-2 shrink-0">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#c7a96b] opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#c7a96b]" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-(--accent-gold) opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-(--accent-gold)" />
             </span>
 
-            <span className="font-semibold text-white">
+            <span className="font-semibold text-(--text-primary)">
               Waiting for opponent to join...
             </span>
 
-            <span className="hidden text-white/20 sm:inline">•</span>
+            <span className="hidden text-(--text-muted-20) sm:inline">•</span>
 
-            <span className="hidden text-white/50 sm:inline">
+            <span className="hidden text-(--text-muted-50) sm:inline">
               Share the room code with your opponent to begin the match.
             </span>
           </div>
@@ -209,15 +209,15 @@ export const GameScreen = () => {
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
           <section className="min-w-0">
-            <div className="mb-3 flex items-center justify-between border-y border-white/10 px-1 py-3">
+            <div className="mb-3 flex items-center justify-between border-y border-(--border-10) px-1 py-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center border border-white/10 bg-[#11110f] text-xs font-serif text-white/60">
+                <div className="flex h-8 w-8 items-center justify-center border border-(--border-10) bg-(--bg-surface-1) text-xs font-serif text-(--text-muted-60)">
                   {opponent?.username?.charAt(0).toUpperCase() || "?"}
                 </div>
 
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-white/75">
+                    <span className="text-xs font-semibold text-(--text-muted-75)">
                       {opponent?.username || "Waiting for opponent..."}
                     </span>
 
@@ -229,60 +229,60 @@ export const GameScreen = () => {
                     )}
                   </div>
 
-                  <span className="text-[9px] uppercase tracking-[0.16em] text-white/20">
+                  <span className="text-[9px] uppercase tracking-[0.16em] text-(--text-muted-20)">
                     Playing as {opponentColor}
                   </span>
                 </div>
               </div>
 
-              <span className="hidden text-[8px] uppercase tracking-[0.25em] text-white/15 sm:block">
+              <span className="hidden text-[8px] uppercase tracking-[0.25em] text-(--text-muted-15) sm:block">
                 Opponent
               </span>
             </div>
 
-            <div className="border border-white/10 bg-[#11110f] p-2 sm:p-4">
+            <div className="border border-(--border-10) bg-(--bg-surface-1) p-2 sm:p-4">
               <div className="flex justify-center">
                 <ChessBoardComponent />
               </div>
             </div>
 
-            <div className="mt-3 flex items-center justify-between border-y border-white/10 px-1 py-3">
+            <div className="mt-3 flex items-center justify-between border-y border-(--border-10) px-1 py-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center bg-[#e9e4d8] text-xs font-semibold text-[#11110f]">
+                <div className="flex h-8 w-8 items-center justify-center bg-(--btn-profile-bg) text-xs font-semibold text-(--btn-profile-text)">
                   {user?.username?.charAt(0).toUpperCase() || "U"}
                 </div>
 
                 <div>
-                  <span className="block text-xs font-semibold text-white/75">
+                  <span className="block text-xs font-semibold text-(--text-muted-75)">
                     {user?.username}{" "}
-                    <span className="font-normal text-white/25">(You)</span>
+                    <span className="font-normal text-(--text-muted-25)">(You)</span>
                   </span>
 
-                  <span className="text-[9px] uppercase tracking-[0.16em] text-white/20">
+                  <span className="text-[9px] uppercase tracking-[0.16em] text-(--text-muted-20)">
                     Playing as {playerColor}
                   </span>
                 </div>
               </div>
 
-              <span className="hidden text-[8px] uppercase tracking-[0.25em] text-[#c7a96b]/60 sm:block">
+              <span className="hidden text-[8px] uppercase tracking-[0.25em] text-(--accent-gold)/60 sm:block">
                 Your side
               </span>
             </div>
           </section>
 
-          <aside className="border border-white/10 bg-[#11110f]">
-            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+          <aside className="border border-(--border-10) bg-(--bg-surface-1)">
+            <div className="flex items-center justify-between border-b border-(--border-10) px-5 py-4">
               <div>
-                <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#c7a96b]">
+                <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-(--accent-gold)">
                   Match record
                 </span>
 
-                <h2 className="mt-1 font-serif text-xl text-white">
+                <h2 className="mt-1 font-serif text-xl text-(--text-heading)">
                   Move history
                 </h2>
               </div>
 
-              <span className="font-mono text-[10px] text-white/20">
+              <span className="font-mono text-[10px] text-(--text-muted-20)">
                 {moveHistory.length} moves
               </span>
             </div>
@@ -290,37 +290,37 @@ export const GameScreen = () => {
             <div className="max-h-125 overflow-y-auto">
               {moveHistory.length === 0 ? (
                 <div className="px-5 py-16 text-center">
-                  <div className="mx-auto flex h-10 w-10 items-center justify-center border border-white/10 text-white/15">
+                  <div className="mx-auto flex h-10 w-10 items-center justify-center border border-(--border-10) text-(--text-muted-15)">
                     <span className="font-serif text-lg">♟</span>
                   </div>
 
-                  <p className="mt-4 text-xs text-white/25">
+                  <p className="mt-4 text-xs text-(--text-muted-25)">
                     No moves played yet.
                   </p>
 
-                  <p className="mt-1 text-[9px] uppercase tracking-[0.15em] text-white/10">
+                  <p className="mt-1 text-[9px] uppercase tracking-[0.15em] text-(--text-muted-10)">
                     The game begins when you move
                   </p>
                 </div>
               ) : (
                 <table className="w-full text-left">
-                  <thead className="sticky top-0 bg-[#11110f]">
-                    <tr className="border-b border-white/10">
-                      <th className="px-5 py-3 text-[8px] font-semibold uppercase tracking-[0.2em] text-white/20">
+                  <thead className="sticky top-0 bg-(--bg-surface-1)">
+                    <tr className="border-b border-(--border-10)">
+                      <th className="px-5 py-3 text-[8px] font-semibold uppercase tracking-[0.2em] text-(--text-muted-20)">
                         #
                       </th>
 
-                      <th className="px-3 py-3 text-[8px] font-semibold uppercase tracking-[0.2em] text-white/20">
+                      <th className="px-3 py-3 text-[8px] font-semibold uppercase tracking-[0.2em] text-(--text-muted-20)">
                         White
                       </th>
 
-                      <th className="px-3 py-3 text-[8px] font-semibold uppercase tracking-[0.2em] text-white/20">
+                      <th className="px-3 py-3 text-[8px] font-semibold uppercase tracking-[0.2em] text-(--text-muted-20)">
                         Black
                       </th>
                     </tr>
                   </thead>
 
-                  <tbody className="divide-y divide-white/5 font-mono text-xs">
+                  <tbody className="divide-y divide-(--border-5) font-mono text-xs">
                     {Array.from({
                       length: Math.ceil(moveHistory.length / 2),
                     }).map((_, idx) => {
@@ -330,17 +330,17 @@ export const GameScreen = () => {
                       return (
                         <tr
                           key={idx}
-                          className="transition-colors hover:bg-white/5"
+                          className="transition-colors hover:bg-(--border-5)"
                         >
-                          <td className="px-5 py-3 text-white/15">
+                          <td className="px-5 py-3 text-(--text-muted-15)">
                             {idx + 1}
                           </td>
 
-                          <td className="px-3 py-3 font-medium text-white/65">
+                          <td className="px-3 py-3 font-medium text-(--text-muted-65)">
                             {whiteMove?.san || "—"}
                           </td>
 
-                          <td className="px-3 py-3 font-medium text-white/65">
+                          <td className="px-3 py-3 font-medium text-(--text-muted-65)">
                             {blackMove?.san || "—"}
                           </td>
                         </tr>
@@ -415,26 +415,26 @@ const GameOverModal = ({
   const won = gameOverDetails.winnerId === userId;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0c0c0b]/85 p-4 backdrop-blur-md">
-      <div className="relative w-full max-w-md border border-white/10 bg-[#11110f] p-8 text-center">
-        <div className="absolute left-0 top-0 h-full w-px bg-[#c7a96b]" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-(--bg-modal-backdrop) p-4 backdrop-blur-md">
+      <div className="relative w-full max-w-md border border-(--border-10) bg-(--bg-surface-1) p-8 text-center shadow-2xl">
+        <div className="absolute left-0 top-0 h-full w-px bg-(--accent-gold)" />
 
-        <div className="mx-auto flex h-12 w-12 items-center justify-center border border-white/10 bg-white/5">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center border border-(--border-10) bg-(--border-5)">
           {isDraw ? (
-            <Handshake className="h-5 w-5 text-white/50" />
+            <Handshake className="h-5 w-5 text-(--text-muted-50)" />
           ) : won ? (
-            <Trophy className="h-5 w-5 text-[#c7a96b]" />
+            <Trophy className="h-5 w-5 text-(--accent-gold)" />
           ) : (
             <Frown className="h-5 w-5 text-red-300/60" />
           )}
         </div>
 
         <div className="mt-6">
-          <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-[#c7a96b]">
+          <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-(--accent-gold)">
             Match complete
           </span>
 
-          <h2 className="mt-3 font-serif text-4xl tracking-[-0.04em] text-white">
+          <h2 className="mt-3 font-serif text-4xl tracking-[-0.04em] text-(--text-heading)">
             {isDraw
               ? "Game drawn."
               : won
@@ -442,7 +442,7 @@ const GameOverModal = ({
                 : `${gameOverDetails.winnerUsername || "Opponent"} won.`}
           </h2>
 
-          <p className="mt-3 text-sm text-white/30">
+          <p className="mt-3 text-sm text-(--text-muted-30)">
             {isDraw
               ? `Draw by ${gameOverDetails.drawReason || "agreement"}`
               : `Victory by ${gameOverDetails.winReason || "checkmate"}`}
@@ -453,7 +453,7 @@ const GameOverModal = ({
           <button
             type="button"
             onClick={onRematch}
-            className="flex cursor-pointer items-center justify-center gap-2 bg-[#e9e4d8] py-3.5 text-xs font-bold text-[#11110f] transition-colors hover:bg-white"
+            className="flex cursor-pointer items-center justify-center gap-2 bg-(--btn-primary-bg) py-3.5 text-xs font-bold text-(--btn-primary-text) transition-colors hover:bg-(--btn-primary-hover)"
           >
             <RotateCcw className="h-4 w-4" />
             Play rematch
@@ -462,7 +462,7 @@ const GameOverModal = ({
           <button
             type="button"
             onClick={onLeave}
-            className="flex cursor-pointer items-center justify-center gap-2 border border-white/10 py-3.5 text-xs font-semibold text-white/55 transition-colors hover:border-white/20 hover:bg-white/5 hover:text-white"
+            className="flex cursor-pointer items-center justify-center gap-2 border border-(--border-10) py-3.5 text-xs font-semibold text-(--text-muted-55) transition-colors hover:border-(--border-20) hover:bg-(--border-5) hover:text-(--text-primary)"
           >
             <Home className="h-4 w-4" />
             Return to dashboard
@@ -495,22 +495,22 @@ const OfferModal = ({
   onDecline,
 }: OfferModalProps) => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0c0c0b]/85 p-4 backdrop-blur-md">
-      <div className="relative w-full max-w-md border border-white/10 bg-[#11110f] p-8 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center border border-[#c7a96b]/25 bg-[#c7a96b]/5 text-[#c7a96b]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-(--bg-modal-backdrop) p-4 backdrop-blur-md">
+      <div className="relative w-full max-w-md border border-(--border-10) bg-(--bg-surface-1) p-8 text-center shadow-2xl">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center border border-(--accent-gold)/25 bg-(--accent-gold)/5 text-(--accent-gold)">
           {icon}
         </div>
 
         <div className="mt-6">
-          <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-[#c7a96b]">
+          <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-(--accent-gold)">
             {eyebrow}
           </span>
 
-          <h2 className="mt-3 font-serif text-3xl tracking-[-0.035em] text-white">
+          <h2 className="mt-3 font-serif text-3xl tracking-[-0.035em] text-(--text-heading)">
             {title}
           </h2>
 
-          <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-white/30">
+          <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-(--text-muted-30)">
             {description}
           </p>
         </div>
@@ -519,7 +519,7 @@ const OfferModal = ({
           <button
             type="button"
             onClick={onAccept}
-            className="cursor-pointer bg-[#e9e4d8] py-3.5 text-xs font-bold text-[#11110f] transition-colors hover:bg-white"
+            className="cursor-pointer bg-(--btn-primary-bg) py-3.5 text-xs font-bold text-(--btn-primary-text) transition-colors hover:bg-(--btn-primary-hover)"
           >
             {acceptLabel}
           </button>
@@ -527,7 +527,7 @@ const OfferModal = ({
           <button
             type="button"
             onClick={onDecline}
-            className="cursor-pointer border border-white/10 py-3.5 text-xs font-semibold text-white/55 transition-colors hover:border-white/20 hover:bg-white/5 hover:text-white"
+            className="cursor-pointer border border-(--border-10) py-3.5 text-xs font-semibold text-(--text-muted-55) transition-colors hover:border-(--border-20) hover:bg-(--border-5) hover:text-(--text-primary)"
           >
             {declineLabel}
           </button>

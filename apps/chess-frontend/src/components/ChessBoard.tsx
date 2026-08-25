@@ -189,9 +189,9 @@ export const ChessBoardComponent = () => {
                 {isCheck && <span className="check-badge">CHECK!</span>}
             </div>
 
-            <div className="w-full flex items-center justify-between text-xs font-medium text-slate-600 px-1">
+            <div className="w-full flex items-center justify-between text-xs font-medium text-(--text-muted-50) px-1">
                 <span>Black Captured:</span>
-                <span className="text-sm font-semibold tracking-wider">
+                <span className="text-sm font-semibold tracking-wider text-(--text-primary)">
                     {capturedPieces.black.length > 0 ? capturedPieces.black.map((p) => p.toUpperCase()).join(" ") : "None"}
                 </span>
             </div>
@@ -205,15 +205,15 @@ export const ChessBoardComponent = () => {
                     squareStyles: optionSquares,
                     boardStyle: {
                         borderRadius: "6px",
-                        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.6)",
+                        boxShadow: "var(--board-shadow)",
                     },
                     allowDragging: isMyTurn
                 }}
             />
 
-            <div className="w-full flex items-center justify-between text-xs font-medium text-slate-600 px-1">
+            <div className="w-full flex items-center justify-between text-xs font-medium text-(--text-muted-50) px-1">
                 <span>White Captured:</span>
-                <span className="text-sm font-semibold tracking-wider">
+                <span className="text-sm font-semibold tracking-wider text-(--text-primary)">
                     {capturedPieces.white.length > 0 ? capturedPieces.white.map((p) => p.toUpperCase()).join(" ") : "None"}
                 </span>
             </div>
