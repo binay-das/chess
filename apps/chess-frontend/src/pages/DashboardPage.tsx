@@ -265,6 +265,14 @@ export const DashboardPage = () => {
     setError,
   ]);
 
+  useEffect(() => {
+    if (roomCode) {
+      document.title = `Live Match (${roomCode}) | ChessArena`;
+    } else {
+      document.title = "Dashboard | ChessArena";
+    }
+  }, [roomCode]);
+
   const handleCreateRoom = () => {
     const socket = getSocket();
     socket.emit("room:create");

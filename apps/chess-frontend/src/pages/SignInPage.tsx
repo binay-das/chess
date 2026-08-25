@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,6 +14,10 @@ interface SignInPageProps {
 export const SignInPage: React.FC<SignInPageProps> = ({ onSuccess }) => {
   const navigate = useNavigate();
   const [apiError, setApiError] = useState<string | null>(null);
+
+  useEffect(() => {
+    document.title = "Sign In | ChessArena";
+  }, []);
 
   const {
     register,

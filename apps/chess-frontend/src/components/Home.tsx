@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Chessboard } from "react-chessboard";
 import {
@@ -17,6 +17,10 @@ interface HomeProps {
 }
 
 export const Home: React.FC<HomeProps> = ({ user }) => {
+  useEffect(() => {
+    document.title = "ChessArena — Play Chess Online";
+  }, []);
+
   return (
     <main className="min-h-screen overflow-hidden bg-(--bg-main) text-(--text-primary) transition-colors duration-200">
       <div className="pointer-events-none fixed inset-0 z-0">
