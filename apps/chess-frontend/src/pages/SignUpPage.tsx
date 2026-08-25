@@ -2,9 +2,18 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, UserPlus } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowUpRight,
+  Crown,
+  UserPlus,
+} from "lucide-react";
+
 import { signUpApi, type User } from "../api/auth";
-import { registerSchema, type RegisterFormData } from "../schemas/auth";
+import {
+  registerSchema,
+  type RegisterFormData,
+} from "../schemas/auth";
 
 interface SignUpPageProps {
   onSuccess?: (user: User, token: string) => void;
@@ -38,9 +47,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onSuccess }) => {
     });
 
     if (res.success && res.user && res.token) {
-      if (onSuccess) {
-        onSuccess(res.user, res.token);
-      }
+      onSuccess?.(res.user, res.token);
       navigate("/dashboard");
     } else {
       setApiError(res.message || "Failed to create account");
@@ -48,120 +55,226 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onSuccess }) => {
   };
 
   return (
-    <div className="w-full max-w-md">
-      <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-xl">
-        <div className="mb-6 text-center">
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900">Create an account</h2>
-          <p className="mt-1 text-sm text-slate-500">Join the minimal chess arena and start playing</p>
+    <main className="relative flex min-h-[calc(100vh-72px)] overflow-hidden bg-[#0c0c0b] text-[#f5f2eb]">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute right-[15%] top-[10%] h-137.5 w-137.5 rounded-full bg-[#c7a96b]/5 blur-[150px]" />
+
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.03)_1px,transparent_0)] bg-size-[32px_32px]" />
+      </div>
+
+      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-16 px-6 py-16 lg:grid-cols-2 lg:px-10">
+        <div className="hidden lg:block">
+          <div className="mb-8 flex items-center gap-3 text-[10px] font-semibold tracking-[0.3em] text-white/30">
+            Join the arena
+          </div>
+
+          <h1 className="max-w-xl font-serif text-7xl leading-[0.9] tracking-[-0.045em] text-[#f4f0e7]">
+            Make your
+            <br />
+            <span className="italic text-[#c7a96b]">move.</span>
+          </h1>
+
+          <p className="mt-8 max-w-md text-base leading-7 text-white/35">
+            Create your player profile and step onto the board. Find opponents,
+            play live, and build your rating one game at a time.
+          </p>
+
+          <div className="mt-12 space-y-5 border-t border-white/8 pt-7">
+            <Stat
+              number="01"
+              title="Create your identity"
+              description="Choose your username and claim your place on the board."
+            />
+
+            <Stat
+              number="02"
+              title="Find your opponent"
+              description="Connect with players and start a real-time game."
+            />
+
+            <Stat
+              number="03"
+              title="Build your rating"
+              description="Every game is another chance to improve."
+            />
+          </div>
         </div>
 
-        {apiError && (
-          <div className="mb-4 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-600">
-            <AlertCircle className="h-4 w-4 shrink-0" />
-            <span>{apiError}</span>
-          </div>
-        )}
+        <div className="mx-auto w-full max-w-md">
+          <div className="mb-10 lg:hidden">
+            <div className="mb-5 flex items-center gap-3 text-[10px] font-semibold tracking-[0.3em] text-white/30">
+              Join the arena
+            </div>
 
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)} noValidate>
-          <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-700">Username</label>
-            <input
-              type="text"
-              {...register("username")}
-              className={`w-full rounded-lg border bg-white px-3.5 py-2 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:ring-2 ${
-                errors.username
-                  ? "border-red-300 focus:border-red-500 focus:ring-red-500/10"
-                  : "border-slate-200 focus:border-slate-900 focus:ring-slate-900/10"
-              }`}
-              placeholder="e.g. magnus"
-              disabled={isSubmitting}
-            />
-            {errors.username && (
-              <p className="mt-1 text-xs font-medium text-red-600">{errors.username.message}</p>
-            )}
+            <h1 className="font-serif text-5xl tracking-[-0.04em]">
+              Make your{" "}
+              <span className="italic text-[#c7a96b]">move.</span>
+            </h1>
           </div>
 
-          <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-700">Email Address</label>
-            <input
-              type="email"
-              {...register("email")}
-              className={`w-full rounded-lg border bg-white px-3.5 py-2 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:ring-2 ${
-                errors.email
-                  ? "border-red-300 focus:border-red-500 focus:ring-red-500/10"
-                  : "border-slate-200 focus:border-slate-900 focus:ring-slate-900/10"
-              }`}
-              placeholder="name@example.com"
-              disabled={isSubmitting}
-            />
-            {errors.email && (
-              <p className="mt-1 text-xs font-medium text-red-600">{errors.email.message}</p>
+          <div className="border border-white/9 bg-[#11110f] p-7 sm:p-9">
+            <div className="mb-8">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#c7a96b]">
+                Create account
+              </div>
+
+              <h2 className="mt-3 font-serif text-3xl tracking-tight text-white">
+                Step onto the board.
+              </h2>
+
+              <p className="mt-2 text-sm leading-6 text-white/30">
+                Set up your player profile and start playing.
+              </p>
+            </div>
+
+            {apiError && (
+              <div className="mb-5 flex items-start gap-3 border border-red-400/20 bg-red-400/6 p-3.5 text-xs text-red-300">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>{apiError}</span>
+              </div>
             )}
+
+            <form
+              className="flex flex-col gap-5"
+              onSubmit={handleSubmit(onSubmit)}
+              noValidate
+            >
+              <FormField
+                label="Username"
+                placeholder="e.g. magnus"
+                error={errors.username?.message}
+                disabled={isSubmitting}
+                {...register("username")}
+              />
+
+              <FormField
+                label="Email address"
+                type="email"
+                placeholder="name@example.com"
+                error={errors.email?.message}
+                disabled={isSubmitting}
+                {...register("email")}
+              />
+
+              <FormField
+                label="Password"
+                type="password"
+                placeholder="••••••••"
+                error={errors.password?.message}
+                disabled={isSubmitting}
+                {...register("password")}
+              />
+
+              <FormField
+                label="Confirm password"
+                type="password"
+                placeholder="••••••••"
+                error={errors.confirmPassword?.message}
+                disabled={isSubmitting}
+                {...register("confirmPassword")}
+              />
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="group mt-2 flex w-full cursor-pointer items-center justify-center gap-3 bg-[#e9e4d8] py-3.5 text-sm font-bold text-[#11110f] transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isSubmitting ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#11110f]/30 border-t-[#11110f]" />
+                ) : (
+                  <>
+                    <UserPlus className="h-4 w-4" />
+                    Create account
+                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            <div className="mt-7 border-t border-white/10 pt-6 text-center text-xs text-white/30">
+              Already have an account?{" "}
+              <Link
+                to="/signin"
+                className="font-semibold text-[#c7a96b] transition-colors hover:text-[#e0c98e]"
+              >
+                Sign in
+              </Link>
+            </div>
           </div>
 
-          <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-700">Password</label>
-            <input
-              type="password"
-              {...register("password")}
-              className={`w-full rounded-lg border bg-white px-3.5 py-2 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:ring-2 ${
-                errors.password
-                  ? "border-red-300 focus:border-red-500 focus:ring-red-500/10"
-                  : "border-slate-200 focus:border-slate-900 focus:ring-slate-900/10"
-              }`}
-              placeholder="••••••••"
-              disabled={isSubmitting}
-            />
-            {errors.password && (
-              <p className="mt-1 text-xs font-medium text-red-600">{errors.password.message}</p>
-            )}
+          <div className="mt-5 flex items-center justify-center gap-2 text-[9px] uppercase tracking-[0.2em] text-white/15">
+            <Crown className="h-3 w-3" />
+            Your game starts here
           </div>
-
-          <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-700">Confirm Password</label>
-            <input
-              type="password"
-              {...register("confirmPassword")}
-              className={`w-full rounded-lg border bg-white px-3.5 py-2 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:ring-2 ${
-                errors.confirmPassword
-                  ? "border-red-300 focus:border-red-500 focus:ring-red-500/10"
-                  : "border-slate-200 focus:border-slate-900 focus:ring-slate-900/10"
-              }`}
-              placeholder="••••••••"
-              disabled={isSubmitting}
-            />
-            {errors.confirmPassword && (
-              <p className="mt-1 text-xs font-medium text-red-600">{errors.confirmPassword.message}</p>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-slate-800 disabled:opacity-60 cursor-pointer"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-            ) : (
-              <>
-                <UserPlus className="h-4 w-4" /> Create Account
-              </>
-            )}
-          </button>
-        </form>
-
-        <div className="mt-6 border-t border-slate-100 pt-4 text-center text-xs text-slate-500">
-          Already have an account?{" "}
-          <Link
-            to="/signin"
-            className="font-semibold text-slate-900 underline underline-offset-2 transition-colors hover:text-black"
-          >
-            Click here to sign in
-          </Link>
         </div>
+      </div>
+    </main>
+  );
+};
+
+interface StatProps {
+  number: string;
+  title: string;
+  description: string;
+}
+
+const Stat: React.FC<StatProps> = ({
+  number,
+  title,
+  description,
+}) => {
+  return (
+    <div className="flex gap-5">
+      <span className="pt-0.5 font-mono text-[9px] text-[#c7a96b]/60">
+        {number}
+      </span>
+
+      <div>
+        <h3 className="text-xs font-semibold text-white/70">
+          {title}
+        </h3>
+
+        <p className="mt-1 max-w-sm text-xs leading-5 text-white/25">
+          {description}
+        </p>
       </div>
     </div>
   );
 };
+
+interface FormFieldProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+  error?: string;
+}
+
+const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
+  ({ label, error, ...props }, ref) => {
+    return (
+      <div>
+        <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
+          {label}
+        </label>
+
+        <input
+          ref={ref}
+          {...props}
+          className={`w-full border bg-[#0c0c0b] px-4 py-3.5 text-sm text-white outline-none transition-colors placeholder:text-white/15 ${error
+              ? "border-red-400/50 focus:border-red-400"
+              : "border-white/10 focus:border-[#c7a96b]/70"
+            }`}
+        />
+
+        {error && (
+          <p className="mt-2 text-xs text-red-400">
+            {error}
+          </p>
+        )}
+      </div>
+    );
+  },
+);
+
+FormField.displayName = "FormField";
 
 export const SignUp = SignUpPage;

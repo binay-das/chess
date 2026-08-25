@@ -4,376 +4,535 @@ import { useGameStore } from "../store/GameStore";
 import { getSocket } from "../services/socket";
 import { ChessBoardComponent } from "./ChessBoard";
 import {
-    Copy,
-    Check,
-    Handshake,
-    Flag,
-    LogOut,
-    AlertCircle,
-    AlertTriangle,
-    RotateCcw,
-    Home,
-    Trophy,
-    Frown,
+  Copy,
+  Check,
+  Handshake,
+  Flag,
+  LogOut,
+  AlertCircle,
+  AlertTriangle,
+  RotateCcw,
+  Home,
+  Trophy,
+  Frown,
 } from "lucide-react";
 
 export const GameScreen = () => {
-    const { user } = useAuthStore();
-    const {
-        roomCode,
-        status,
-        opponent,
-        playerColor,
-        moveHistory,
-        gameOverDetails,
-        drawOfferedBy,
-        rematchOfferedBy,
-        invalidMoveError,
-        setDrawOfferedBy,
-        setRematchOfferedBy,
-        setInvalidMoveError,
-        resetGame,
-    } = useGameStore();
+  const { user } = useAuthStore();
 
-    const [copied, setCopied] = useState(false);
+  const {
+    roomCode,
+    status,
+    opponent,
+    playerColor,
+    moveHistory,
+    gameOverDetails,
+    drawOfferedBy,
+    rematchOfferedBy,
+    invalidMoveError,
+    setDrawOfferedBy,
+    setRematchOfferedBy,
+    setInvalidMoveError,
+    resetGame,
+  } = useGameStore();
 
-    const copyRoomCode = () => {
-        if (roomCode) {
-            navigator.clipboard.writeText(roomCode);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        }
-    };
+  const [copied, setCopied] = useState(false);
 
-    // game actions
-    const handleResign = () => {
-        if (roomCode && status === "playing") {
-            if (confirm("Are you sure you want to resign from this game?")) {
-                const socket = getSocket();
-                socket.emit("game:resign", { roomCode });
-            }
-        }
-    };
+  const copyRoomCode = () => {
+    if (roomCode) {
+      navigator.clipboard.writeText(roomCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
-    const handleOfferDraw = () => {
-        if (roomCode && status === "playing") {
-            const socket = getSocket();
-            socket.emit("game:draw_offer", { roomCode });
-            alert("Draw offer sent to opponent.");
-        }
-    };
+  const handleResign = () => {
+    if (roomCode && status === "playing") {
+      if (confirm("Are you sure you want to resign from this game?")) {
+        const socket = getSocket();
+        socket.emit("game:resign", { roomCode });
+      }
+    }
+  };
 
+  const handleOfferDraw = () => {
+    if (roomCode && status === "playing") {
+      const socket = getSocket();
+      socket.emit("game:draw_offer", { roomCode });
+      alert("Draw offer sent to opponent.");
+    }
+  };
 
+  const handleLeaveRoom = () => {
+    if (roomCode) {
+      const socket = getSocket();
+      socket.emit("room:leave", { roomCode });
+    }
 
-    const handleLeaveRoom = () => {
-        if (roomCode) {
-            const socket = getSocket();
-            socket.emit("room:leave", { roomCode });
-        }
-        resetGame();
-    };
+    resetGame();
+  };
 
-    const handleRequestRematch = () => {
-        if (roomCode) {
-            const socket = getSocket();
-            socket.emit("game:rematch_request", { roomCode });
-            alert("Rematch offer sent to opponent.");
-        }
-    };
+  const handleRequestRematch = () => {
+    if (roomCode) {
+      const socket = getSocket();
+      socket.emit("game:rematch_request", { roomCode });
+      alert("Rematch offer sent to opponent.");
+    }
+  };
 
-    const handleRespondRematch = (accept: boolean) => {
-        if (roomCode) {
-            const socket = getSocket();
-            socket.emit("game:rematch_respond", { roomCode, accept });
-            setRematchOfferedBy(null);
-        }
-    };
+  const handleRespondRematch = (accept: boolean) => {
+    if (roomCode) {
+      const socket = getSocket();
+      socket.emit("game:rematch_respond", { roomCode, accept });
+      setRematchOfferedBy(null);
+    }
+  };
 
+  const handleRespondDraw = (accept: boolean) => {
+    if (roomCode) {
+      const socket = getSocket();
+      socket.emit("game:draw_respond", { roomCode, accept });
+      setDrawOfferedBy(null);
+    }
+  };
 
-    const handleRespondDraw = (accept: boolean) => {
-        if (roomCode) {
-            const socket = getSocket();
-            socket.emit("game:draw_respond", { roomCode, accept });
-            setDrawOfferedBy(null);
-        }
-    };
+  const opponentColor = playerColor === "white" ? "black" : "white";
 
-
-    const opponentColor = playerColor === "white" ? "black" : "white";
-
-    return (
-        <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
-            <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex flex-wrap items-center gap-3">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Room Code:</span>
-                    <span className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1 font-mono text-sm font-bold tracking-widest text-slate-900">
-                        {roomCode}
-                    </span>
-                    <button
-                        onClick={copyRoomCode}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-50 active:scale-95 cursor-pointer"
-                    >
-                        {copied ? (
-                            <>
-                                <span>Copied!</span>
-                                <Check className="h-3.5 w-3.5 text-emerald-600" />
-                            </>
-                        ) : (
-                            <>
-                                <span>Copy Code</span>
-                                <Copy className="h-3.5 w-3.5 text-slate-500" />
-                            </>
-                        )}
-                    </button>
-                </div>
-
-                <div className="flex items-center gap-2">
-                    {status === "playing" && (
-                        <>
-                            <button
-                                onClick={handleOfferDraw}
-                                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-50 active:scale-95 cursor-pointer"
-                            >
-                                <Handshake className="h-4 w-4 text-slate-600" />
-                                <span>Offer Draw</span>
-                            </button>
-                            <button
-                                onClick={handleResign}
-                                className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-semibold text-rose-700 shadow-xs transition-all hover:bg-rose-100 active:scale-95 cursor-pointer"
-                            >
-                                <Flag className="h-4 w-4 text-rose-600" />
-                                <span>Resign</span>
-                            </button>
-                        </>
-                    )}
-                    <button
-                        onClick={handleLeaveRoom}
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-900 bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:bg-slate-800 active:scale-95 cursor-pointer"
-                    >
-                        <LogOut className="h-4 w-4" />
-                        <span>Leave Room</span>
-                    </button>
-                </div>
+  return (
+    <main className="min-h-[calc(100vh-72px)] bg-[#0c0c0b] text-[#f5f2eb]">
+      <div className="mx-auto max-w-375 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+        <header className="mb-6 flex flex-col gap-5 border-b border-white/10 pb-6 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <div className="mb-3 flex items-center gap-3">
+              <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-[#c7a96b]">
+                Live match
+              </span>
             </div>
 
-            {invalidMoveError && (
-                <div
-                    className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-600 shadow-xs transition-all hover:bg-red-100/60 animate-bounce"
-                    onClick={() => setInvalidMoveError(null)}
+            <div className="flex flex-wrap items-center gap-4">
+              <h1 className="font-serif text-3xl tracking-[-0.035em] text-white sm:text-4xl">
+                The board
+              </h1>
+
+              <button
+                type="button"
+                onClick={copyRoomCode}
+                title="Click to copy room code"
+                className="group flex cursor-pointer items-center gap-3.5 border border-[#c7a96b]/30 bg-[#11110f] px-4 py-2.5 transition-colors hover:border-[#c7a96b]/60 hover:bg-white/5"
+              >
+                <span className="text-[9px] font-semibold uppercase tracking-[0.22em] text-[#c7a96b]">
+                  Room
+                </span>
+
+                <span className="font-mono text-sm font-bold tracking-[0.28em] text-white">
+                  {roomCode}
+                </span>
+
+                {copied ? (
+                  <Check className="h-4 w-4 text-[#c7a96b]" />
+                ) : (
+                  <Copy className="h-4 w-4 text-white/35 transition-colors group-hover:text-white/80" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {status === "playing" && (
+              <>
+                <button
+                  type="button"
+                  onClick={handleOfferDraw}
+                  className="flex cursor-pointer items-center gap-2 border border-white/10 bg-[#11110f] px-3.5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/55 transition-colors hover:border-white/20 hover:bg-white/5 hover:text-white"
                 >
-                    <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
-                    <span>{invalidMoveError}</span>
-                </div>
+                  <Handshake className="h-3.5 w-3.5" />
+                  Draw
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleResign}
+                  className="flex cursor-pointer items-center gap-2 border border-red-400/15 bg-red-400/5 px-3.5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-red-300/70 transition-colors hover:border-red-400/25 hover:bg-red-400/10 hover:text-red-300"
+                >
+                  <Flag className="h-3.5 w-3.5" />
+                  Resign
+                </button>
+              </>
             )}
 
-            {status === "waiting" && (
-                <div className="flex flex-col items-center justify-center space-y-4 rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
-                    <div className="space-y-1">
-                        <h2 className="text-xl font-bold tracking-tight text-slate-900">Waiting for Opponent to Join...</h2>
-                        <p className="text-xs text-slate-500">Share this room code with a friend to start the match:</p>
-                    </div>
-                    <div
-                        className="cursor-pointer rounded-xl border border-slate-200 bg-slate-50 px-6 py-3 font-mono text-2xl font-bold tracking-widest text-slate-900 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-100"
-                        onClick={copyRoomCode}
-                    >
-                        {roomCode}
-                    </div>
-                    <span className="flex items-center gap-1 text-xs font-semibold text-amber-600">
-                        <Copy className="h-3.5 w-3.5" /> Click code to copy
+            <button
+              type="button"
+              onClick={handleLeaveRoom}
+              className="flex cursor-pointer items-center gap-2 border border-white/10 bg-white/5 px-3.5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60 transition-colors hover:border-white/20 hover:bg-white/10 hover:text-white"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              Leave
+            </button>
+          </div>
+        </header>
+
+        {invalidMoveError && (
+          <button
+            type="button"
+            onClick={() => setInvalidMoveError(null)}
+            className="mb-6 flex w-full cursor-pointer items-center justify-between border border-red-400/20 bg-red-400/5 px-4 py-3 text-left text-xs text-red-300 transition-colors hover:bg-red-400/10"
+          >
+            <span className="flex items-center gap-3">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              {invalidMoveError}
+            </span>
+
+            <span className="text-[8px] uppercase tracking-[0.2em] text-red-300/40">
+              Dismiss
+            </span>
+          </button>
+        )}
+
+        {status === "waiting" && (
+          <div className="mb-6 flex items-center gap-3 border border-[#c7a96b]/20 bg-[#c7a96b]/5 px-4 py-3 text-xs text-white/70">
+            <span className="relative flex h-2 w-2 shrink-0">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#c7a96b] opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#c7a96b]" />
+            </span>
+
+            <span className="font-semibold text-white">
+              Waiting for opponent to join...
+            </span>
+
+            <span className="hidden text-white/20 sm:inline">•</span>
+
+            <span className="hidden text-white/50 sm:inline">
+              Share the room code with your opponent to begin the match.
+            </span>
+          </div>
+        )}
+
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <section className="min-w-0">
+            <div className="mb-3 flex items-center justify-between border-y border-white/10 px-1 py-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center border border-white/10 bg-[#11110f] text-xs font-serif text-white/60">
+                  {opponent?.username?.charAt(0).toUpperCase() || "?"}
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-white/75">
+                      {opponent?.username || "Waiting for opponent..."}
                     </span>
+
+                    {opponent?.isDisconnected && (
+                      <span className="flex items-center gap-1 text-[8px] uppercase tracking-[0.15em] text-amber-300/70">
+                        <AlertTriangle className="h-3 w-3" />
+                        Disconnected
+                      </span>
+                    )}
+                  </div>
+
+                  <span className="text-[9px] uppercase tracking-[0.16em] text-white/20">
+                    Playing as {opponentColor}
+                  </span>
                 </div>
-            )}
+              </div>
 
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                <div className="flex flex-col space-y-4 lg:col-span-2">
-                    <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm">
-                        <div className="flex items-center gap-3">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-sm font-semibold text-slate-800">
-                                {opponent?.username?.charAt(0).toUpperCase() || "?"}
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-sm font-bold text-slate-900">
-                                    {opponent ? opponent.username : "Waiting for opponent..."}
-                                </span>
-                                <span className="text-xs capitalize text-slate-500">Playing as {opponentColor}</span>
-                            </div>
-                        </div>
-                        {opponent?.isDisconnected && (
-                            <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">
-                                <span>Disconnected</span>
-                                <AlertTriangle className="h-3 w-3 shrink-0" />
-                            </span>
-                        )}
-                    </div>
-
-                    <div className="flex justify-center rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                        <ChessBoardComponent />
-                    </div>
-
-                    <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-sm font-semibold text-white">
-                            {user?.username?.charAt(0).toUpperCase() || "U"}
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-sm font-bold text-slate-900">{user?.username} (You)</span>
-                            <span className="text-xs capitalize text-slate-500">Playing as {playerColor}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex flex-col space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                    <h3 className="border-b border-slate-100 pb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
-                        Move History
-                    </h3>
-                    <div className="max-h-110 overflow-y-auto pr-1">
-                        {moveHistory.length === 0 ? (
-                            <p className="py-8 text-center text-xs text-slate-400">No moves played yet.</p>
-                        ) : (
-                            <table className="w-full text-left text-xs text-slate-700">
-                                <thead className="sticky top-0 bg-slate-50 text-[10px] font-semibold uppercase text-slate-500">
-                                    <tr>
-                                        <th className="rounded-l-md px-3 py-2">#</th>
-                                        <th className="px-3 py-2">White</th>
-                                        <th className="rounded-r-md px-3 py-2">Black</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-100 font-mono">
-                                    {Array.from({ length: Math.ceil(moveHistory.length / 2) }).map((_, idx) => {
-                                        const whiteMove = moveHistory[idx * 2];
-                                        const blackMove = moveHistory[idx * 2 + 1];
-                                        return (
-                                            <tr key={idx} className="hover:bg-slate-50">
-                                                <td className="font-sans text-slate-400 px-3 py-2">{idx + 1}.</td>
-                                                <td className="font-medium text-slate-900 px-3 py-2">{whiteMove?.san || ""}</td>
-                                                <td className="font-medium text-slate-900 px-3 py-2">{blackMove?.san || ""}</td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        )}
-                    </div>
-                </div>
+              <span className="hidden text-[8px] uppercase tracking-[0.25em] text-white/15 sm:block">
+                Opponent
+              </span>
             </div>
 
+            <div className="border border-white/10 bg-[#11110f] p-2 sm:p-4">
+              <div className="flex justify-center">
+                <ChessBoardComponent />
+              </div>
+            </div>
 
-            {status === "finished" && gameOverDetails && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
-                    <div className="relative w-full max-w-sm space-y-4 rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-2xl">
-                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100">
-                            {gameOverDetails.isDraw ? (
-                                <Handshake className="h-8 w-8 text-slate-700" />
-                            ) : gameOverDetails.winnerId === user?.id ? (
-                                <Trophy className="h-8 w-8 text-amber-500" />
-                            ) : (
-                                <Frown className="h-8 w-8 text-rose-500" />
-                            )}
-                        </div>
-                        <div className="space-y-1">
-                            <h2 className="text-xl font-bold tracking-tight text-slate-900">
-                                {gameOverDetails.isDraw
-                                    ? "Game Draw!"
-                                    : gameOverDetails.winnerId === user?.id
-                                        ? "You Won!"
-                                        : `${gameOverDetails.winnerUsername || "Opponent"} Won!`}
-                            </h2>
-                            <p className="text-xs text-slate-500">
-                                {gameOverDetails.isDraw
-                                    ? `Draw by ${gameOverDetails.drawReason || "agreement"}`
-                                    : `Victory by ${gameOverDetails.winReason || "checkmate"}`}
-                            </p>
-                        </div>
-
-                        <div className="flex flex-col gap-2.5 pt-2">
-                            <button
-                                onClick={handleRequestRematch}
-                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 py-2.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-slate-800 cursor-pointer"
-                            >
-                                <RotateCcw className="h-4 w-4" />
-                                <span>Play Rematch</span>
-                            </button>
-                            <button
-                                onClick={handleLeaveRoom}
-                                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-2.5 text-xs font-semibold text-slate-700 shadow-xs transition-all hover:bg-slate-50 cursor-pointer"
-                            >
-                                <Home className="h-4 w-4" />
-                                <span>Return to Dashboard</span>
-                            </button>
-                        </div>
-                    </div>
+            <div className="mt-3 flex items-center justify-between border-y border-white/10 px-1 py-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center bg-[#e9e4d8] text-xs font-semibold text-[#11110f]">
+                  {user?.username?.charAt(0).toUpperCase() || "U"}
                 </div>
-            )}
 
+                <div>
+                  <span className="block text-xs font-semibold text-white/75">
+                    {user?.username}{" "}
+                    <span className="font-normal text-white/25">(You)</span>
+                  </span>
 
-            {/* Rematch Offered Modal */}
-            {rematchOfferedBy && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
-                    <div className="relative w-full max-w-sm space-y-4 rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-2xl">
-                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-800">
-                            <RotateCcw className="h-8 w-8" />
-                        </div>
-                        <div className="space-y-1">
-                            <h2 className="text-xl font-bold tracking-tight text-slate-900">Rematch Offered</h2>
-                            <p className="text-xs text-slate-500">
-                                {rematchOfferedBy.username} wants a rematch! Colors will be swapped.
-                            </p>
-                        </div>
-                        <div className="flex gap-3 pt-2">
-                            <button
-                                onClick={() => handleRespondRematch(true)}
-                                className="flex-1 rounded-xl bg-slate-900 py-2.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-slate-800 cursor-pointer"
-                            >
-                                Accept Rematch
-                            </button>
-                            <button
-                                onClick={() => handleRespondRematch(false)}
-                                className="flex-1 rounded-xl border border-slate-200 bg-white py-2.5 text-xs font-semibold text-slate-700 shadow-xs transition-all hover:bg-slate-50 cursor-pointer"
-                            >
-                                Decline
-                            </button>
-                        </div>
-                    </div>
+                  <span className="text-[9px] uppercase tracking-[0.16em] text-white/20">
+                    Playing as {playerColor}
+                  </span>
                 </div>
-            )}
+              </div>
 
+              <span className="hidden text-[8px] uppercase tracking-[0.25em] text-[#c7a96b]/60 sm:block">
+                Your side
+              </span>
+            </div>
+          </section>
 
-            {/* Draw Offered Modal */}
-            {drawOfferedBy && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
-                    <div className="relative w-full max-w-sm space-y-4 rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-2xl">
-                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-800">
-                            <Handshake className="h-8 w-8" />
-                        </div>
-                        <div className="space-y-1">
-                            <h2 className="text-xl font-bold tracking-tight text-slate-900">Draw Offered</h2>
-                            <p className="text-xs text-slate-500">
-                                {drawOfferedBy.username} has offered a draw. Do you accept?
-                            </p>
-                        </div>
-                        <div className="flex gap-3 pt-2">
-                            <button
-                                onClick={() => handleRespondDraw(true)}
-                                className="flex-1 rounded-xl bg-slate-900 py-2.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-slate-800 cursor-pointer"
-                            >
-                                Accept Draw
-                            </button>
-                            <button
-                                onClick={() => handleRespondDraw(false)}
-                                className="flex-1 rounded-xl border border-slate-200 bg-white py-2.5 text-xs font-semibold text-slate-700 shadow-xs transition-all hover:bg-slate-50 cursor-pointer"
-                            >
-                                Decline
-                            </button>
-                        </div>
-                    </div>
+          <aside className="border border-white/10 bg-[#11110f]">
+            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+              <div>
+                <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#c7a96b]">
+                  Match record
+                </span>
+
+                <h2 className="mt-1 font-serif text-xl text-white">
+                  Move history
+                </h2>
+              </div>
+
+              <span className="font-mono text-[10px] text-white/20">
+                {moveHistory.length} moves
+              </span>
+            </div>
+
+            <div className="max-h-125 overflow-y-auto">
+              {moveHistory.length === 0 ? (
+                <div className="px-5 py-16 text-center">
+                  <div className="mx-auto flex h-10 w-10 items-center justify-center border border-white/10 text-white/15">
+                    <span className="font-serif text-lg">♟</span>
+                  </div>
+
+                  <p className="mt-4 text-xs text-white/25">
+                    No moves played yet.
+                  </p>
+
+                  <p className="mt-1 text-[9px] uppercase tracking-[0.15em] text-white/10">
+                    The game begins when you move
+                  </p>
                 </div>
-            )}
+              ) : (
+                <table className="w-full text-left">
+                  <thead className="sticky top-0 bg-[#11110f]">
+                    <tr className="border-b border-white/10">
+                      <th className="px-5 py-3 text-[8px] font-semibold uppercase tracking-[0.2em] text-white/20">
+                        #
+                      </th>
 
+                      <th className="px-3 py-3 text-[8px] font-semibold uppercase tracking-[0.2em] text-white/20">
+                        White
+                      </th>
 
+                      <th className="px-3 py-3 text-[8px] font-semibold uppercase tracking-[0.2em] text-white/20">
+                        Black
+                      </th>
+                    </tr>
+                  </thead>
 
+                  <tbody className="divide-y divide-white/5 font-mono text-xs">
+                    {Array.from({
+                      length: Math.ceil(moveHistory.length / 2),
+                    }).map((_, idx) => {
+                      const whiteMove = moveHistory[idx * 2];
+                      const blackMove = moveHistory[idx * 2 + 1];
 
+                      return (
+                        <tr
+                          key={idx}
+                          className="transition-colors hover:bg-white/5"
+                        >
+                          <td className="px-5 py-3 text-white/15">
+                            {idx + 1}
+                          </td>
 
+                          <td className="px-3 py-3 font-medium text-white/65">
+                            {whiteMove?.san || "—"}
+                          </td>
 
+                          <td className="px-3 py-3 font-medium text-white/65">
+                            {blackMove?.san || "—"}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </aside>
         </div>
-    );
+      </div>
+
+      {status === "finished" && gameOverDetails && (
+        <GameOverModal
+          gameOverDetails={gameOverDetails}
+          userId={user?.id}
+          onRematch={handleRequestRematch}
+          onLeave={handleLeaveRoom}
+        />
+      )}
+
+      {rematchOfferedBy && (
+        <OfferModal
+          eyebrow="Rematch"
+          title="Another game?"
+          description={`${rematchOfferedBy.username} wants a rematch. Colors will be swapped.`}
+          icon={<RotateCcw className="h-5 w-5" />}
+          acceptLabel="Accept rematch"
+          declineLabel="Decline"
+          onAccept={() => handleRespondRematch(true)}
+          onDecline={() => handleRespondRematch(false)}
+        />
+      )}
+
+      {drawOfferedBy && (
+        <OfferModal
+          eyebrow="Draw offer"
+          title="Accept a draw?"
+          description={`${drawOfferedBy.username} has offered a draw. Do you accept?`}
+          icon={<Handshake className="h-5 w-5" />}
+          acceptLabel="Accept draw"
+          declineLabel="Decline"
+          onAccept={() => handleRespondDraw(true)}
+          onDecline={() => handleRespondDraw(false)}
+        />
+      )}
+    </main>
+  );
+};
+
+interface GameOverModalProps {
+  gameOverDetails: {
+    isDraw?: boolean;
+    winnerId?: string;
+    winnerUsername?: string;
+    drawReason?: string;
+    winReason?: string;
+  };
+  userId?: string;
+  onRematch: () => void;
+  onLeave: () => void;
+}
+
+const GameOverModal = ({
+  gameOverDetails,
+  userId,
+  onRematch,
+  onLeave,
+}: GameOverModalProps) => {
+  const isDraw = gameOverDetails.isDraw;
+  const won = gameOverDetails.winnerId === userId;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0c0c0b]/85 p-4 backdrop-blur-md">
+      <div className="relative w-full max-w-md border border-white/10 bg-[#11110f] p-8 text-center">
+        <div className="absolute left-0 top-0 h-full w-px bg-[#c7a96b]" />
+
+        <div className="mx-auto flex h-12 w-12 items-center justify-center border border-white/10 bg-white/5">
+          {isDraw ? (
+            <Handshake className="h-5 w-5 text-white/50" />
+          ) : won ? (
+            <Trophy className="h-5 w-5 text-[#c7a96b]" />
+          ) : (
+            <Frown className="h-5 w-5 text-red-300/60" />
+          )}
+        </div>
+
+        <div className="mt-6">
+          <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-[#c7a96b]">
+            Match complete
+          </span>
+
+          <h2 className="mt-3 font-serif text-4xl tracking-[-0.04em] text-white">
+            {isDraw
+              ? "Game drawn."
+              : won
+                ? "You won."
+                : `${gameOverDetails.winnerUsername || "Opponent"} won.`}
+          </h2>
+
+          <p className="mt-3 text-sm text-white/30">
+            {isDraw
+              ? `Draw by ${gameOverDetails.drawReason || "agreement"}`
+              : `Victory by ${gameOverDetails.winReason || "checkmate"}`}
+          </p>
+        </div>
+
+        <div className="mt-8 grid gap-2">
+          <button
+            type="button"
+            onClick={onRematch}
+            className="flex cursor-pointer items-center justify-center gap-2 bg-[#e9e4d8] py-3.5 text-xs font-bold text-[#11110f] transition-colors hover:bg-white"
+          >
+            <RotateCcw className="h-4 w-4" />
+            Play rematch
+          </button>
+
+          <button
+            type="button"
+            onClick={onLeave}
+            className="flex cursor-pointer items-center justify-center gap-2 border border-white/10 py-3.5 text-xs font-semibold text-white/55 transition-colors hover:border-white/20 hover:bg-white/5 hover:text-white"
+          >
+            <Home className="h-4 w-4" />
+            Return to dashboard
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+interface OfferModalProps {
+  eyebrow: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  acceptLabel: string;
+  declineLabel: string;
+  onAccept: () => void;
+  onDecline: () => void;
+}
+
+const OfferModal = ({
+  eyebrow,
+  title,
+  description,
+  icon,
+  acceptLabel,
+  declineLabel,
+  onAccept,
+  onDecline,
+}: OfferModalProps) => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0c0c0b]/85 p-4 backdrop-blur-md">
+      <div className="relative w-full max-w-md border border-white/10 bg-[#11110f] p-8 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center border border-[#c7a96b]/25 bg-[#c7a96b]/5 text-[#c7a96b]">
+          {icon}
+        </div>
+
+        <div className="mt-6">
+          <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-[#c7a96b]">
+            {eyebrow}
+          </span>
+
+          <h2 className="mt-3 font-serif text-3xl tracking-[-0.035em] text-white">
+            {title}
+          </h2>
+
+          <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-white/30">
+            {description}
+          </p>
+        </div>
+
+        <div className="mt-8 grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={onAccept}
+            className="cursor-pointer bg-[#e9e4d8] py-3.5 text-xs font-bold text-[#11110f] transition-colors hover:bg-white"
+          >
+            {acceptLabel}
+          </button>
+
+          <button
+            type="button"
+            onClick={onDecline}
+            className="cursor-pointer border border-white/10 py-3.5 text-xs font-semibold text-white/55 transition-colors hover:border-white/20 hover:bg-white/5 hover:text-white"
+          >
+            {declineLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
