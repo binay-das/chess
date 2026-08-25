@@ -55,7 +55,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onSuccess }) => {
   return (
     <main className="relative flex min-h-[calc(100vh-72px)] overflow-hidden bg-[#0c0c0b] text-[#f5f2eb]">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[20%] top-[15%] h-125 w-125 rounded-full bg-[#c7a96b]/[0.035] blur-[140px]" />
+        <div className="absolute left-[20%] top-[15%] h-125 w-125 rounded-full bg-[#c7a96b]/5 blur-[140px]" />
 
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.03)_1px,transparent_0)] bg-size-[32px_32px]" />
       </div>
@@ -96,7 +96,6 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onSuccess }) => {
         <div className="mx-auto w-full max-w-md">
           <div className="mb-10 lg:hidden">
             <div className="mb-5 flex items-center gap-3 text-[10px] font-semibold tracking-[0.3em] text-white/30">
-              <span className="h-px w-7 bg-[#c7a96b]" />
               Welcome back
             </div>
 
@@ -196,7 +195,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onSuccess }) => {
               </button>
             </form>
 
-            <div className="mt-7 border-t border-white/[0.07] pt-6 text-center text-xs text-white/30">
+            <div className="mt-7 border-t border-white/10 pt-6 text-center text-xs text-white/30">
               Don't have an account?{" "}
               <Link
                 to="/signup"

@@ -20,7 +20,7 @@ export const Home: React.FC<HomeProps> = ({ user }) => {
   return (
     <main className="min-h-screen overflow-hidden bg-[#0c0c0b] text-[#f5f2eb]">
       <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute left-1/2 top-0 h-175 w-175 -translate-x-1/2 rounded-full bg-amber-500/[0.035] blur-[140px]" />
+        <div className="absolute left-1/2 top-0 h-175 w-175 -translate-x-1/2 rounded-full bg-amber-500/5 blur-[140px]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.035)_1px,transparent_0)] bg-size-[32px_32px]" />
       </div>
 
@@ -121,13 +121,7 @@ export const Home: React.FC<HomeProps> = ({ user }) => {
                       "r1bq1rk1/ppp2ppp/2np1n2/8/2B1P3/2N2N2/PPPP1PPP/R1BQ1RK1 w - - 0 1",
                     boardStyle: {
                       width: "100%",
-                    },
-                    darkSquareStyle: {
-                      backgroundColor: "#769656",
-                    },
-                    lightSquareStyle: {
-                      backgroundColor: "#eeeed2",
-                    },
+                    }
                   }}
                 />
               </div>
@@ -211,9 +205,9 @@ export const Home: React.FC<HomeProps> = ({ user }) => {
 
       <section
         id="features"
-        className="border-y border-white/[0.07] bg-[#11110f]"
+        className="border-y border-white/10 bg-[#11110f]"
       >
-        <div className="mx-auto grid max-w-7xl divide-y divide-white/[0.07] px-6 lg:grid-cols-3 lg:divide-x lg:divide-y-0 lg:px-10">
+        <div className="mx-auto grid max-w-7xl divide-y divide-white/10 px-6 lg:grid-cols-3 lg:divide-x lg:divide-y-0 lg:px-10">
           <Feature
             number="01"
             icon={<Swords className="h-5 w-5" />}

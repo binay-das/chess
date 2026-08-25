@@ -100,8 +100,8 @@ export const GameScreen = () => {
 
   return (
     <main className="min-h-[calc(100vh-72px)] bg-[#0c0c0b] text-[#f5f2eb]">
-      <div className="mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-        <header className="mb-6 flex flex-col gap-5 border-b border-white/[0.08] pb-6 lg:flex-row lg:items-end lg:justify-between">
+      <div className="mx-auto max-w-375 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+        <header className="mb-6 flex flex-col gap-5 border-b border-white/10 pb-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <div className="mb-3 flex items-center gap-3">
               <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-[#c7a96b]">
@@ -118,7 +118,7 @@ export const GameScreen = () => {
                 type="button"
                 onClick={copyRoomCode}
                 title="Click to copy room code"
-                className="group flex cursor-pointer items-center gap-3.5 border border-[#c7a96b]/30 bg-[#11110f] px-4 py-2.5 transition-colors hover:border-[#c7a96b]/60 hover:bg-white/[0.03]"
+                className="group flex cursor-pointer items-center gap-3.5 border border-[#c7a96b]/30 bg-[#11110f] px-4 py-2.5 transition-colors hover:border-[#c7a96b]/60 hover:bg-white/5"
               >
                 <span className="text-[9px] font-semibold uppercase tracking-[0.22em] text-[#c7a96b]">
                   Room
@@ -143,7 +143,7 @@ export const GameScreen = () => {
                 <button
                   type="button"
                   onClick={handleOfferDraw}
-                  className="flex cursor-pointer items-center gap-2 border border-white/[0.1] bg-[#11110f] px-3.5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/55 transition-colors hover:border-white/20 hover:bg-white/[0.03] hover:text-white"
+                  className="flex cursor-pointer items-center gap-2 border border-white/10 bg-[#11110f] px-3.5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/55 transition-colors hover:border-white/20 hover:bg-white/5 hover:text-white"
                 >
                   <Handshake className="h-3.5 w-3.5" />
                   Draw
@@ -152,7 +152,7 @@ export const GameScreen = () => {
                 <button
                   type="button"
                   onClick={handleResign}
-                  className="flex cursor-pointer items-center gap-2 border border-red-400/15 bg-red-400/[0.03] px-3.5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-red-300/70 transition-colors hover:border-red-400/25 hover:bg-red-400/[0.06] hover:text-red-300"
+                  className="flex cursor-pointer items-center gap-2 border border-red-400/15 bg-red-400/5 px-3.5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-red-300/70 transition-colors hover:border-red-400/25 hover:bg-red-400/10 hover:text-red-300"
                 >
                   <Flag className="h-3.5 w-3.5" />
                   Resign
@@ -163,7 +163,7 @@ export const GameScreen = () => {
             <button
               type="button"
               onClick={handleLeaveRoom}
-              className="flex cursor-pointer items-center gap-2 border border-white/[0.1] bg-white/[0.04] px-3.5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60 transition-colors hover:border-white/20 hover:bg-white/[0.07] hover:text-white"
+              className="flex cursor-pointer items-center gap-2 border border-white/10 bg-white/5 px-3.5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60 transition-colors hover:border-white/20 hover:bg-white/10 hover:text-white"
             >
               <LogOut className="h-3.5 w-3.5" />
               Leave
@@ -175,7 +175,7 @@ export const GameScreen = () => {
           <button
             type="button"
             onClick={() => setInvalidMoveError(null)}
-            className="mb-6 flex w-full cursor-pointer items-center justify-between border border-red-400/20 bg-red-400/[0.05] px-4 py-3 text-left text-xs text-red-300 transition-colors hover:bg-red-400/[0.08]"
+            className="mb-6 flex w-full cursor-pointer items-center justify-between border border-red-400/20 bg-red-400/5 px-4 py-3 text-left text-xs text-red-300 transition-colors hover:bg-red-400/10"
           >
             <span className="flex items-center gap-3">
               <AlertCircle className="h-4 w-4 shrink-0" />
@@ -189,7 +189,7 @@ export const GameScreen = () => {
         )}
 
         {status === "waiting" && (
-          <div className="mb-6 flex items-center gap-3 border border-[#c7a96b]/20 bg-[#c7a96b]/[0.04] px-4 py-3 text-xs text-white/70">
+          <div className="mb-6 flex items-center gap-3 border border-[#c7a96b]/20 bg-[#c7a96b]/5 px-4 py-3 text-xs text-white/70">
             <span className="relative flex h-2 w-2 shrink-0">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#c7a96b] opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[#c7a96b]" />
@@ -209,9 +209,9 @@ export const GameScreen = () => {
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
           <section className="min-w-0">
-            <div className="mb-3 flex items-center justify-between border-y border-white/[0.07] px-1 py-3">
+            <div className="mb-3 flex items-center justify-between border-y border-white/10 px-1 py-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center border border-white/[0.08] bg-[#11110f] text-xs font-serif text-white/60">
+                <div className="flex h-8 w-8 items-center justify-center border border-white/10 bg-[#11110f] text-xs font-serif text-white/60">
                   {opponent?.username?.charAt(0).toUpperCase() || "?"}
                 </div>
 
@@ -240,13 +240,13 @@ export const GameScreen = () => {
               </span>
             </div>
 
-            <div className="border border-white/[0.08] bg-[#11110f] p-2 sm:p-4">
+            <div className="border border-white/10 bg-[#11110f] p-2 sm:p-4">
               <div className="flex justify-center">
                 <ChessBoardComponent />
               </div>
             </div>
 
-            <div className="mt-3 flex items-center justify-between border-y border-white/[0.07] px-1 py-3">
+            <div className="mt-3 flex items-center justify-between border-y border-white/10 px-1 py-3">
               <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center bg-[#e9e4d8] text-xs font-semibold text-[#11110f]">
                   {user?.username?.charAt(0).toUpperCase() || "U"}
@@ -270,8 +270,8 @@ export const GameScreen = () => {
             </div>
           </section>
 
-          <aside className="border border-white/[0.08] bg-[#11110f]">
-            <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-4">
+          <aside className="border border-white/10 bg-[#11110f]">
+            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
               <div>
                 <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#c7a96b]">
                   Match record
@@ -287,10 +287,10 @@ export const GameScreen = () => {
               </span>
             </div>
 
-            <div className="max-h-[500px] overflow-y-auto">
+            <div className="max-h-125 overflow-y-auto">
               {moveHistory.length === 0 ? (
                 <div className="px-5 py-16 text-center">
-                  <div className="mx-auto flex h-10 w-10 items-center justify-center border border-white/[0.07] text-white/15">
+                  <div className="mx-auto flex h-10 w-10 items-center justify-center border border-white/10 text-white/15">
                     <span className="font-serif text-lg">♟</span>
                   </div>
 
@@ -305,7 +305,7 @@ export const GameScreen = () => {
               ) : (
                 <table className="w-full text-left">
                   <thead className="sticky top-0 bg-[#11110f]">
-                    <tr className="border-b border-white/[0.07]">
+                    <tr className="border-b border-white/10">
                       <th className="px-5 py-3 text-[8px] font-semibold uppercase tracking-[0.2em] text-white/20">
                         #
                       </th>
@@ -320,7 +320,7 @@ export const GameScreen = () => {
                     </tr>
                   </thead>
 
-                  <tbody className="divide-y divide-white/[0.05] font-mono text-xs">
+                  <tbody className="divide-y divide-white/5 font-mono text-xs">
                     {Array.from({
                       length: Math.ceil(moveHistory.length / 2),
                     }).map((_, idx) => {
@@ -330,7 +330,7 @@ export const GameScreen = () => {
                       return (
                         <tr
                           key={idx}
-                          className="transition-colors hover:bg-white/[0.025]"
+                          className="transition-colors hover:bg-white/5"
                         >
                           <td className="px-5 py-3 text-white/15">
                             {idx + 1}
@@ -416,10 +416,10 @@ const GameOverModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0c0c0b]/85 p-4 backdrop-blur-md">
-      <div className="relative w-full max-w-md border border-white/[0.09] bg-[#11110f] p-8 text-center">
+      <div className="relative w-full max-w-md border border-white/10 bg-[#11110f] p-8 text-center">
         <div className="absolute left-0 top-0 h-full w-px bg-[#c7a96b]" />
 
-        <div className="mx-auto flex h-12 w-12 items-center justify-center border border-white/[0.1] bg-white/[0.025]">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center border border-white/10 bg-white/5">
           {isDraw ? (
             <Handshake className="h-5 w-5 text-white/50" />
           ) : won ? (
@@ -462,7 +462,7 @@ const GameOverModal = ({
           <button
             type="button"
             onClick={onLeave}
-            className="flex cursor-pointer items-center justify-center gap-2 border border-white/[0.1] py-3.5 text-xs font-semibold text-white/55 transition-colors hover:border-white/20 hover:bg-white/[0.03] hover:text-white"
+            className="flex cursor-pointer items-center justify-center gap-2 border border-white/10 py-3.5 text-xs font-semibold text-white/55 transition-colors hover:border-white/20 hover:bg-white/5 hover:text-white"
           >
             <Home className="h-4 w-4" />
             Return to dashboard
@@ -496,8 +496,8 @@ const OfferModal = ({
 }: OfferModalProps) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0c0c0b]/85 p-4 backdrop-blur-md">
-      <div className="relative w-full max-w-md border border-white/[0.09] bg-[#11110f] p-8 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center border border-[#c7a96b]/25 bg-[#c7a96b]/[0.05] text-[#c7a96b]">
+      <div className="relative w-full max-w-md border border-white/10 bg-[#11110f] p-8 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center border border-[#c7a96b]/25 bg-[#c7a96b]/5 text-[#c7a96b]">
           {icon}
         </div>
 
@@ -527,7 +527,7 @@ const OfferModal = ({
           <button
             type="button"
             onClick={onDecline}
-            className="cursor-pointer border border-white/10 py-3.5 text-xs font-semibold text-white/55 transition-colors hover:border-white/20 hover:bg-white/[0.03] hover:text-white"
+            className="cursor-pointer border border-white/10 py-3.5 text-xs font-semibold text-white/55 transition-colors hover:border-white/20 hover:bg-white/5 hover:text-white"
           >
             {declineLabel}
           </button>

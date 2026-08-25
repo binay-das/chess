@@ -32,18 +32,18 @@ export const JoinRoomModal = ({ isOpen, onClose }: JoinRoomModalProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0c0c0b]/80 p-4 backdrop-blur-md">
-      <div className="relative w-full max-w-md border border-white/[0.09] bg-[#11110f] p-7 text-[#f5f2eb] shadow-2xl">
+      <div className="relative w-full max-w-md border border-white/10 bg-[#11110f] p-7 text-[#f5f2eb] shadow-2xl">
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-5 top-5 flex h-8 w-8 cursor-pointer items-center justify-center border border-white/[0.08] text-white/30 transition-colors hover:border-white/15 hover:bg-white/[0.04] hover:text-white"
+          className="absolute right-5 top-5 flex h-8 w-8 cursor-pointer items-center justify-center border border-white/10 text-white/30 transition-colors hover:border-white/15 hover:bg-white/5 hover:text-white"
         >
           <X className="h-4 w-4" />
         </button>
 
         <div className="mb-8">
           <div className="mb-5 flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center border border-[#c7a96b]/25 bg-[#c7a96b]/[0.05]">
+            <div className="flex h-9 w-9 items-center justify-center border border-[#c7a96b]/25 bg-[#c7a96b]/5">
               <KeyRound className="h-4 w-4 text-[#c7a96b]" />
             </div>
 
@@ -62,7 +62,7 @@ export const JoinRoomModal = ({ isOpen, onClose }: JoinRoomModalProps) => {
         </div>
 
         {error && (
-          <div className="mb-5 flex items-center gap-3 border border-red-400/20 bg-red-400/[0.05] px-4 py-3 text-xs text-red-300">
+          <div className="mb-5 flex items-center gap-3 border border-red-400/20 bg-red-400/5 px-4 py-3 text-xs text-red-300">
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{error}</span>
           </div>

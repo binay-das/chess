@@ -17,7 +17,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onSignOut }) => {
   const initial = user?.username ? user.username.charAt(0).toUpperCase() : "?";
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/[0.07] bg-[#0c0c0b]/95 text-[#f5f2eb] backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0c0c0b]/95 text-[#f5f2eb] backdrop-blur-md">
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-6 lg:px-10">
         <Link
           to="/"
@@ -89,7 +89,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onSignOut }) => {
 
                     <div className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2">
                       <span className="text-white/40">Email</span>
-                      <span className="font-medium text-white/80 truncate max-w-[150px]">{user.email}</span>
+                      <span className="font-medium text-white/80 truncate max-w-37.5">{user.email}</span>
                     </div>
 
                     <div className="flex items-center justify-between rounded-lg bg-white/5 px-3 py-2">
