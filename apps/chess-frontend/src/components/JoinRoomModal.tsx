@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getSocket } from "../services/socket";
-import { X, AlertCircle } from "lucide-react";
+import { X, AlertCircle, KeyRound, ArrowUpRight } from "lucide-react";
 
 interface JoinRoomModalProps {
   isOpen: boolean;
@@ -15,67 +15,94 @@ export const JoinRoomModal = ({ isOpen, onClose }: JoinRoomModalProps) => {
 
   const handleJoin = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!roomCode.trim()) {
       setError("Please enter a 6-character room code.");
       return;
     }
 
     const socket = getSocket();
-    socket.emit("room:join", { roomCode: roomCode.trim().toUpperCase() });
+
+    socket.emit("room:join", {
+      roomCode: roomCode.trim().toUpperCase(),
+    });
+
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
-      <div className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl transition-all">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0c0c0b]/80 p-4 backdrop-blur-md">
+      <div className="relative w-full max-w-md border border-white/[0.09] bg-[#11110f] p-7 text-[#f5f2eb] shadow-2xl">
         <button
-          className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 cursor-pointer"
+          type="button"
           onClick={onClose}
+          className="absolute right-5 top-5 flex h-8 w-8 cursor-pointer items-center justify-center border border-white/[0.08] text-white/30 transition-colors hover:border-white/15 hover:bg-white/[0.04] hover:text-white"
         >
           <X className="h-4 w-4" />
         </button>
 
-        <div className="mb-6 text-center">
-          <h2 className="text-xl font-bold tracking-tight text-slate-900">Join Match Room</h2>
-          <p className="mt-1 text-sm text-slate-500">Enter the 6-character room code from your opponent</p>
+        <div className="mb-8">
+          <div className="mb-5 flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center border border-[#c7a96b]/25 bg-[#c7a96b]/[0.05]">
+              <KeyRound className="h-4 w-4 text-[#c7a96b]" />
+            </div>
+
+            <span className="text-[9px] font-semibold uppercase tracking-[0.28em] text-[#c7a96b]">
+              Join match
+            </span>
+          </div>
+
+          <h2 className="font-serif text-3xl tracking-[-0.035em] text-white">
+            Enter the room.
+          </h2>
+
+          <p className="mt-3 max-w-sm text-sm leading-6 text-white/30">
+            Enter the six-character code shared by your opponent.
+          </p>
         </div>
 
         {error && (
-          <div className="mb-4 flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-center text-xs font-medium text-red-600">
+          <div className="mb-5 flex items-center gap-3 border border-red-400/20 bg-red-400/[0.05] px-4 py-3 text-xs text-red-300">
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleJoin} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="modalRoomCode" className="block text-xs font-semibold text-slate-700">
-              Room Code
-            </label>
-            <input
-              id="modalRoomCode"
-              type="text"
-              placeholder="e.g. A9B2X7"
-              value={roomCode}
-              onChange={(e) => {
-                setRoomCode(e.target.value.toUpperCase());
-                setError(null);
-              }}
-              maxLength={6}
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-center font-mono text-xl tracking-widest text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-slate-900 focus:bg-white focus:ring-2 focus:ring-slate-900/10 uppercase"
-              autoFocus
-            />
-          </div>
+        <form onSubmit={handleJoin}>
+          <label
+            htmlFor="modalRoomCode"
+            className="mb-2 block text-[9px] font-semibold uppercase tracking-[0.25em] text-white/30"
+          >
+            Room code
+          </label>
+
+          <input
+            id="modalRoomCode"
+            type="text"
+            placeholder="A9B2X7"
+            value={roomCode}
+            onChange={(e) => {
+              setRoomCode(e.target.value.toUpperCase());
+              setError(null);
+            }}
+            maxLength={6}
+            autoFocus
+            className="w-full border border-white/10 bg-[#0c0c0b] px-4 py-5 text-center font-mono text-2xl font-semibold uppercase tracking-[0.45em] text-[#f5f2eb] outline-none transition-colors placeholder:text-white/10 focus:border-[#c7a96b]/60"
+          />
 
           <button
             type="submit"
-            className="w-full rounded-lg bg-slate-900 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-slate-800 active:scale-[0.99] cursor-pointer"
+            className="group mt-4 flex w-full cursor-pointer items-center justify-between border border-[#e9e4d8] bg-[#e9e4d8] px-5 py-4 text-xs font-bold text-[#11110f] transition-colors hover:bg-white"
           >
-            Join Match
+            <span>Join match</span>
+            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </button>
         </form>
+
+        <p className="mt-5 text-center text-[9px] uppercase tracking-[0.18em] text-white/15">
+          Room codes are case-insensitive
+        </p>
       </div>
     </div>
   );
 };
-

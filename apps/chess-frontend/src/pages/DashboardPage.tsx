@@ -1,440 +1,621 @@
 import { useEffect, useState } from "react";
-import { useAuthStore } from "../store/AuthStore"
+import { useAuthStore } from "../store/AuthStore";
 import { useGameStore } from "../store/GameStore";
 import { connectSocket, getSocket } from "../services/socket";
 import { JoinRoomModal } from "../components/JoinRoomModal";
-import { Trophy, AlertCircle, Gamepad2, Award, XCircle, Zap, Plus, KeyRound } from "lucide-react";
+import {
+  Trophy,
+  AlertCircle,
+  Gamepad2,
+  Award,
+  XCircle,
+  Zap,
+  Plus,
+  KeyRound,
+  ArrowUpRight,
+} from "lucide-react";
 import { GameScreen } from "../components/GameScreen";
 
 interface GameHistoryItem {
-    id: string;
-    whitePlayer: { id: string; username: string };
-    blackPlayer: { id: string; username: string };
-    winnerId?: string;
-    result: string;
-    createdAt: string;
+  id: string;
+  whitePlayer: { id: string; username: string };
+  blackPlayer: { id: string; username: string };
+  winnerId?: string;
+  result: string;
+  createdAt: string;
 }
-
 
 interface UserStats {
-    totalGames: number;
-    wins: number;
-    losses: number;
-    draws: number;
-    winRate: number;
+  totalGames: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  winRate: number;
 }
-
 
 export const DashboardPage = () => {
-    const { user } = useAuthStore();
-    const { roomCode,
-        setRoomState,
-        updateMove,
-        setGameOver,
-        setDrawOfferedBy,
-        setRematchOfferedBy,
-        setError,
-        error: gameError
-    } = useGameStore();
+  const { user } = useAuthStore();
 
-    const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
-    const [stats, setStats] = useState<UserStats | null>(null);
-    const [recentGames, setRecentGames] = useState<GameHistoryItem[]>([]);
-    const [loadingHistory, setLoadingHistory] = useState(true);
+  const {
+    roomCode,
+    setRoomState,
+    updateMove,
+    setGameOver,
+    setDrawOfferedBy,
+    setRematchOfferedBy,
+    setError,
+    error: gameError,
+  } = useGameStore();
 
-    const loadDasboardData = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            if (!token) return;
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [stats, setStats] = useState<UserStats | null>(null);
+  const [recentGames, setRecentGames] = useState<GameHistoryItem[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(true);
 
-            const baseUrl = import.meta.env.VITE_API_URL;
+  const loadDasboardData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
-            // Fetch Profile & Stats
-            const profileRes = await fetch(`${baseUrl}/users/profile`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
+      const baseUrl = import.meta.env.VITE_API_URL;
 
-            if (profileRes.ok) {
-                const result = await profileRes.json();
-                if (result.data?.stats) {
-                    setStats(result.data.stats);
-                }
-            }
+      // Fetch Profile & Stats
+      const profileRes = await fetch(`${baseUrl}/users/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-            // Fetch Games History
-            const gamesRes = await fetch(`${baseUrl}/games`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
+      if (profileRes.ok) {
+        const result = await profileRes.json();
 
-
-            if (gamesRes.ok) {
-                const result = await gamesRes.json();
-                console.log("gamesRes", result.games);
-                if (result.games) {
-                    setRecentGames(result.games);
-                }
-            }
-        } catch (error) {
-            console.error("Error fetching dashboard data:", error);
-        } finally {
-            setLoadingHistory(false);
+        if (result.data?.stats) {
+          setStats(result.data.stats);
         }
+      }
+
+      // Fetch Games History
+      const gamesRes = await fetch(`${baseUrl}/games`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (gamesRes.ok) {
+        const result = await gamesRes.json();
+
+        if (result.games) {
+          setRecentGames(result.games);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setLoadingHistory(false);
     }
+  };
 
-    useEffect(() => {
-        // if (status === "idle") {
-        loadDasboardData();
-        // }
-    }, [status]);
+  useEffect(() => {
+    loadDasboardData();
+  }, []);
 
+  useEffect(() => {
+    if (!user) return;
 
-    useEffect(() => {
-        if (!user) return;
+    const socket = connectSocket();
 
-        const socket = connectSocket();
+    socket.emit("game:reconnect");
 
-        // check if player has any ongoing game to reconnect
-        socket.emit("game:reconnect");
-
-        const onRoomCreated = (data: any) => {
-            setRoomState({
-                roomCode: data.roomCode,
-                status: data.room?.status || "waiting",
-                players: data.players || data.room?.players || [],
-                currentUserId: user.id,
-            });
-        };
-
-        const onRoomJoined = (data: any) => {
-            setRoomState({
-                roomCode: data.roomCode,
-                status: data.room?.status || "playing",
-                players: data.players || data.room?.players || [],
-                currentUserId: user.id,
-                game: data.room?.game,
-            });
-        };
-
-        const onRoomState = (data: any) => {
-            const room = data.room || data;
-            if (room && room.roomCode) {
-                const currentStatus = useGameStore.getState().status;
-                const statusToSet = (room.status === "finished" || (currentStatus === "finished" && room.status !== "playing"))
-                    ? "finished"
-                    : room.status;
-
-                setRoomState({
-                    roomCode: room.roomCode,
-                    status: statusToSet,
-                    players: room.players || [],
-                    currentUserId: user.id,
-                    game: room.game,
-                });
-            }
-        };
-
-        const onGameStarted = (data: any) => {
-            setRoomState({
-                roomCode: data.roomCode,
-                status: "playing",
-                players: data.players || [],
-                currentUserId: user.id,
-                game: {
-                    fen: data.fen,
-                    pgn: data.pgn || "",
-                    turn: data.turn,
-                },
-            });
-        };
-
-
-        const onGameMoved = (data: any) => {
-            updateMove({
-                fen: data.fen,
-                pgn: data.pgn,
-                turn: data.turn,
-                move: data.move,
-                isCheck: data.isCheck,
-            });
-        };
-
-        const onGameOver = (data: any) => {
-            setGameOver({
-                winnerId: data.winnerId,
-                winnerUsername: data.winnerUsername,
-                winReason: data.winReason,
-                isDraw: data.isDraw,
-                drawReason: data.drawReason,
-            });
-        };
-
-
-
-        const onGameRestored = (data: any) => {
-            setRoomState({
-                roomCode: data.roomCode,
-                status: data.status,
-                players: data.players,
-                currentUserId: user.id,
-                game: {
-                    fen: data.fen,
-                    pgn: data.pgn,
-                    turn: data.turn,
-                    moveHistory: data.moveHistory,
-                },
-            });
-        };
-
-
-        const onDrawOffered = (data: any) => {
-            setDrawOfferedBy(data.offeredBy);
-        };
-
-        const onDrawDeclined = () => {
-            alert("Your draw offer was declined.");
-        };
-
-        const onRematchOffered = (data: any) => {
-            setRematchOfferedBy(data.offeredBy);
-        };
-
-        const onRematchDeclined = () => {
-            alert("Your rematch request was declined.");
-        };
-
-        const onError = (data: any) => {
-            setError(data.error || "An error occurred");
-        };
-
-        socket.on("room:created", onRoomCreated);
-        socket.on("room:joined", onRoomJoined);
-        socket.on("room:player_joined", onRoomState);
-        socket.on("room:state", onRoomState);
-        socket.on("game:started", onGameStarted);
-        socket.on("game:start", onGameStarted);
-        socket.on("game:moved", onGameMoved);
-        socket.on("game:over", onGameOver);
-        socket.on("game:restored", onGameRestored);
-        socket.on("game:draw_offered", onDrawOffered);
-        socket.on("game:draw_declined", onDrawDeclined);
-        socket.on("game:rematch_offered", onRematchOffered);
-        socket.on("game:rematch_declined", onRematchDeclined);
-        socket.on("room:error", onError);
-        socket.on("game:error", onError);
-
-        return () => {
-            socket.off("room:created", onRoomCreated);
-            socket.off("room:joined", onRoomJoined);
-            socket.off("room:player_joined", onRoomState);
-            socket.off("room:state", onRoomState);
-            socket.off("game:started", onGameStarted);
-            socket.off("game:start", onGameStarted);
-            socket.off("game:moved", onGameMoved);
-            socket.off("game:over", onGameOver);
-            socket.off("game:restored", onGameRestored);
-            socket.off("game:draw_offered", onDrawOffered);
-            socket.off("game:draw_declined", onDrawDeclined);
-            socket.off("game:rematch_offered", onRematchOffered);
-            socket.off("game:rematch_declined", onRematchDeclined);
-            socket.off("room:error", onError);
-            socket.off("game:error", onError);
-        };
-    }, [user, setRoomState, updateMove, setGameOver, setDrawOfferedBy, setRematchOfferedBy, setError]);
-
-
-
-    const handleCreateRoom = () => {
-        const socket = getSocket();
-        socket.emit("room:create");
+    const onRoomCreated = (data: any) => {
+      setRoomState({
+        roomCode: data.roomCode,
+        status: data.room?.status || "waiting",
+        players: data.players || data.room?.players || [],
+        currentUserId: user.id,
+      });
     };
 
-    if (roomCode) {
-        return <GameScreen />;
-    }
+    const onRoomJoined = (data: any) => {
+      setRoomState({
+        roomCode: data.roomCode,
+        status: data.room?.status || "playing",
+        players: data.players || data.room?.players || [],
+        currentUserId: user.id,
+        game: data.room?.game,
+      });
+    };
 
-    return (
-        <div className="mx-auto max-w-5xl space-y-8 px-4 py-8 sm:px-6">
-            <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-                <div className="space-y-1">
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-                        Welcome back, <span className="font-extrabold text-slate-900">{user?.username}</span>!
-                    </h1>
-                    <p className="text-sm font-medium text-slate-500">
-                        {user?.email} • Real-time Multiplayer Chess Arena
-                    </p>
-                </div>
+    const onRoomState = (data: any) => {
+      const room = data.room || data;
 
-                <div className="flex items-center gap-3.5 self-start rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 shadow-xs sm:self-center">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100/80">
-                        <Trophy className="h-5 w-5 text-amber-600" />
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Current Rating</span>
-                        <span className="text-lg font-bold text-slate-900">{user?.rating || 1200} Elo</span>
-                    </div>
-                </div>
+      if (room && room.roomCode) {
+        const currentStatus = useGameStore.getState().status;
+
+        const statusToSet =
+          room.status === "finished" ||
+            (currentStatus === "finished" && room.status !== "playing")
+            ? "finished"
+            : room.status;
+
+        setRoomState({
+          roomCode: room.roomCode,
+          status: statusToSet,
+          players: room.players || [],
+          currentUserId: user.id,
+          game: room.game,
+        });
+      }
+    };
+
+    const onGameStarted = (data: any) => {
+      setRoomState({
+        roomCode: data.roomCode,
+        status: "playing",
+        players: data.players || [],
+        currentUserId: user.id,
+        game: {
+          fen: data.fen,
+          pgn: data.pgn || "",
+          turn: data.turn,
+        },
+      });
+    };
+
+    const onGameMoved = (data: any) => {
+      updateMove({
+        fen: data.fen,
+        pgn: data.pgn,
+        turn: data.turn,
+        move: data.move,
+        isCheck: data.isCheck,
+      });
+    };
+
+    const onGameOver = (data: any) => {
+      setGameOver({
+        winnerId: data.winnerId,
+        winnerUsername: data.winnerUsername,
+        winReason: data.winReason,
+        isDraw: data.isDraw,
+        drawReason: data.drawReason,
+      });
+    };
+
+    const onGameRestored = (data: any) => {
+      setRoomState({
+        roomCode: data.roomCode,
+        status: data.status,
+        players: data.players,
+        currentUserId: user.id,
+        game: {
+          fen: data.fen,
+          pgn: data.pgn,
+          turn: data.turn,
+          moveHistory: data.moveHistory,
+        },
+      });
+    };
+
+    const onDrawOffered = (data: any) => {
+      setDrawOfferedBy(data.offeredBy);
+    };
+
+    const onDrawDeclined = () => {
+      alert("Your draw offer was declined.");
+    };
+
+    const onRematchOffered = (data: any) => {
+      setRematchOfferedBy(data.offeredBy);
+    };
+
+    const onRematchDeclined = () => {
+      alert("Your rematch request was declined.");
+    };
+
+    const onError = (data: any) => {
+      setError(data.error || "An error occurred");
+    };
+
+    socket.on("room:created", onRoomCreated);
+    socket.on("room:joined", onRoomJoined);
+    socket.on("room:player_joined", onRoomState);
+    socket.on("room:state", onRoomState);
+    socket.on("game:started", onGameStarted);
+    socket.on("game:start", onGameStarted);
+    socket.on("game:moved", onGameMoved);
+    socket.on("game:over", onGameOver);
+    socket.on("game:restored", onGameRestored);
+    socket.on("game:draw_offered", onDrawOffered);
+    socket.on("game:draw_declined", onDrawDeclined);
+    socket.on("game:rematch_offered", onRematchOffered);
+    socket.on("game:rematch_declined", onRematchDeclined);
+    socket.on("room:error", onError);
+    socket.on("game:error", onError);
+
+    return () => {
+      socket.off("room:created", onRoomCreated);
+      socket.off("room:joined", onRoomJoined);
+      socket.off("room:player_joined", onRoomState);
+      socket.off("room:state", onRoomState);
+      socket.off("game:started", onGameStarted);
+      socket.off("game:start", onGameStarted);
+      socket.off("game:moved", onGameMoved);
+      socket.off("game:over", onGameOver);
+      socket.off("game:restored", onGameRestored);
+      socket.off("game:draw_offered", onDrawOffered);
+      socket.off("game:draw_declined", onDrawDeclined);
+      socket.off("game:rematch_offered", onRematchOffered);
+      socket.off("game:rematch_declined", onRematchDeclined);
+      socket.off("room:error", onError);
+      socket.off("game:error", onError);
+    };
+  }, [
+    user,
+    setRoomState,
+    updateMove,
+    setGameOver,
+    setDrawOfferedBy,
+    setRematchOfferedBy,
+    setError,
+  ]);
+
+  const handleCreateRoom = () => {
+    const socket = getSocket();
+    socket.emit("room:create");
+  };
+
+  if (roomCode) {
+    return <GameScreen />;
+  }
+
+  const rating = user?.rating || 1200;
+
+  return (
+    <main className="min-h-[calc(100vh-72px)] bg-[#0c0c0b] text-[#f5f2eb]">
+      <div className="mx-auto max-w-7xl px-6 py-12 lg:px-10 lg:py-16">
+        <section className="grid gap-12 border-b border-white/[0.08] pb-12 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div>
+            <div className="mb-7 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/30">
+              <span className="h-px w-8 bg-[#c7a96b]" />
+              Player dashboard
             </div>
 
-            {gameError && (
-                <div className="flex cursor-pointer items-center justify-between rounded-xl border border-red-200 bg-red-50 p-4 text-xs font-medium text-red-600 shadow-xs transition-all hover:bg-red-100/50" onClick={() => setError(null)}>
-                    <span className="flex items-center gap-2">
-                        <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
-                        <span>{gameError} (click to dismiss)</span>
-                    </span>
-                </div>
-            )}
+            <h1 className="max-w-3xl font-serif text-5xl leading-[0.95] tracking-[-0.045em] text-[#f5f2eb] sm:text-6xl lg:text-7xl">
+              Welcome back,
+              <br />
+              <span className="italic text-[#c7a96b]">
+                {user?.username || "player"}.
+              </span>
+            </h1>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-slate-300 hover:shadow-md">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700">
-                        <Gamepad2 className="h-6 w-6" />
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-2xl font-bold tracking-tight text-slate-900">{stats?.totalGames ?? 0}</span>
-                        <span className="text-xs font-medium text-slate-500">Total Games</span>
-                    </div>
-                </div>
+            <p className="mt-7 max-w-lg text-sm leading-7 text-white/35">
+              Your games. Your rating. Your next move.
+              <span className="mx-2 text-white/15">•</span>
+              {user?.email}
+            </p>
+          </div>
 
-                <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-slate-300 hover:shadow-md">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-emerald-100 bg-emerald-50 text-emerald-600">
-                        <Award className="h-6 w-6" />
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-2xl font-bold tracking-tight text-emerald-600">{stats?.wins ?? 0}</span>
-                        <span className="text-xs font-medium text-slate-500">Victories</span>
-                    </div>
-                </div>
+          <div className="relative border border-white/[0.09] bg-[#11110f] px-7 py-6 lg:min-w-[230px]">
+            <div className="absolute left-0 top-0 h-full w-px bg-[#c7a96b]" />
 
-                <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-slate-300 hover:shadow-md">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-rose-100 bg-rose-50 text-rose-600">
-                        <XCircle className="h-6 w-6" />
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-2xl font-bold tracking-tight text-rose-600">{stats?.losses ?? 0}</span>
-                        <span className="text-xs font-medium text-slate-500">Defeats</span>
-                    </div>
-                </div>
+            <div className="flex items-center gap-3">
+              <Trophy className="h-4 w-4 text-[#c7a96b]" />
 
-                <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-slate-300 hover:shadow-md">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-amber-100 bg-amber-50 text-amber-600">
-                        <Zap className="h-6 w-6" />
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-2xl font-bold tracking-tight text-amber-600">{stats?.winRate ?? 0}%</span>
-                        <span className="text-xs font-medium text-slate-500">Win Rate</span>
-                    </div>
-                </div>
+              <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-white/30">
+                Current rating
+              </span>
             </div>
 
-            <div className="space-y-4">
-                <h2 className="text-xl font-bold tracking-tight text-slate-900">Play Chess</h2>
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                    <div className="relative flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-slate-300 hover:shadow-md">
-                        <div className="space-y-3">
-                            <div className="flex items-center justify-between">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-900">
-                                    <Plus className="h-5 w-5" />
-                                </div>
-                                <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-slate-600">HOST MATCH</span>
+            <div className="mt-4 flex items-baseline gap-2">
+              <span className="font-serif text-4xl tracking-[-0.03em] text-white">
+                {rating}
+              </span>
+
+              <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/25">
+                Elo
+              </span>
+            </div>
+          </div>
+        </section>
+
+        {gameError && (
+          <button
+            type="button"
+            onClick={() => setError(null)}
+            className="mt-8 flex w-full cursor-pointer items-center justify-between border border-red-400/20 bg-red-400/[0.05] px-5 py-4 text-left text-xs text-red-300 transition-colors hover:bg-red-400/[0.08]"
+          >
+            <span className="flex items-center gap-3">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              {gameError}
+            </span>
+
+            <span className="text-[9px] uppercase tracking-[0.15em] text-red-300/50">
+              Dismiss
+            </span>
+          </button>
+        )}
+
+        <section className="mt-12 border-y border-white/8">
+          <div className="grid grid-cols-2 lg:grid-cols-4">
+            <Stat
+              label="Total games"
+              value={stats?.totalGames ?? 0}
+              icon={<Gamepad2 className="h-4 w-4" />}
+            />
+
+            <Stat
+              label="Victories"
+              value={stats?.wins ?? 0}
+              icon={<Award className="h-4 w-4" />}
+              accent
+            />
+
+            <Stat
+              label="Defeats"
+              value={stats?.losses ?? 0}
+              icon={<XCircle className="h-4 w-4" />}
+            />
+
+            <Stat
+              label="Win rate"
+              value={`${stats?.winRate ?? 0}%`}
+              icon={<Zap className="h-4 w-4" />}
+              accent
+            />
+          </div>
+        </section>
+
+        <section className="mt-16">
+          <div className="mb-7 flex items-end justify-between gap-6">
+            <div>
+              <div className="mb-3 text-[9px] font-semibold uppercase tracking-[0.28em] text-[#c7a96b]">
+                The board
+              </div>
+
+              <h2 className="font-serif text-4xl tracking-[-0.035em] text-white">
+                Play
+              </h2>
+
+              <p className="mt-2 text-sm text-white/30">
+                Choose how you want to enter the board.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-px overflow-hidden border border-white/[0.08] bg-white/[0.08] lg:grid-cols-[1.2fr_1fr]">
+            <div className="group relative flex min-h-[300px] flex-col justify-between bg-[#11110f] p-7 sm:p-9">
+              <div className="absolute right-8 top-8 text-[#c7a96b]/20 transition-colors group-hover:text-[#c7a96b]/40">
+                <Plus className="h-8 w-8" strokeWidth={1} />
+              </div>
+
+              <div>
+                <div className="mb-8 flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center border border-[#c7a96b]/25 bg-[#c7a96b]/[0.05]">
+                    <Plus className="h-4 w-4 text-[#c7a96b]" />
+                  </div>
+
+                  <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#c7a96b]">
+                    Host match
+                  </span>
+                </div>
+
+                <h3 className="font-serif text-3xl tracking-[-0.025em] text-white">
+                  Create a room
+                </h3>
+
+                <p className="mt-3 max-w-md text-sm leading-6 text-white/30">
+                  Host a private match and invite an opponent with a room code.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleCreateRoom}
+                className="group/button mt-10 flex w-full cursor-pointer items-center justify-between border border-[#e9e4d8] bg-[#e9e4d8] px-5 py-3.5 text-xs font-bold text-[#11110f] transition-colors hover:bg-white"
+              >
+                <span>Create room</span>
+
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover/button:-translate-y-0.5 group-hover/button:translate-x-0.5" />
+              </button>
+            </div>
+
+            <div className="group flex min-h-75 flex-col justify-between bg-[#0f0f0e] p-7 sm:p-9">
+              <div>
+                <div className="mb-8 flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center border border-white/[0.1] bg-white/[0.025]">
+                    <KeyRound className="h-4 w-4 text-white/45" />
+                  </div>
+
+                  <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-white/30">
+                    Join match
+                  </span>
+                </div>
+
+                <h3 className="font-serif text-3xl tracking-[-0.025em] text-white">
+                  Join a room
+                </h3>
+
+                <p className="mt-3 max-w-md text-sm leading-6 text-white/30">
+                  Have a room code? Enter it and join your opponent on the
+                  board.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsJoinModalOpen(true)}
+                className="group/button mt-10 flex w-full cursor-pointer items-center justify-between border border-white/[0.12] bg-transparent px-5 py-3.5 text-xs font-semibold text-white/70 transition-colors hover:border-white/25 hover:bg-white/[0.03] hover:text-white"
+              >
+                <span>Enter room code</span>
+
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover/button:-translate-y-0.5 group-hover/button:translate-x-0.5" />
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-16 pb-12">
+          <div className="mb-7">
+            <div className="mb-3 text-[9px] font-semibold uppercase tracking-[0.28em] text-[#c7a96b]">
+              Match history
+            </div>
+
+            <h2 className="font-serif text-4xl tracking-[-0.035em] text-white">
+              Recent games
+            </h2>
+
+            <p className="mt-2 text-sm text-white/30">
+              Your latest completed matches.
+            </p>
+          </div>
+
+          {loadingHistory ? (
+            <div className="border-y border-white/[0.08] py-12 text-center">
+              <div className="text-[10px] uppercase tracking-[0.25em] text-white/20">
+                Loading match history
+              </div>
+            </div>
+          ) : recentGames.length === 0 ? (
+            <div className="border border-white/[0.08] bg-[#11110f] px-6 py-12 text-center">
+              <Gamepad2 className="mx-auto h-6 w-6 text-white/15" />
+
+              <p className="mt-4 text-sm text-white/30">
+                No completed games yet.
+              </p>
+
+              <p className="mt-1 text-xs text-white/15">
+                Play your first match to build your history.
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto border-y border-white/[0.08]">
+              <table className="w-full min-w-[600px] text-left">
+                <thead>
+                  <tr className="border-b border-white/[0.08]">
+                    <th className="px-4 py-4 text-[9px] font-semibold uppercase tracking-[0.22em] text-white/25">
+                      Opponent
+                    </th>
+
+                    <th className="px-4 py-4 text-[9px] font-semibold uppercase tracking-[0.22em] text-white/25">
+                      Color
+                    </th>
+
+                    <th className="px-4 py-4 text-[9px] font-semibold uppercase tracking-[0.22em] text-white/25">
+                      Result
+                    </th>
+
+                    <th className="px-4 py-4 text-[9px] font-semibold uppercase tracking-[0.22em] text-white/25">
+                      Date
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-white/[0.06]">
+                  {recentGames.map((game) => {
+                    const isWhite = game.whitePlayer?.id === user?.id;
+                    const isWinner = game.winnerId === user?.id;
+                    const isDraw = game.result.toLowerCase().includes("draw");
+
+                    const opponent = isWhite
+                      ? game.blackPlayer?.username
+                      : game.whitePlayer?.username;
+
+                    return (
+                      <tr
+                        key={game.id}
+                        className="group transition-colors hover:bg-white/[0.025]"
+                      >
+                        <td className="px-4 py-5">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 items-center justify-center border border-white/[0.08] bg-white/[0.025]">
+                              <span className="font-serif text-sm text-white/50">
+                                {opponent?.charAt(0).toUpperCase() || "?"}
+                              </span>
                             </div>
-                            <h3 className="text-lg font-bold text-slate-900">Create a Room</h3>
-                            <p className="text-xs leading-relaxed text-slate-500">Generate a unique 6-character room code to host a game with a friend.</p>
-                        </div>
-                        <button onClick={handleCreateRoom} className="mt-6 flex w-full items-center justify-center rounded-xl bg-slate-900 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-slate-800 active:scale-[0.99] cursor-pointer">
-                            Create Room
-                        </button>
-                    </div>
 
-                    <div className="relative flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-slate-300 hover:shadow-md">
-                        <div className="space-y-3">
-                            <div className="flex items-center justify-between">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-900">
-                                    <KeyRound className="h-5 w-5" />
-                                </div>
-                                <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-slate-600">JOIN MATCH</span>
-                            </div>
-                            <h3 className="text-lg font-bold text-slate-900">Join Existing Room</h3>
-                            <p className="text-xs leading-relaxed text-slate-500">Enter a 6-character room code from your opponent to join an active room.</p>
-                        </div>
-                        <button onClick={() => setIsJoinModalOpen(true)} className="mt-6 flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white py-2.5 text-sm font-semibold text-slate-700 shadow-xs transition-all hover:border-slate-300 hover:bg-slate-50 active:scale-[0.99] cursor-pointer">
-                            Join Room
-                        </button>
-                    </div>
-                </div>
+                            <span className="text-sm font-medium text-white/70">
+                              {opponent || "Unknown"}
+                            </span>
+                          </div>
+                        </td>
+
+                        <td className="px-4 py-5">
+                          <div className="flex items-center gap-2 text-xs text-white/35">
+                            <span
+                              className={`h-3 w-3 border ${isWhite
+                                ? "border-white/50 bg-[#f0ece3]"
+                                : "border-white/20 bg-[#292825]"
+                                }`}
+                            />
+
+                            {isWhite ? "White" : "Black"}
+                          </div>
+                        </td>
+
+                        <td className="px-4 py-5">
+                          <span
+                            className={`text-[10px] font-bold uppercase tracking-[0.18em] ${isDraw
+                              ? "text-white/40"
+                              : isWinner
+                                ? "text-emerald-400/80"
+                                : "text-red-400/70"
+                              }`}
+                          >
+                            {isDraw
+                              ? "Draw"
+                              : isWinner
+                                ? "Victory"
+                                : "Defeat"}
+                          </span>
+                        </td>
+
+                        <td className="px-4 py-5 text-xs text-white/20">
+                          {new Date(game.createdAt).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
+          )}
+        </section>
+      </div>
 
-            {/* Previous Games Table Section */}
-            <div className="space-y-4">
-                <h2 className="text-xl font-bold tracking-tight text-slate-900">Previous Games</h2>
-                {loadingHistory ? (
-                    <div className="p-8 text-center text-slate-400">Loading match history...</div>
-                ) : recentGames?.length === 0 ? (
-                    <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm font-medium text-slate-500 shadow-sm">
-                        <p>No completed games found. Play your first match to build your history!</p>
-                    </div>
-                ) : (
-                    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                        <table className="w-full text-left text-sm text-slate-700">
-                            <thead className="bg-slate-50 border-b border-slate-200 text-xs uppercase font-semibold text-slate-500">
-                                <tr>
-                                    <th className="px-4 py-3">White Player</th>
-                                    <th className="px-4 py-3">Black Player</th>
-                                    <th className="px-4 py-3">Result</th>
-                                    <th className="px-4 py-3">Date</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100">
-                                {recentGames.map((game) => {
-                                    const isWhite = game.whitePlayer?.id === user?.id;
-                                    const isWinner = game.winnerId === user?.id;
-                                    const isDraw = game.result.toLowerCase().includes("draw");
+      <JoinRoomModal
+        isOpen={isJoinModalOpen}
+        onClose={() => setIsJoinModalOpen(false)}
+      />
+    </main>
+  );
+};
 
-                                    return (
-                                        <tr
-                                            key={game.id}
-                                            className="cursor-pointer hover:bg-slate-50 transition-colors"
-                                        >
-                                            <td className="px-4 py-3">
-                                                <span className={isWhite ? "font-bold text-slate-900" : ""}>
-                                                    {game.whitePlayer?.username || "Unknown"}
-                                                </span>
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                <span className={!isWhite ? "font-bold text-slate-900" : ""}>
-                                                    {game.blackPlayer?.username || "Unknown"}
-                                                </span>
-                                            </td>
-                                            <td className="px-4 py-3">
-                                                <span
-                                                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${isDraw
-                                                        ? "bg-slate-100 text-slate-700 border border-slate-200"
-                                                        : isWinner
-                                                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                                            : "bg-rose-50 text-rose-700 border border-rose-200"
-                                                        }`}
-                                                >
-                                                    {isDraw ? "Draw" : isWinner ? "Victory" : "Defeat"} ({game.result})
-                                                </span>
-                                            </td>
-                                            <td className="px-4 py-3 text-slate-400 text-sm">
-                                                {new Date(game.createdAt).toLocaleDateString()}
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </div>
-
-            <JoinRoomModal isOpen={isJoinModalOpen} onClose={() => setIsJoinModalOpen(false)} />
-        </div>
-    );
+interface StatProps {
+  label: string;
+  value: number | string;
+  icon: React.ReactNode;
+  accent?: boolean;
 }
+
+const Stat = ({ label, value, icon, accent }: StatProps) => {
+  return (
+    <div className="border-r border-white/8 px-5 py-6 first:pl-0 last:border-r-0 lg:px-7">
+      <div className="flex items-center gap-2 text-white/20">
+        {icon}
+
+        <span className="text-[9px] font-semibold uppercase tracking-[0.22em]">
+          {label}
+        </span>
+      </div>
+
+      <div
+        className={`mt-3 font-serif text-3xl tracking-[-0.03em] ${accent ? "text-[#c7a96b]" : "text-white"
+          }`}
+      >
+        {value}
+      </div>
+    </div>
+  );
+};
