@@ -15,6 +15,10 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { GameScreen } from "../components/GameScreen";
+import {
+  StatSkeleton,
+  MatchHistorySkeleton,
+} from "../components/DashboardSkeleton";
 
 interface GameHistoryItem {
   id: string;
@@ -275,10 +279,9 @@ export const DashboardPage = () => {
   return (
     <main className="min-h-[calc(100vh-72px)] bg-[#0c0c0b] text-[#f5f2eb]">
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-10 lg:py-16">
-        <section className="grid gap-12 border-b border-white/[0.08] pb-12 lg:grid-cols-[1fr_auto] lg:items-end">
+        <section className="grid gap-12 border-b border-white/8 pb-12 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
-            <div className="mb-7 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/30">
-              <span className="h-px w-8 bg-[#c7a96b]" />
+            <div className="mb-7 flex items-center gap-3 text-[10px] font-semibold tracking-[0.3em] text-white/30">
               Player dashboard
             </div>
 
@@ -297,7 +300,7 @@ export const DashboardPage = () => {
             </p>
           </div>
 
-          <div className="relative border border-white/[0.09] bg-[#11110f] px-7 py-6 lg:min-w-[230px]">
+          <div className="relative border border-white/9 bg-[#11110f] px-7 py-6 lg:min-w-57.5">
             <div className="absolute left-0 top-0 h-full w-px bg-[#c7a96b]" />
 
             <div className="flex items-center gap-3">
@@ -324,7 +327,7 @@ export const DashboardPage = () => {
           <button
             type="button"
             onClick={() => setError(null)}
-            className="mt-8 flex w-full cursor-pointer items-center justify-between border border-red-400/20 bg-red-400/[0.05] px-5 py-4 text-left text-xs text-red-300 transition-colors hover:bg-red-400/[0.08]"
+            className="mt-8 flex w-full cursor-pointer items-center justify-between border border-red-400/20 bg-red-400/5 px-5 py-4 text-left text-xs text-red-300 transition-colors hover:bg-red-400/8"
           >
             <span className="flex items-center gap-3">
               <AlertCircle className="h-4 w-4 shrink-0" />
@@ -343,6 +346,7 @@ export const DashboardPage = () => {
               label="Total games"
               value={stats?.totalGames ?? 0}
               icon={<Gamepad2 className="h-4 w-4" />}
+              loading={loadingHistory}
             />
 
             <Stat
@@ -350,12 +354,14 @@ export const DashboardPage = () => {
               value={stats?.wins ?? 0}
               icon={<Award className="h-4 w-4" />}
               accent
+              loading={loadingHistory}
             />
 
             <Stat
               label="Defeats"
               value={stats?.losses ?? 0}
               icon={<XCircle className="h-4 w-4" />}
+              loading={loadingHistory}
             />
 
             <Stat
@@ -363,6 +369,7 @@ export const DashboardPage = () => {
               value={`${stats?.winRate ?? 0}%`}
               icon={<Zap className="h-4 w-4" />}
               accent
+              loading={loadingHistory}
             />
           </div>
         </section>
@@ -384,15 +391,15 @@ export const DashboardPage = () => {
             </div>
           </div>
 
-          <div className="grid gap-px overflow-hidden border border-white/[0.08] bg-white/[0.08] lg:grid-cols-[1.2fr_1fr]">
-            <div className="group relative flex min-h-[300px] flex-col justify-between bg-[#11110f] p-7 sm:p-9">
+          <div className="grid gap-px overflow-hidden border border-white/8 bg-white/8 lg:grid-cols-[1.2fr_1fr]">
+            <div className="group relative flex min-h-75 flex-col justify-between bg-[#11110f] p-7 sm:p-9">
               <div className="absolute right-8 top-8 text-[#c7a96b]/20 transition-colors group-hover:text-[#c7a96b]/40">
                 <Plus className="h-8 w-8" strokeWidth={1} />
               </div>
 
               <div>
                 <div className="mb-8 flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center border border-[#c7a96b]/25 bg-[#c7a96b]/[0.05]">
+                  <div className="flex h-9 w-9 items-center justify-center border border-[#c7a96b]/25 bg-[#c7a96b]/5">
                     <Plus className="h-4 w-4 text-[#c7a96b]" />
                   </div>
 
@@ -401,7 +408,7 @@ export const DashboardPage = () => {
                   </span>
                 </div>
 
-                <h3 className="font-serif text-3xl tracking-[-0.025em] text-white">
+                <h3 className="font-serif text-3xl tracking-tight text-white">
                   Create a room
                 </h3>
 
@@ -424,7 +431,7 @@ export const DashboardPage = () => {
             <div className="group flex min-h-75 flex-col justify-between bg-[#0f0f0e] p-7 sm:p-9">
               <div>
                 <div className="mb-8 flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center border border-white/[0.1] bg-white/[0.025]">
+                  <div className="flex h-9 w-9 items-center justify-center border border-white/10 bg-white/2.5">
                     <KeyRound className="h-4 w-4 text-white/45" />
                   </div>
 
@@ -433,7 +440,7 @@ export const DashboardPage = () => {
                   </span>
                 </div>
 
-                <h3 className="font-serif text-3xl tracking-[-0.025em] text-white">
+                <h3 className="font-serif text-3xl tracking-tight text-white">
                   Join a room
                 </h3>
 
@@ -446,7 +453,7 @@ export const DashboardPage = () => {
               <button
                 type="button"
                 onClick={() => setIsJoinModalOpen(true)}
-                className="group/button mt-10 flex w-full cursor-pointer items-center justify-between border border-white/[0.12] bg-transparent px-5 py-3.5 text-xs font-semibold text-white/70 transition-colors hover:border-white/25 hover:bg-white/[0.03] hover:text-white"
+                className="group/button mt-10 flex w-full cursor-pointer items-center justify-between border border-white/12 bg-transparent px-5 py-3.5 text-xs font-semibold text-white/70 transition-colors hover:border-white/25 hover:bg-white/3 hover:text-white"
               >
                 <span>Enter room code</span>
 
@@ -472,13 +479,9 @@ export const DashboardPage = () => {
           </div>
 
           {loadingHistory ? (
-            <div className="border-y border-white/[0.08] py-12 text-center">
-              <div className="text-[10px] uppercase tracking-[0.25em] text-white/20">
-                Loading match history
-              </div>
-            </div>
+            <MatchHistorySkeleton />
           ) : recentGames.length === 0 ? (
-            <div className="border border-white/[0.08] bg-[#11110f] px-6 py-12 text-center">
+            <div className="border border-white/8 bg-[#11110f] px-6 py-12 text-center">
               <Gamepad2 className="mx-auto h-6 w-6 text-white/15" />
 
               <p className="mt-4 text-sm text-white/30">
@@ -490,10 +493,10 @@ export const DashboardPage = () => {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto border-y border-white/[0.08]">
-              <table className="w-full min-w-[600px] text-left">
+            <div className="overflow-x-auto border-y border-white/8">
+              <table className="w-full min-w-150 text-left">
                 <thead>
-                  <tr className="border-b border-white/[0.08]">
+                  <tr className="border-b border-white/8">
                     <th className="px-4 py-4 text-[9px] font-semibold uppercase tracking-[0.22em] text-white/25">
                       Opponent
                     </th>
@@ -512,7 +515,7 @@ export const DashboardPage = () => {
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-white/[0.06]">
+                <tbody className="divide-y divide-white/6">
                   {recentGames.map((game) => {
                     const isWhite = game.whitePlayer?.id === user?.id;
                     const isWinner = game.winnerId === user?.id;
@@ -525,11 +528,11 @@ export const DashboardPage = () => {
                     return (
                       <tr
                         key={game.id}
-                        className="group transition-colors hover:bg-white/[0.025]"
+                        className="group transition-colors hover:bg-white/2.5"
                       >
                         <td className="px-4 py-5">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-8 w-8 items-center justify-center border border-white/[0.08] bg-white/[0.025]">
+                            <div className="flex h-8 w-8 items-center justify-center border border-white/8 bg-white/2.5">
                               <span className="font-serif text-sm text-white/50">
                                 {opponent?.charAt(0).toUpperCase() || "?"}
                               </span>
@@ -597,9 +600,10 @@ interface StatProps {
   value: number | string;
   icon: React.ReactNode;
   accent?: boolean;
+  loading?: boolean;
 }
 
-const Stat = ({ label, value, icon, accent }: StatProps) => {
+const Stat = ({ label, value, icon, accent, loading }: StatProps) => {
   return (
     <div className="border-r border-white/8 px-5 py-6 first:pl-0 last:border-r-0 lg:px-7">
       <div className="flex items-center gap-2 text-white/20">
@@ -610,12 +614,16 @@ const Stat = ({ label, value, icon, accent }: StatProps) => {
         </span>
       </div>
 
-      <div
-        className={`mt-3 font-serif text-3xl tracking-[-0.03em] ${accent ? "text-[#c7a96b]" : "text-white"
-          }`}
-      >
-        {value}
-      </div>
+      {loading ? (
+        <StatSkeleton />
+      ) : (
+        <div
+          className={`mt-3 font-serif text-3xl tracking-[-0.03em] ${accent ? "text-[#c7a96b]" : "text-white"
+            }`}
+        >
+          {value}
+        </div>
+      )}
     </div>
   );
 };

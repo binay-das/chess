@@ -62,8 +62,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onSuccess }) => {
 
       <div className="relative mx-auto grid w-full max-w-7xl items-center gap-16 px-6 py-16 lg:grid-cols-2 lg:px-10">
         <div className="hidden lg:block">
-          <div className="mb-8 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/30">
-            <span className="h-px w-8 bg-[#c7a96b]" />
+          <div className="mb-8 flex items-center gap-3 text-[10px] font-semibold tracking-[0.3em] text-white/30">
             Welcome back
           </div>
 
@@ -96,7 +95,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onSuccess }) => {
 
         <div className="mx-auto w-full max-w-md">
           <div className="mb-10 lg:hidden">
-            <div className="mb-5 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/30">
+            <div className="mb-5 flex items-center gap-3 text-[10px] font-semibold tracking-[0.3em] text-white/30">
               <span className="h-px w-7 bg-[#c7a96b]" />
               Welcome back
             </div>
