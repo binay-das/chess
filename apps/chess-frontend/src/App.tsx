@@ -62,12 +62,24 @@ export function App() {
 
         <Route
           path="/signin"
-          element={<SignInPage onSuccess={handleAuthSuccess} />}
+          element={
+            user ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <SignInPage onSuccess={handleAuthSuccess} />
+            )
+          }
         />
 
         <Route
           path="/signup"
-          element={<SignUpPage onSuccess={handleAuthSuccess} />}
+          element={
+            user ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <SignUpPage onSuccess={handleAuthSuccess} />
+            )
+          }
         />
 
         <Route
