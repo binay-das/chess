@@ -104,8 +104,6 @@ export const GameScreen = () => {
         <header className="mb-6 flex flex-col gap-5 border-b border-white/[0.08] pb-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <div className="mb-3 flex items-center gap-3">
-              <span className="h-px w-7 bg-[#c7a96b]" />
-
               <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-[#c7a96b]">
                 Live match
               </span>
@@ -119,20 +117,21 @@ export const GameScreen = () => {
               <button
                 type="button"
                 onClick={copyRoomCode}
-                className="group flex cursor-pointer items-center gap-3 border border-white/[0.09] bg-[#11110f] px-3 py-2 transition-colors hover:border-white/[0.16]"
+                title="Click to copy room code"
+                className="group flex cursor-pointer items-center gap-3.5 border border-[#c7a96b]/30 bg-[#11110f] px-4 py-2.5 transition-colors hover:border-[#c7a96b]/60 hover:bg-white/[0.03]"
               >
-                <span className="text-[8px] font-semibold uppercase tracking-[0.2em] text-white/25">
+                <span className="text-[9px] font-semibold uppercase tracking-[0.22em] text-[#c7a96b]">
                   Room
                 </span>
 
-                <span className="font-mono text-xs font-semibold tracking-[0.25em] text-white/70">
+                <span className="font-mono text-sm font-bold tracking-[0.28em] text-white">
                   {roomCode}
                 </span>
 
                 {copied ? (
-                  <Check className="h-3.5 w-3.5 text-[#c7a96b]" />
+                  <Check className="h-4 w-4 text-[#c7a96b]" />
                 ) : (
-                  <Copy className="h-3.5 w-3.5 text-white/25 transition-colors group-hover:text-white/60" />
+                  <Copy className="h-4 w-4 text-white/35 transition-colors group-hover:text-white/80" />
                 )}
               </button>
             </div>
@@ -190,43 +189,22 @@ export const GameScreen = () => {
         )}
 
         {status === "waiting" && (
-          <section className="mb-6 border border-white/[0.08] bg-[#11110f] px-6 py-10 text-center sm:px-10">
-            <div className="mx-auto mb-6 flex h-10 w-10 items-center justify-center border border-[#c7a96b]/25 bg-[#c7a96b]/[0.05]">
-              <Copy className="h-4 w-4 text-[#c7a96b]" />
-            </div>
+          <div className="mb-6 flex items-center gap-3 border border-[#c7a96b]/20 bg-[#c7a96b]/[0.04] px-4 py-3 text-xs text-white/70">
+            <span className="relative flex h-2 w-2 shrink-0">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#c7a96b] opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#c7a96b]" />
+            </span>
 
-            <p className="text-[9px] font-semibold uppercase tracking-[0.3em] text-[#c7a96b]">
-              Waiting for opponent
-            </p>
+            <span className="font-semibold text-white">
+              Waiting for opponent to join...
+            </span>
 
-            <h2 className="mt-3 font-serif text-3xl tracking-[-0.03em] text-white">
-              Your board is ready.
-            </h2>
+            <span className="hidden text-white/20 sm:inline">•</span>
 
-            <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-white/30">
+            <span className="hidden text-white/50 sm:inline">
               Share the room code with your opponent to begin the match.
-            </p>
-
-            <button
-              type="button"
-              onClick={copyRoomCode}
-              className="mx-auto mt-7 flex cursor-pointer items-center gap-4 border border-white/[0.1] bg-[#0c0c0b] px-6 py-4 transition-colors hover:border-[#c7a96b]/40"
-            >
-              <span className="font-mono text-2xl font-semibold tracking-[0.35em] text-white">
-                {roomCode}
-              </span>
-
-              {copied ? (
-                <Check className="h-4 w-4 text-[#c7a96b]" />
-              ) : (
-                <Copy className="h-4 w-4 text-white/25" />
-              )}
-            </button>
-
-            <p className="mt-4 text-[8px] uppercase tracking-[0.2em] text-white/15">
-              Click the code to copy
-            </p>
-          </section>
+            </span>
+          </div>
         )}
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
