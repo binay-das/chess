@@ -10,6 +10,7 @@ import {
   Swords,
 } from "lucide-react";
 import type { User } from "../api/auth";
+import { Footer } from "./Footer";
 
 interface HomeProps {
   user: User | null;
@@ -254,10 +255,7 @@ export const Home: React.FC<HomeProps> = ({ user }) => {
         </Link>
       </section>
 
-      <footer className="mx-auto flex max-w-7xl items-center justify-between border-t border-white/[0.07] px-6 py-8 text-[10px] uppercase tracking-[0.2em] text-white/20 lg:px-10">
-        <span>Checkmate</span>
-        <span>Built for the board</span>
-      </footer>
+      <Footer />
     </main>
   );
 };
