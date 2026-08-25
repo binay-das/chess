@@ -1,7 +1,177 @@
 @import "tailwindcss";
 
 @layer base {
-  body {
-    @apply bg-white text-slate-900 font-sans antialiased min-h-screen;
+  :root,
+  .dark {
+    --bg-main: #0c0c0b;
+    --bg-surface-1: #11110f;
+    --bg-surface-2: #151513;
+    --bg-surface-3: #181816;
+    --bg-surface-4: #0f0f0e;
+    --bg-surface-5: #121210;
+    --bg-header: rgba(12, 12, 11, 0.95);
+    --bg-input: #0c0c0b;
+    --bg-modal-backdrop: rgba(12, 12, 11, 0.85);
+
+    --text-primary: #f5f2eb;
+    --text-heading: #f4f0e7;
+    --text-bright: #ffffff;
+    --text-muted-90: rgba(255, 255, 255, 0.9);
+    --text-muted-80: rgba(255, 255, 255, 0.8);
+    --text-muted-75: rgba(255, 255, 255, 0.75);
+    --text-muted-70: rgba(255, 255, 255, 0.7);
+    --text-muted-65: rgba(255, 255, 255, 0.65);
+    --text-muted-60: rgba(255, 255, 255, 0.6);
+    --text-muted-55: rgba(255, 255, 255, 0.55);
+    --text-muted-50: rgba(255, 255, 255, 0.5);
+    --text-muted-45: rgba(255, 255, 255, 0.45);
+    --text-muted-40: rgba(255, 255, 255, 0.4);
+    --text-muted-35: rgba(255, 255, 255, 0.35);
+    --text-muted-30: rgba(255, 255, 255, 0.3);
+    --text-muted-25: rgba(255, 255, 255, 0.25);
+    --text-muted-20: rgba(255, 255, 255, 0.2);
+    --text-muted-15: rgba(255, 255, 255, 0.15);
+    --text-muted-10: rgba(255, 255, 255, 0.1);
+
+    --accent-gold: #c7a96b;
+    --accent-gold-hover: #e0c98e;
+
+    --btn-primary-bg: #e9e4d8;
+    --btn-primary-text: #11110f;
+    --btn-primary-hover: #ffffff;
+
+    --btn-profile-bg: #e9e4d8;
+    --btn-profile-text: #11110f;
+
+    --border-20: rgba(255, 255, 255, 0.2);
+    --border-15: rgba(255, 255, 255, 0.15);
+    --border-12: rgba(255, 255, 255, 0.12);
+    --border-10: rgba(255, 255, 255, 0.1);
+    --border-9: rgba(255, 255, 255, 0.09);
+    --border-8: rgba(255, 255, 255, 0.08);
+    --border-6: rgba(255, 255, 255, 0.06);
+    --border-5: rgba(255, 255, 255, 0.05);
+    --border-2: rgba(255, 255, 255, 0.025);
+
+    --dot-pattern: rgba(255, 255, 255, 0.035);
+    --glow-amber: rgba(245, 158, 11, 0.05);
+
+    --avatar-bg: #292925;
+    --table-hover: rgba(255, 255, 255, 0.025);
+    --board-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
   }
+
+  .light {
+    --bg-main: #f6f2ea;
+    --bg-surface-1: #efe9df;
+    --bg-surface-2: #e6dfd3;
+    --bg-surface-3: #ded6c8;
+    --bg-surface-4: #e6dfd3;
+    --bg-surface-5: #f2ebd8;
+    --bg-header: rgba(246, 242, 234, 0.95);
+    --bg-input: #fdfbf7;
+    --bg-modal-backdrop: rgba(246, 242, 234, 0.85);
+
+    --text-primary: #1c1917;
+    --text-heading: #1c1917;
+    --text-bright: #0c0a09;
+    --text-muted-90: rgba(28, 25, 23, 0.9);
+    --text-muted-80: rgba(28, 25, 23, 0.8);
+    --text-muted-75: rgba(28, 25, 23, 0.75);
+    --text-muted-70: rgba(28, 25, 23, 0.7);
+    --text-muted-65: rgba(28, 25, 23, 0.65);
+    --text-muted-60: rgba(28, 25, 23, 0.6);
+    --text-muted-55: rgba(28, 25, 23, 0.55);
+    --text-muted-50: rgba(28, 25, 23, 0.5);
+    --text-muted-45: rgba(28, 25, 23, 0.45);
+    --text-muted-40: rgba(28, 25, 23, 0.4);
+    --text-muted-35: rgba(28, 25, 23, 0.35);
+    --text-muted-30: rgba(28, 25, 23, 0.3);
+    --text-muted-25: rgba(28, 25, 23, 0.25);
+    --text-muted-20: rgba(28, 25, 23, 0.2);
+    --text-muted-15: rgba(28, 25, 23, 0.15);
+    --text-muted-10: rgba(28, 25, 23, 0.1);
+
+    --accent-gold: #b58832;
+    --accent-gold-hover: #9c7324;
+
+    --btn-primary-bg: #1c1917;
+    --btn-primary-text: #f6f2ea;
+    --btn-primary-hover: #38322e;
+
+    --btn-profile-bg: #1c1917;
+    --btn-profile-text: #f6f2ea;
+
+    --border-20: rgba(28, 25, 23, 0.25);
+    --border-15: rgba(28, 25, 23, 0.2);
+    --border-12: rgba(28, 25, 23, 0.16);
+    --border-10: rgba(28, 25, 23, 0.14);
+    --border-9: rgba(28, 25, 23, 0.12);
+    --border-8: rgba(28, 25, 23, 0.1);
+    --border-6: rgba(28, 25, 23, 0.08);
+    --border-5: rgba(28, 25, 23, 0.06);
+    --border-2: rgba(28, 25, 23, 0.03);
+
+    --dot-pattern: rgba(28, 25, 23, 0.06);
+    --glow-amber: rgba(181, 136, 50, 0.12);
+
+    --avatar-bg: #ded6c8;
+    --table-hover: rgba(28, 25, 23, 0.04);
+    --board-shadow: 0 10px 30px rgba(28, 25, 23, 0.15);
+  }
+
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    min-height: 100vh;
+    font-family: inherit;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+}
+
+.turn-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.turn-my-turn {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.turn-waiting {
+  background-color: var(--border-5);
+  color: var(--text-muted-50);
+  border: 1px solid var(--border-10);
+}
+
+.turn-pulse {
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 9999px;
+  background-color: currentColor;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.check-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.chessboard-status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }

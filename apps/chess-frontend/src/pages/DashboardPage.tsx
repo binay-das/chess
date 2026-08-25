@@ -277,46 +277,46 @@ export const DashboardPage = () => {
   const rating = user?.rating || 1200;
 
   return (
-    <main className="min-h-[calc(100vh-72px)] bg-[#0c0c0b] text-[#f5f2eb]">
+    <main className="min-h-[calc(100vh-72px)] bg-(--bg-main) text-(--text-primary) transition-colors duration-200">
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-10 lg:py-16">
-        <section className="grid gap-12 border-b border-white/8 pb-12 lg:grid-cols-[1fr_auto] lg:items-end">
+        <section className="grid gap-12 border-b border-(--border-8) pb-12 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
-            <div className="mb-7 flex items-center gap-3 text-[10px] font-semibold tracking-[0.3em] text-white/30">
+            <div className="mb-7 flex items-center gap-3 text-[10px] font-semibold tracking-[0.3em] text-(--text-muted-30)">
               Player dashboard
             </div>
 
-            <h1 className="max-w-3xl font-serif text-5xl leading-[0.95] tracking-[-0.045em] text-[#f5f2eb] sm:text-6xl lg:text-7xl">
+            <h1 className="max-w-3xl font-serif text-5xl leading-[0.95] tracking-[-0.045em] text-(--text-heading) sm:text-6xl lg:text-7xl">
               Welcome back,
               <br />
-              <span className="italic text-[#c7a96b]">
+              <span className="italic text-(--accent-gold)">
                 {user?.username || "player"}.
               </span>
             </h1>
 
-            <p className="mt-7 max-w-lg text-sm leading-7 text-white/35">
+            <p className="mt-7 max-w-lg text-sm leading-7 text-(--text-muted-35)">
               Your games. Your rating. Your next move.
-              <span className="mx-2 text-white/15">•</span>
+              <span className="mx-2 text-(--text-muted-15)">•</span>
               {user?.email}
             </p>
           </div>
 
-          <div className="relative border border-white/9 bg-[#11110f] px-7 py-6 lg:min-w-57.5">
-            <div className="absolute left-0 top-0 h-full w-px bg-[#c7a96b]" />
+          <div className="relative border border-(--border-9) bg-(--bg-surface-1) px-7 py-6 lg:min-w-57.5">
+            <div className="absolute left-0 top-0 h-full w-px bg-(--accent-gold)" />
 
             <div className="flex items-center gap-3">
-              <Trophy className="h-4 w-4 text-[#c7a96b]" />
+              <Trophy className="h-4 w-4 text-(--accent-gold)" />
 
-              <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-white/30">
+              <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-(--text-muted-30)">
                 Current rating
               </span>
             </div>
 
             <div className="mt-4 flex items-baseline gap-2">
-              <span className="font-serif text-4xl tracking-[-0.03em] text-white">
+              <span className="font-serif text-4xl tracking-[-0.03em] text-(--text-heading)">
                 {rating}
               </span>
 
-              <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/25">
+              <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-(--text-muted-25)">
                 Elo
               </span>
             </div>
@@ -340,7 +340,7 @@ export const DashboardPage = () => {
           </button>
         )}
 
-        <section className="mt-12 border-y border-white/8">
+        <section className="mt-12 border-y border-(--border-8)">
           <div className="grid grid-cols-2 lg:grid-cols-4">
             <Stat
               label="Total games"
@@ -377,42 +377,42 @@ export const DashboardPage = () => {
         <section className="mt-16">
           <div className="mb-7 flex items-end justify-between gap-6">
             <div>
-              <div className="mb-3 text-[9px] font-semibold uppercase tracking-[0.28em] text-[#c7a96b]">
+              <div className="mb-3 text-[9px] font-semibold uppercase tracking-[0.28em] text-(--accent-gold)">
                 The board
               </div>
 
-              <h2 className="font-serif text-4xl tracking-[-0.035em] text-white">
+              <h2 className="font-serif text-4xl tracking-[-0.035em] text-(--text-heading)">
                 Play
               </h2>
 
-              <p className="mt-2 text-sm text-white/30">
+              <p className="mt-2 text-sm text-(--text-muted-30)">
                 Choose how you want to enter the board.
               </p>
             </div>
           </div>
 
-          <div className="grid gap-px overflow-hidden border border-white/8 bg-white/8 lg:grid-cols-[1.2fr_1fr]">
-            <div className="group relative flex min-h-75 flex-col justify-between bg-[#11110f] p-7 sm:p-9">
-              <div className="absolute right-8 top-8 text-[#c7a96b]/20 transition-colors group-hover:text-[#c7a96b]/40">
+          <div className="grid gap-px overflow-hidden border border-(--border-8) bg-(--border-8) lg:grid-cols-[1.2fr_1fr]">
+            <div className="group relative flex min-h-75 flex-col justify-between bg-(--bg-surface-1) p-7 sm:p-9">
+              <div className="absolute right-8 top-8 text-(--accent-gold)/20 transition-colors group-hover:text-(--accent-gold)/40">
                 <Plus className="h-8 w-8" strokeWidth={1} />
               </div>
 
               <div>
                 <div className="mb-8 flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center border border-[#c7a96b]/25 bg-[#c7a96b]/5">
-                    <Plus className="h-4 w-4 text-[#c7a96b]" />
+                  <div className="flex h-9 w-9 items-center justify-center border border-(--accent-gold)/25 bg-(--accent-gold)/5">
+                    <Plus className="h-4 w-4 text-(--accent-gold)" />
                   </div>
 
-                  <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#c7a96b]">
+                  <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-(--accent-gold)">
                     Host match
                   </span>
                 </div>
 
-                <h3 className="font-serif text-3xl tracking-tight text-white">
+                <h3 className="font-serif text-3xl tracking-tight text-(--text-heading)">
                   Create a room
                 </h3>
 
-                <p className="mt-3 max-w-md text-sm leading-6 text-white/30">
+                <p className="mt-3 max-w-md text-sm leading-6 text-(--text-muted-30)">
                   Host a private match and invite an opponent with a room code.
                 </p>
               </div>
@@ -420,7 +420,7 @@ export const DashboardPage = () => {
               <button
                 type="button"
                 onClick={handleCreateRoom}
-                className="group/button mt-10 flex w-full cursor-pointer items-center justify-between border border-[#e9e4d8] bg-[#e9e4d8] px-5 py-3.5 text-xs font-bold text-[#11110f] transition-colors hover:bg-white"
+                className="group/button mt-10 flex w-full cursor-pointer items-center justify-between border border-(--btn-primary-bg) bg-(--btn-primary-bg) px-5 py-3.5 text-xs font-bold text-(--btn-primary-text) transition-colors hover:bg-(--btn-primary-hover)"
               >
                 <span>Create room</span>
 
@@ -428,23 +428,23 @@ export const DashboardPage = () => {
               </button>
             </div>
 
-            <div className="group flex min-h-75 flex-col justify-between bg-[#0f0f0e] p-7 sm:p-9">
+            <div className="group flex min-h-75 flex-col justify-between bg-(--bg-surface-4) p-7 sm:p-9">
               <div>
                 <div className="mb-8 flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center border border-white/10 bg-white/2.5">
-                    <KeyRound className="h-4 w-4 text-white/45" />
+                  <div className="flex h-9 w-9 items-center justify-center border border-(--border-10) bg-(--border-2)">
+                    <KeyRound className="h-4 w-4 text-(--text-muted-45)" />
                   </div>
 
-                  <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-white/30">
+                  <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-(--text-muted-30)">
                     Join match
                   </span>
                 </div>
 
-                <h3 className="font-serif text-3xl tracking-tight text-white">
+                <h3 className="font-serif text-3xl tracking-tight text-(--text-heading)">
                   Join a room
                 </h3>
 
-                <p className="mt-3 max-w-md text-sm leading-6 text-white/30">
+                <p className="mt-3 max-w-md text-sm leading-6 text-(--text-muted-30)">
                   Have a room code? Enter it and join your opponent on the
                   board.
                 </p>
@@ -453,7 +453,7 @@ export const DashboardPage = () => {
               <button
                 type="button"
                 onClick={() => setIsJoinModalOpen(true)}
-                className="group/button mt-10 flex w-full cursor-pointer items-center justify-between border border-white/12 bg-transparent px-5 py-3.5 text-xs font-semibold text-white/70 transition-colors hover:border-white/25 hover:bg-white/3 hover:text-white"
+                className="group/button mt-10 flex w-full cursor-pointer items-center justify-between border border-(--border-12) bg-transparent px-5 py-3.5 text-xs font-semibold text-(--text-muted-70) transition-colors hover:border-(--border-20) hover:bg-(--border-5) hover:text-(--text-primary)"
               >
                 <span>Enter room code</span>
 
@@ -465,15 +465,15 @@ export const DashboardPage = () => {
 
         <section className="mt-16 pb-12">
           <div className="mb-7">
-            <div className="mb-3 text-[9px] font-semibold uppercase tracking-[0.28em] text-[#c7a96b]">
+            <div className="mb-3 text-[9px] font-semibold uppercase tracking-[0.28em] text-(--accent-gold)">
               Match history
             </div>
 
-            <h2 className="font-serif text-4xl tracking-[-0.035em] text-white">
+            <h2 className="font-serif text-4xl tracking-[-0.035em] text-(--text-heading)">
               Recent games
             </h2>
 
-            <p className="mt-2 text-sm text-white/30">
+            <p className="mt-2 text-sm text-(--text-muted-30)">
               Your latest completed matches.
             </p>
           </div>
@@ -481,41 +481,41 @@ export const DashboardPage = () => {
           {loadingHistory ? (
             <MatchHistorySkeleton />
           ) : recentGames.length === 0 ? (
-            <div className="border border-white/8 bg-[#11110f] px-6 py-12 text-center">
-              <Gamepad2 className="mx-auto h-6 w-6 text-white/15" />
+            <div className="border border-(--border-8) bg-(--bg-surface-1) px-6 py-12 text-center">
+              <Gamepad2 className="mx-auto h-6 w-6 text-(--text-muted-15)" />
 
-              <p className="mt-4 text-sm text-white/30">
+              <p className="mt-4 text-sm text-(--text-muted-30)">
                 No completed games yet.
               </p>
 
-              <p className="mt-1 text-xs text-white/15">
+              <p className="mt-1 text-xs text-(--text-muted-15)">
                 Play your first match to build your history.
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto border-y border-white/8">
+            <div className="overflow-x-auto border-y border-(--border-8)">
               <table className="w-full min-w-150 text-left">
                 <thead>
-                  <tr className="border-b border-white/8">
-                    <th className="px-4 py-4 text-[9px] font-semibold uppercase tracking-[0.22em] text-white/25">
+                  <tr className="border-b border-(--border-8)">
+                    <th className="px-4 py-4 text-[9px] font-semibold uppercase tracking-[0.22em] text-(--text-muted-25)">
                       Opponent
                     </th>
 
-                    <th className="px-4 py-4 text-[9px] font-semibold uppercase tracking-[0.22em] text-white/25">
+                    <th className="px-4 py-4 text-[9px] font-semibold uppercase tracking-[0.22em] text-(--text-muted-25)">
                       Color
                     </th>
 
-                    <th className="px-4 py-4 text-[9px] font-semibold uppercase tracking-[0.22em] text-white/25">
+                    <th className="px-4 py-4 text-[9px] font-semibold uppercase tracking-[0.22em] text-(--text-muted-25)">
                       Result
                     </th>
 
-                    <th className="px-4 py-4 text-[9px] font-semibold uppercase tracking-[0.22em] text-white/25">
+                    <th className="px-4 py-4 text-[9px] font-semibold uppercase tracking-[0.22em] text-(--text-muted-25)">
                       Date
                     </th>
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-white/6">
+                <tbody className="divide-y divide-(--border-6)">
                   {recentGames.map((game) => {
                     const isWhite = game.whitePlayer?.id === user?.id;
                     const isWinner = game.winnerId === user?.id;
@@ -528,28 +528,28 @@ export const DashboardPage = () => {
                     return (
                       <tr
                         key={game.id}
-                        className="group transition-colors hover:bg-white/2.5"
+                        className="group transition-colors hover:bg-(--table-hover)"
                       >
                         <td className="px-4 py-5">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-8 w-8 items-center justify-center border border-white/8 bg-white/2.5">
-                              <span className="font-serif text-sm text-white/50">
+                            <div className="flex h-8 w-8 items-center justify-center border border-(--border-8) bg-(--border-2)">
+                              <span className="font-serif text-sm text-(--text-muted-50)">
                                 {opponent?.charAt(0).toUpperCase() || "?"}
                               </span>
                             </div>
 
-                            <span className="text-sm font-medium text-white/70">
+                            <span className="text-sm font-medium text-(--text-muted-70)">
                               {opponent || "Unknown"}
                             </span>
                           </div>
                         </td>
 
                         <td className="px-4 py-5">
-                          <div className="flex items-center gap-2 text-xs text-white/35">
+                          <div className="flex items-center gap-2 text-xs text-(--text-muted-35)">
                             <span
                               className={`h-3 w-3 border ${isWhite
                                 ? "border-white/50 bg-[#f0ece3]"
-                                : "border-white/20 bg-[#292825]"
+                                : "border-zinc-700 bg-[#292825]"
                                 }`}
                             />
 
@@ -560,7 +560,7 @@ export const DashboardPage = () => {
                         <td className="px-4 py-5">
                           <span
                             className={`text-[10px] font-bold uppercase tracking-[0.18em] ${isDraw
-                              ? "text-white/40"
+                              ? "text-(--text-muted-40)"
                               : isWinner
                                 ? "text-emerald-400/80"
                                 : "text-red-400/70"
@@ -574,7 +574,7 @@ export const DashboardPage = () => {
                           </span>
                         </td>
 
-                        <td className="px-4 py-5 text-xs text-white/20">
+                        <td className="px-4 py-5 text-xs text-(--text-muted-20)">
                           {new Date(game.createdAt).toLocaleDateString()}
                         </td>
                       </tr>
@@ -605,8 +605,8 @@ interface StatProps {
 
 const Stat = ({ label, value, icon, accent, loading }: StatProps) => {
   return (
-    <div className="border-r border-white/8 px-5 py-6 first:pl-0 last:border-r-0 lg:px-7">
-      <div className="flex items-center gap-2 text-white/20">
+    <div className="border-r border-(--border-8) px-5 py-6 first:pl-0 last:border-r-0 lg:px-7">
+      <div className="flex items-center gap-2 text-(--text-muted-20)">
         {icon}
 
         <span className="text-[9px] font-semibold uppercase tracking-[0.22em]">
@@ -618,7 +618,7 @@ const Stat = ({ label, value, icon, accent, loading }: StatProps) => {
         <StatSkeleton />
       ) : (
         <div
-          className={`mt-3 font-serif text-3xl tracking-[-0.03em] ${accent ? "text-[#c7a96b]" : "text-white"
+          className={`mt-3 font-serif text-3xl tracking-[-0.03em] ${accent ? "text-(--accent-gold)" : "text-(--text-heading)"
             }`}
         >
           {value}
