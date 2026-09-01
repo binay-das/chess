@@ -3,6 +3,7 @@ import { useAuthStore } from "../store/AuthStore";
 import { useGameStore } from "../store/GameStore";
 import { useDashboardStore } from "../store/DashboardStore";
 import { connectSocket, getSocket } from "../services/socket";
+import { soundEngine } from "../utils/audio";
 import { JoinRoomModal } from "../components/JoinRoomModal";
 import {
   Trophy,
@@ -176,6 +177,14 @@ export const DashboardPage = () => {
         move: data.move,
         isCheck: data.isCheck,
       });
+
+      if (data.isCheck) {
+        soundEngine.playCheck();
+      } else if (data.move?.captured) {
+        soundEngine.playCapture();
+      } else {
+        soundEngine.playMove();
+      }
     };
 
     const onGameOver = (data: GameOverDetails) => {
@@ -186,6 +195,7 @@ export const DashboardPage = () => {
         isDraw: data.isDraw,
         drawReason: data.drawReason,
       });
+      soundEngine.playGameOver();
     };
 
     const onGameRestored = (data: GameRestoredPayload) => {
