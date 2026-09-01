@@ -1,18 +1,14 @@
 import { Socket } from "socket.io";
 import jwt from "jsonwebtoken";
+import type { JwtPayload } from "@repo/types";
 
+export type { JwtPayload };
 
-export interface JwtPayload {
-  userId: string;
-  username: string;
-  email: string;
-}
-
-export interface AuthenticatedSocket extends Socket {
+export type AuthenticatedSocket = Socket & {
   data: {
     user: JwtPayload;
   };
-}
+};
 
 export function socketAuthMiddleware(socket: Socket, next: (err?: Error) => void): void {
   try {

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { GameOverModalProps, OfferModalProps } from "@repo/types";
 import { useAuthStore } from "../store/AuthStore";
 import { useGameStore } from "../store/GameStore";
 import { getSocket } from "../services/socket";
@@ -421,18 +422,6 @@ export const GameScreen = () => {
   );
 };
 
-interface GameOverModalProps {
-  gameOverDetails: {
-    isDraw?: boolean;
-    winnerId?: string;
-    winnerUsername?: string;
-    drawReason?: string;
-    winReason?: string;
-  };
-  userId?: string;
-  onRematch: () => void;
-  onLeave: () => void;
-}
 
 const GameOverModal = ({
   gameOverDetails,
@@ -502,16 +491,6 @@ const GameOverModal = ({
   );
 };
 
-interface OfferModalProps {
-  eyebrow: string;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  acceptLabel: string;
-  declineLabel: string;
-  onAccept: () => void;
-  onDecline: () => void;
-}
 
 const OfferModal = ({
   eyebrow,

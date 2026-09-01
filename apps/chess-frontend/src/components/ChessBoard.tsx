@@ -1,13 +1,9 @@
 import { Chess, type PieceSymbol, type Square } from "chess.js";
 import { Chessboard } from "react-chessboard";
+import type { CapturedPieces } from "@repo/types";
 import { useGameStore } from "../store/GameStore";
 import { useEffect, useMemo, useState } from "react";
 import { getSocket } from "../services/socket";
-
-interface CapturedPieces {
-    white: PieceSymbol[];
-    black: PieceSymbol[];
-}
 
 const INITIAL_PIECES: Record<PieceSymbol, number> = {
     p: 8,

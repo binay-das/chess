@@ -1,13 +1,8 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Crown, LogOut, Trophy } from "lucide-react";
-import type { User } from "../api/auth";
+import type { User, NavbarProps, NavLinkProps } from "@repo/types";
 import { ModeToggle } from "./mode-toggle";
-
-interface NavbarProps {
-  user: User | null;
-  onSignOut: () => void;
-}
 
 export const Navbar: React.FC<NavbarProps> = ({ user, onSignOut }) => {
   const location = useLocation();
@@ -143,11 +138,6 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onSignOut }) => {
   );
 };
 
-interface NavLinkProps {
-  to: string;
-  active: boolean;
-  children: React.ReactNode;
-}
 
 const NavLink: React.FC<NavLinkProps> = ({ to, active, children }) => {
   return (

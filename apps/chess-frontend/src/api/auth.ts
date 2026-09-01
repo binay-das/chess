@@ -1,15 +1,6 @@
+import type { AuthResponse } from "@repo/types";
+
 const API_URL = import.meta.env.VITE_API_URL;
-
-import type { User } from "../types/auth";
-export type { User };
-
-export interface AuthResponse {
-  success: boolean;
-  message: string;
-  token?: string;
-  user?: User;
-  error?: unknown;
-}
 
 export async function signUpApi(data: { username: string; email: string; password: string }): Promise<AuthResponse> {
   try {

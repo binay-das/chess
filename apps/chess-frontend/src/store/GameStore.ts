@@ -1,32 +1,7 @@
 import { create } from "zustand";
+import type { MoveRecord, GameOverDetails, RoomPlayer as PlayerInfo } from "@repo/types";
 
-
-export interface PlayerInfo {
-    userId: string;
-    username: string;
-    color: "white" | "black";
-    isDisconnected: boolean;
-}
-
-export interface MoveRecord {
-    from: string;
-    to: string;
-    san: string;
-    piece?: string;
-    captured?: string;
-    promotion?: string;
-    by?: string;
-    fenAfterMove: string;
-    timestamp: string | Date;
-}
-
-export interface GameOverDetails {
-    winnerId?: string;
-    winnerUsername?: string;
-    winReason?: "checkmate" | "resign" | "disconnect" | "timeout";
-    isDraw?: boolean;
-    drawReason?: string;
-}
+export type { PlayerInfo, MoveRecord, GameOverDetails };
 
 export interface GameState {
     roomCode: string | null;

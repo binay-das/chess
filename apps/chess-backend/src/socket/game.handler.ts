@@ -252,7 +252,7 @@ export function gameHandler(io: Server, socket: Socket) {
             if (!room || room.status !== "playing") return;
 
             const opponent = room.players.find((p) => p.userId !== userId);
-            if (opponent) {
+            if (opponent?.socketId) {
                 const opponentSocket = io.sockets.sockets.get(opponent.socketId);
                 if (opponentSocket) {
                     opponentSocket.emit("game:draw_offered", {
@@ -292,7 +292,7 @@ export function gameHandler(io: Server, socket: Socket) {
                     console.error("[GameService] Error persisting draw game:", err)
                 );
             } else {
-                if (opponent) {
+                if (opponent?.socketId) {
                     const opponentSocket = io.sockets.sockets.get(opponent.socketId);
                     if (opponentSocket) {
                         opponentSocket.emit("game:draw_declined");
@@ -313,7 +313,7 @@ export function gameHandler(io: Server, socket: Socket) {
             if (!room) return;
 
             const opponent = room.players.find((p) => p.userId !== userId);
-            if (opponent) {
+            if (opponent?.socketId) {
                 const opponentSocket = io.sockets.sockets.get(opponent.socketId);
                 if (opponentSocket) {
                     opponentSocket.emit("game:rematch_offered", {
@@ -367,7 +367,7 @@ export function gameHandler(io: Server, socket: Socket) {
                     })),
                 });
             } else {
-                if (opponent) {
+                if (opponent?.socketId) {
                     const opponentSocket = io.sockets.sockets.get(opponent.socketId);
                     if (opponentSocket) {
                         opponentSocket.emit("game:rematch_declined");

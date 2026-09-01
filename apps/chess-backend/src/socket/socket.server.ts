@@ -5,17 +5,11 @@ import { gameHandler } from "./game.handler";
 import { handleMatchmaking } from "./matchmaking.handler";
 import { socketAuthMiddleware } from "./socket.auth";
 
-interface User {
-    userId: string,
-    username: string,
-    email: string,
-    socketId: string,
-    connectedAt: Date
-}
+import type { ConnectedUser } from "@repo/types";
 
 let io: SocketIOServer | null = null;
 
-const users = new Map<string, User>();
+const users = new Map<string, ConnectedUser>();
 
 
 export const initSocketServer = (

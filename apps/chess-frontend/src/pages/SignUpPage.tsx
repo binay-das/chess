@@ -9,15 +9,12 @@ import {
   UserPlus,
 } from "lucide-react";
 
-import { signUpApi, type User } from "../api/auth";
+import type { User, SignUpPageProps, SignUpStatProps as StatProps, FormFieldProps } from "@repo/types";
+import { signUpApi } from "../api/auth";
 import {
   registerSchema,
   type RegisterFormData,
 } from "../schemas/auth";
-
-interface SignUpPageProps {
-  onSuccess?: (user: User, token: string) => void;
-}
 
 export const SignUpPage: React.FC<SignUpPageProps> = ({ onSuccess }) => {
   const navigate = useNavigate();
@@ -216,11 +213,6 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onSuccess }) => {
   );
 };
 
-interface StatProps {
-  number: string;
-  title: string;
-  description: string;
-}
 
 const Stat: React.FC<StatProps> = ({
   number,
@@ -246,11 +238,6 @@ const Stat: React.FC<StatProps> = ({
   );
 };
 
-interface FormFieldProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
-  label: string;
-  error?: string;
-}
 
 const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
   ({ label, error, ...props }, ref) => {

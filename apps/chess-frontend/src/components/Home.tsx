@@ -9,12 +9,8 @@ import {
   Flame,
   Swords,
 } from "lucide-react";
-import type { User } from "../api/auth";
+import type { User, HomeProps, FeatureProps } from "@repo/types";
 import { Footer } from "./Footer";
-
-interface HomeProps {
-  user: User | null;
-}
 
 export const Home: React.FC<HomeProps> = ({ user }) => {
   useEffect(() => {
@@ -259,12 +255,6 @@ export const Home: React.FC<HomeProps> = ({ user }) => {
   );
 };
 
-interface FeatureProps {
-  number: string;
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}
 
 const Feature: React.FC<FeatureProps> = ({
   number,

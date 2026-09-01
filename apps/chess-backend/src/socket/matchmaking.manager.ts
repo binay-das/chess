@@ -1,14 +1,9 @@
 import type { Server, Socket } from "socket.io";
+import type { QueuedPlayer as SharedQueuedPlayer } from "@repo/types";
 import { createRoom, joinRoom } from "./room.manager";
 import { startGameTimer } from "./timer.manager";
 
-// queue of { userId, username, socket }
-interface QueuedPlayer {
-    userId: string;
-    username: string;
-    socket: Socket;
-    joinedAt: number;
-}
+type QueuedPlayer = SharedQueuedPlayer & { socket: Socket };
 
 const queue: QueuedPlayer[] = [];
 

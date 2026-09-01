@@ -1,11 +1,7 @@
 
-export interface User {
-    id: string;
-    username: string;
-    email: string;
-    rating: number;
-    createdAt?: string;
-}
+import type { User } from "@repo/types";
+
+export type { User };
 
 export interface AuthState {
     user: User | null;

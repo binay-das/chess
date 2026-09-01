@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { DashboardStatProps as StatProps } from "@repo/types";
 import { useAuthStore } from "../store/AuthStore";
 import { useGameStore } from "../store/GameStore";
 import { useDashboardStore } from "../store/DashboardStore";
@@ -22,64 +23,17 @@ import {
   MatchHistorySkeleton,
 } from "../components/DashboardSkeleton";
 
-import type { PlayerInfo, MoveRecord, GameOverDetails } from "../store/GameStore";
-
-interface RoomEventPayload {
-  roomCode?: string;
-  status?: "waiting" | "playing" | "finished";
-  players?: PlayerInfo[];
-  game?: {
-    fen: string;
-    pgn: string;
-    turn: "white" | "black";
-    moveHistory?: MoveRecord[];
-  };
-  room?: {
-    roomCode?: string;
-    status?: "waiting" | "playing" | "finished";
-    players?: PlayerInfo[];
-    game?: {
-      fen: string;
-      pgn: string;
-      turn: "white" | "black";
-      moveHistory?: MoveRecord[];
-    };
-  };
-}
-
-interface GameStartedPayload {
-  roomCode: string;
-  fen: string;
-  pgn?: string;
-  turn: "white" | "black";
-  players?: PlayerInfo[];
-}
-
-interface GameMovedPayload {
-  fen: string;
-  pgn: string;
-  turn: "white" | "black";
-  move: MoveRecord;
-  isCheck?: boolean;
-}
-
-interface GameRestoredPayload {
-  roomCode: string;
-  status: "waiting" | "playing" | "finished";
-  players: PlayerInfo[];
-  fen: string;
-  pgn: string;
-  turn: "white" | "black";
-  moveHistory?: MoveRecord[];
-}
-
-interface OfferPayload {
-  offeredBy: { userId: string; username: string };
-}
-
-interface ErrorPayload {
-  error?: string;
-}
+import type {
+  RoomEventPayload,
+  GameStartedPayload,
+  GameMovedPayload,
+  GameRestoredPayload,
+  OfferPayload,
+  ErrorPayload,
+  RoomPlayer as PlayerInfo,
+  MoveRecord,
+  GameOverDetails
+} from "@repo/types";
 
 export const DashboardPage = () => {
   const { user } = useAuthStore();
@@ -698,13 +652,6 @@ export const DashboardPage = () => {
   );
 };
 
-interface StatProps {
-  label: string;
-  value: number | string;
-  icon: React.ReactNode;
-  accent?: boolean;
-  loading?: boolean;
-}
 
 const Stat = ({ label, value, icon, accent, loading }: StatProps) => {
   return (

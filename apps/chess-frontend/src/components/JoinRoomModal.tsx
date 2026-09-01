@@ -1,11 +1,7 @@
 import { useState } from "react";
+import type { JoinRoomModalProps } from "@repo/types";
 import { getSocket } from "../services/socket";
 import { X, AlertCircle, KeyRound, ArrowUpRight } from "lucide-react";
-
-interface JoinRoomModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
 
 export const JoinRoomModal = ({ isOpen, onClose }: JoinRoomModalProps) => {
   const [roomCode, setRoomCode] = useState<string>("");

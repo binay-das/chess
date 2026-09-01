@@ -3,13 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, ArrowUpRight, Crown, LogIn } from "lucide-react";
-
-import { signInApi, type User } from "../api/auth";
+import type { User, SignInPageProps } from "@repo/types";
 import { loginSchema, type LoginFormData } from "../schemas/auth";
-
-interface SignInPageProps {
-  onSuccess?: (user: User, token: string) => void;
-}
+import { signInApi } from "../api/auth";
 
 export const SignInPage: React.FC<SignInPageProps> = ({ onSuccess }) => {
   const navigate = useNavigate();
