@@ -96,8 +96,8 @@ export const DashboardPage = () => {
     error: gameError,
   } = useGameStore();
 
-  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
-  const [isFindingMatch, setIsFindingMatch] = useState(false);
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState<boolean>(false);
+  const [isFindingMatch, setIsFindingMatch] = useState<boolean>(false);
   const { stats, recentGames, loadingHistory, fetchDashboardData } = useDashboardStore();
 
   const handleFindMatch = () => {

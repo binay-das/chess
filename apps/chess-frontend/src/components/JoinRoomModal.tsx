@@ -8,7 +8,7 @@ interface JoinRoomModalProps {
 }
 
 export const JoinRoomModal = ({ isOpen, onClose }: JoinRoomModalProps) => {
-  const [roomCode, setRoomCode] = useState("");
+  const [roomCode, setRoomCode] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) return null;

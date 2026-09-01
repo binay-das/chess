@@ -4,7 +4,7 @@ import { useTheme } from "../components/theme-provider";
 
 export function ModeToggle() {
   const { theme, setTheme } = useTheme();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

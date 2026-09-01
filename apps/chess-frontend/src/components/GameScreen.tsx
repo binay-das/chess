@@ -37,7 +37,7 @@ export const GameScreen = () => {
     timers,
   } = useGameStore();
 
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<boolean>(false);
 
   const copyRoomCode = () => {
     if (roomCode) {
