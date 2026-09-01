@@ -72,6 +72,7 @@ export const calculatePlayerStats = async (userId: string) => {
             }
         }
     } catch (error) {
-
+        console.error("[playerStats] Error calculating player stats:", error);
+        return null;
     }
-}
+};

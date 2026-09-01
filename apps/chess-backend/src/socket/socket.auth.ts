@@ -31,7 +31,7 @@ export function socketAuthMiddleware(socket: Socket, next: (err?: Error) => void
     socket.data.user = decoded;
 
     next();
-  } catch (error) {
+  } catch {
     return next(new Error("Authentication error: Invalid or expired token"));
   }
 }

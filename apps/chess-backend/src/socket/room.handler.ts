@@ -27,10 +27,10 @@ export function roomHandler(io: Server, socket: Socket) {
 
         } catch (error) {
             console.log(error);
+            const msg = error instanceof Error ? error.message : "Failed to create room";
             socket.emit("error", {
                 message: "Failed to create room",
-                // @ts-ignore
-                error: error.message
+                error: msg
             });
         }
     })
@@ -76,14 +76,14 @@ export function roomHandler(io: Server, socket: Socket) {
 
         } catch (error) {
             console.error("[Room] Error joining room:", error);
-            // @ts-ignore
-            socket.emit("room:error", { error: error.message || "Failed to join room" });
+            const msg = error instanceof Error ? error.message : "Failed to join room";
+            socket.emit("room:error", { error: msg });
         }
     })
 
     socket.on("room:leave", async (payload?: { roomCode?: string }) => {
         try {
-            let roomCode = payload?.roomCode;
+            const roomCode = payload?.roomCode;
 
             if (!roomCode) {
                 socket.emit("room:error", { error: "Not currently in any room" });
@@ -118,9 +118,10 @@ export function roomHandler(io: Server, socket: Socket) {
             }
 
             console.log(`[Room] ${username} left room ${roomCode}`);
-        } catch (error: any) {
+        } catch (error) {
             console.error("[Room] Error leaving room:", error);
-            socket.emit("room:error", { error: error.message || "Failed to leave room" });
+            const msg = error instanceof Error ? error.message : "Failed to leave room";
+            socket.emit("room:error", { error: msg });
         }
     });
 }

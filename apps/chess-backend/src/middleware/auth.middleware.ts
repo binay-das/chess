@@ -41,8 +41,8 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
         req.user = decoded;
         console.log("Token is verified successfully...");
         next();
-    } catch (error) {
-        console.log("Token is missing or invalid");
+    } catch {
+        console.log("Token verification failed");
         return res.status(401).json({
             success: false,
             message: "Authorization token is missing or invalid"

@@ -1,20 +1,18 @@
 import { GameResult, PieceColor } from "../../generated/prisma/enums";
 import { prisma } from "../lib/prisma";
+import type { Room, RoomPlayer, MoveRecord } from "../types/room";
 
-
-export async function persistCompletedGame(room: any) {
-    const { roomCode, players, game, createdAt } = room;
-
+export async function persistCompletedGame(room: Room) {
     try {
         if (!room || !room.game) {
             console.error("[GameService] Cannot persist game: Room or game state missing.");
             return;
         }
 
+        const { roomCode, players, game, createdAt } = room;
 
-
-        const whitePlayer = players.find((p: any) => p.color === "white" || p.color === "w");
-        const blackPlayer = players.find((p: any) => p.color === "black" || p.color === "b");
+        const whitePlayer = players.find((p: RoomPlayer) => p.color === "white");
+        const blackPlayer = players.find((p: RoomPlayer) => p.color === "black");
         if (!whitePlayer || !blackPlayer) {
             console.error("[GameService] Cannot persist game: Players missing.", players);
             return;
@@ -71,9 +69,9 @@ export async function persistCompletedGame(room: any) {
                 startedAt: createdAt || new Date(),
                 endedAt: new Date(),
                 moves: {
-                    create: (game.moveHistory || []).map((m: any, idx: any) => {
-                        const player = players.find((p: any) => p.userId === m.by);
-                        const playerColorEnum = (player?.color === "white" || player?.color === "w") ? PieceColor.WHITE : PieceColor.BLACK;
+                    create: (game.moveHistory || []).map((m: MoveRecord, idx: number) => {
+                        const player = players.find((p: RoomPlayer) => p.userId === m.by);
+                        const playerColorEnum = player?.color === "white" ? PieceColor.WHITE : PieceColor.BLACK;
 
                         return {
                             moveNumber: idx + 1,
@@ -97,7 +95,7 @@ export async function persistCompletedGame(room: any) {
         console.log(`[GameService] Game ${roomCode} successfully persisted to database! ID: ${persistedGame.id}`);
         return persistedGame;
     } catch (error) {
-        console.error(`[GameService] Error persisting completed game for room ${roomCode}:`, error);
+        console.error(`[GameService] Error persisting completed game for room ${room?.roomCode}:`, error);
         return null;
     }
 }

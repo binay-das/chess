@@ -7,7 +7,7 @@ import { SignInPage } from "./pages/SignInPage";
 import { SignUpPage } from "./pages/SignUpPage";
 import { DashboardPage } from "./pages/DashboardPage";
 
-import type { User } from "./api/auth";
+import type { User } from "./types/auth";
 import { useAuthStore } from "./store/AuthStore";
 
 export function App() {
@@ -29,7 +29,7 @@ export function App() {
 
   useEffect(() => {
     if (token && user) {
-      useAuthStore.getState().setAuth(user as any, token);
+      useAuthStore.getState().setAuth(user, token);
     }
   }, [token, user]);
 
@@ -37,7 +37,7 @@ export function App() {
     setUser(userData);
     setToken(authToken);
 
-    useAuthStore.getState().setAuth(userData as any, authToken);
+    useAuthStore.getState().setAuth(userData, authToken);
 
     localStorage.setItem("token", authToken);
     localStorage.setItem("user", JSON.stringify(userData));

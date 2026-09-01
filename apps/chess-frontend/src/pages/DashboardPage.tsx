@@ -20,6 +20,65 @@ import {
   MatchHistorySkeleton,
 } from "../components/DashboardSkeleton";
 
+import type { PlayerInfo, MoveRecord, GameOverDetails } from "../store/GameStore";
+
+interface RoomEventPayload {
+  roomCode?: string;
+  status?: "waiting" | "playing" | "finished";
+  players?: PlayerInfo[];
+  game?: {
+    fen: string;
+    pgn: string;
+    turn: "white" | "black";
+    moveHistory?: MoveRecord[];
+  };
+  room?: {
+    roomCode?: string;
+    status?: "waiting" | "playing" | "finished";
+    players?: PlayerInfo[];
+    game?: {
+      fen: string;
+      pgn: string;
+      turn: "white" | "black";
+      moveHistory?: MoveRecord[];
+    };
+  };
+}
+
+interface GameStartedPayload {
+  roomCode: string;
+  fen: string;
+  pgn?: string;
+  turn: "white" | "black";
+  players?: PlayerInfo[];
+}
+
+interface GameMovedPayload {
+  fen: string;
+  pgn: string;
+  turn: "white" | "black";
+  move: MoveRecord;
+  isCheck?: boolean;
+}
+
+interface GameRestoredPayload {
+  roomCode: string;
+  status: "waiting" | "playing" | "finished";
+  players: PlayerInfo[];
+  fen: string;
+  pgn: string;
+  turn: "white" | "black";
+  moveHistory?: MoveRecord[];
+}
+
+interface OfferPayload {
+  offeredBy: { userId: string; username: string };
+}
+
+interface ErrorPayload {
+  error?: string;
+}
+
 interface GameHistoryItem {
   id: string;
   whitePlayer: { id: string; username: string };
@@ -56,53 +115,53 @@ export const DashboardPage = () => {
   const [recentGames, setRecentGames] = useState<GameHistoryItem[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
 
-  const loadDasboardData = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
-      const baseUrl = import.meta.env.VITE_API_URL;
-
-      // Fetch Profile & Stats
-      const profileRes = await fetch(`${baseUrl}/users/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (profileRes.ok) {
-        const result = await profileRes.json();
-
-        if (result.data?.stats) {
-          setStats(result.data.stats);
-        }
-      }
-
-      // Fetch Games History
-      const gamesRes = await fetch(`${baseUrl}/games`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (gamesRes.ok) {
-        const result = await gamesRes.json();
-
-        if (result.games) {
-          setRecentGames(result.games);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching dashboard data:", error);
-    } finally {
-      setLoadingHistory(false);
-    }
-  };
-
   useEffect(() => {
-    loadDasboardData();
+    const loadDashboardData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const baseUrl = import.meta.env.VITE_API_URL;
+
+        // Fetch Profile & Stats
+        const profileRes = await fetch(`${baseUrl}/users/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (profileRes.ok) {
+          const result = await profileRes.json();
+
+          if (result.data?.stats) {
+            setStats(result.data.stats);
+          }
+        }
+
+        // Fetch Games History
+        const gamesRes = await fetch(`${baseUrl}/games`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (gamesRes.ok) {
+          const result = await gamesRes.json();
+
+          if (result.games) {
+            setRecentGames(result.games);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        setLoadingHistory(false);
+      }
+    };
+
+    loadDashboardData();
   }, []);
 
   useEffect(() => {
@@ -112,18 +171,22 @@ export const DashboardPage = () => {
 
     socket.emit("game:reconnect");
 
-    const onRoomCreated = (data: any) => {
+
+
+    const onRoomCreated = (data: RoomEventPayload) => {
+      if (!data.roomCode && !data.room?.roomCode) return;
       setRoomState({
-        roomCode: data.roomCode,
+        roomCode: data.roomCode || data.room?.roomCode || "",
         status: data.room?.status || "waiting",
         players: data.players || data.room?.players || [],
         currentUserId: user.id,
       });
     };
 
-    const onRoomJoined = (data: any) => {
+    const onRoomJoined = (data: RoomEventPayload) => {
+      if (!data.roomCode && !data.room?.roomCode) return;
       setRoomState({
-        roomCode: data.roomCode,
+        roomCode: data.roomCode || data.room?.roomCode || "",
         status: data.room?.status || "playing",
         players: data.players || data.room?.players || [],
         currentUserId: user.id,
@@ -131,7 +194,7 @@ export const DashboardPage = () => {
       });
     };
 
-    const onRoomState = (data: any) => {
+    const onRoomState = (data: RoomEventPayload) => {
       const room = data.room || data;
 
       if (room && room.roomCode) {
@@ -141,7 +204,7 @@ export const DashboardPage = () => {
           room.status === "finished" ||
             (currentStatus === "finished" && room.status !== "playing")
             ? "finished"
-            : room.status;
+            : room.status || "waiting";
 
         setRoomState({
           roomCode: room.roomCode,
@@ -153,7 +216,7 @@ export const DashboardPage = () => {
       }
     };
 
-    const onGameStarted = (data: any) => {
+    const onGameStarted = (data: GameStartedPayload) => {
       setRoomState({
         roomCode: data.roomCode,
         status: "playing",
@@ -167,7 +230,7 @@ export const DashboardPage = () => {
       });
     };
 
-    const onGameMoved = (data: any) => {
+    const onGameMoved = (data: GameMovedPayload) => {
       updateMove({
         fen: data.fen,
         pgn: data.pgn,
@@ -177,7 +240,7 @@ export const DashboardPage = () => {
       });
     };
 
-    const onGameOver = (data: any) => {
+    const onGameOver = (data: GameOverDetails) => {
       setGameOver({
         winnerId: data.winnerId,
         winnerUsername: data.winnerUsername,
@@ -187,7 +250,7 @@ export const DashboardPage = () => {
       });
     };
 
-    const onGameRestored = (data: any) => {
+    const onGameRestored = (data: GameRestoredPayload) => {
       setRoomState({
         roomCode: data.roomCode,
         status: data.status,
@@ -202,7 +265,7 @@ export const DashboardPage = () => {
       });
     };
 
-    const onDrawOffered = (data: any) => {
+    const onDrawOffered = (data: OfferPayload) => {
       setDrawOfferedBy(data.offeredBy);
     };
 
@@ -210,7 +273,7 @@ export const DashboardPage = () => {
       alert("Your draw offer was declined.");
     };
 
-    const onRematchOffered = (data: any) => {
+    const onRematchOffered = (data: OfferPayload) => {
       setRematchOfferedBy(data.offeredBy);
     };
 
@@ -218,7 +281,7 @@ export const DashboardPage = () => {
       alert("Your rematch request was declined.");
     };
 
-    const onError = (data: any) => {
+    const onError = (data: ErrorPayload) => {
       setError(data.error || "An error occurred");
     };
 

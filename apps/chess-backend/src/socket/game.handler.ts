@@ -1,8 +1,8 @@
 import { Server, Socket } from "socket.io";
 import { reconnectPlayer, sanitizeRoom, getRoom } from "./room.manager";
 import { persistCompletedGame } from "../services/game.service";
-import { Room, RoomPlayer } from "../types/room";
-
+import { RoomPlayer } from "../types/room";
+import { Chess } from "chess.js";
 
 export function gameHandler(io: Server, socket: Socket) {
     const { userId, username } = socket.data.user;
@@ -45,9 +45,10 @@ export function gameHandler(io: Server, socket: Socket) {
                 reconnectedUser: { userId, username, color: player.color },
                 room: sanitizeRoom(room),
             });
-        } catch (error: any) {
+        } catch (error) {
             console.error("[Game] Error processing game reconnection:", error);
-            socket.emit("game:error", { error: error.message || "Failed to reconnect to game" });
+            const msg = error instanceof Error ? error.message : "Failed to reconnect to game";
+            socket.emit("game:error", { error: msg });
         }
     })
 
@@ -83,8 +84,9 @@ export function gameHandler(io: Server, socket: Socket) {
                     to: payload.to,
                     promotion: payload.promotion || "q"
                 })
-            } catch (err: any) {
-                socket.emit("game:error", { error: err?.message || "Invalid move" });
+            } catch (err) {
+                const msg = err instanceof Error ? err.message : "Invalid move";
+                socket.emit("game:error", { error: msg });
                 return;
             }
 
@@ -174,8 +176,8 @@ export function gameHandler(io: Server, socket: Socket) {
             }
         } catch (error) {
             console.error("[Game] Error executing move:", error);
-            // @ts-ignore
-            socket.emit("game:error", { error: error.message || "Failed to process resignation" });
+            const msg = error instanceof Error ? error.message : "Failed to process move";
+            socket.emit("game:error", { error: msg });
         }
 
     })
@@ -231,8 +233,8 @@ export function gameHandler(io: Server, socket: Socket) {
             );
         } catch (error) {
             console.error("[Game] Error processing resignation:", error);
-            // @ts-ignore
-            socket.emit("game:error", { error: error.message || "Failed to process resignation" });
+            const msg = error instanceof Error ? error.message : "Failed to process resignation";
+            socket.emit("game:error", { error: msg });
         }
     });
 
@@ -335,7 +337,6 @@ export function gameHandler(io: Server, socket: Socket) {
                 });
 
                 // Start fresh game
-                const { Chess } = require("chess.js");
                 const newChess = new Chess();
                 room.status = "playing";
                 room.game = {

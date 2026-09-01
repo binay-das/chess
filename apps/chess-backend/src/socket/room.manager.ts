@@ -2,7 +2,7 @@ import { Chess } from "chess.js";
 import { generateRoomCode } from "../lib/roomId"
 import type { Room, RoomPlayer } from "../types/room";
 
-let rooms: Map<string, Room> = new Map();
+const rooms: Map<string, Room> = new Map();
 
 export const createRoom = (hostUserId: string, hostUsername: string, hostSocketId: string) => {
     leaveUserRooms(hostUserId, hostSocketId);
@@ -273,6 +273,7 @@ export const sanitizeRoom = (room: Room | null | undefined) => {
     if (!game) {
         return { ...restRoom };
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { chess, ...restGame } = game;
     return {
         ...restRoom,

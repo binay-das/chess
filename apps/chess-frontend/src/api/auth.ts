@@ -1,12 +1,7 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  rating: number;
-  createdAt: string;
-}
+import type { User } from "../types/auth";
+export type { User };
 
 export interface AuthResponse {
   success: boolean;

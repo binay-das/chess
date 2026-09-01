@@ -20,21 +20,23 @@ const INITIAL_PIECES: Record<PieceSymbol, number> = {
 
 export const ChessBoardComponent = () => {
     const { fen, turn, playerColor, roomCode, status, isCheck } = useGameStore();
-    const [game, setGame] = useState(new Chess(fen));
+
+    const game = useMemo(() => {
+        try {
+            return new Chess(fen);
+        } catch {
+            return new Chess();
+        }
+    }, [fen]);
 
     const [moveFrom, setMoveFrom] = useState<Square | null>(null);
     const [optionSquares, setOptionsSquares] = useState<Record<string, { background?: string; borderRadius?: string }>>({});
 
-    // sync using stored fen
+    // reset square options when fen changes
     useEffect(() => {
-        try {
-            const updatedGame = new Chess(fen);
-            setGame(updatedGame);
-            setOptionsSquares({});
-            setMoveFrom(null);
-        } catch (error) {
-            console.log("FEN invalid: ", error);
-        }
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setOptionsSquares({});
+        setMoveFrom(null);
     }, [fen]);
 
     const isMyTurn = status === "playing" && turn === playerColor;
@@ -131,7 +133,7 @@ export const ChessBoardComponent = () => {
             return true;
 
 
-        } catch (error) {
+        } catch {
             return false;
         }
     }
@@ -165,9 +167,6 @@ export const ChessBoardComponent = () => {
     }) => {
         if (!isMyTurn || !targetSquare) return false;
         const success = makeMove(sourceSquare as Square, targetSquare as Square);
-        if (!success) {
-
-        }
         setMoveFrom(null);
         setOptionsSquares({});
         return success;
