@@ -31,6 +31,7 @@ export const ChessBoardComponent = () => {
 
     const [moveFrom, setMoveFrom] = useState<Square | null>(null);
     const [optionSquares, setOptionsSquares] = useState<Record<string, { background?: string; borderRadius?: string }>>({});
+    const [pendingPromotion, setPendingPromotion] = useState<{ from: Square; to: Square } | null>(null);
 
     // reset square options when fen changes
     useEffect(() => {
@@ -104,15 +105,28 @@ export const ChessBoardComponent = () => {
         return true;
     };
 
-    const makeMove = (from: Square, to: Square) => {
+    const makeMove = (from: Square, to: Square, promotion?: string) => {
         if (!roomCode || status !== "playing") {
             return false;
+        }
+
+        // Check if it's a promotion move
+        const piece = game.get(from);
+        if (piece && piece.type === "p") {
+            const toRank = to[1];
+            if ((piece.color === "w" && toRank === "8") || (piece.color === "b" && toRank === "1")) {
+                if (!promotion) {
+                    // Open promotion dialog
+                    setPendingPromotion({ from, to });
+                    return false;
+                }
+            }
         }
 
         try {
             const tempGame = new Chess(game.fen());
             const move = tempGame.move({
-                from, to, promotion: "q"
+                from, to, promotion: promotion || "q"
             });
 
 
@@ -127,7 +141,7 @@ export const ChessBoardComponent = () => {
                 roomCode,
                 from,
                 to,
-                promotion: "q",
+                promotion: promotion || "q",
             });
 
             return true;
@@ -216,6 +230,37 @@ export const ChessBoardComponent = () => {
                     {capturedPieces.white.length > 0 ? capturedPieces.white.map((p) => p.toUpperCase()).join(" ") : "None"}
                 </span>
             </div>
+
+            {pendingPromotion && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                    <div className="bg-(--bg-surface-1) border border-(--border-10) p-6 shadow-2xl rounded-lg">
+                        <h3 className="text-lg font-serif mb-4 text-center text-(--text-heading)">Choose Promotion</h3>
+                        <div className="flex gap-4 justify-center">
+                            {['q', 'r', 'b', 'n'].map((p) => {
+                                const pieceCode = `${playerColor === "white" ? "w" : "b"}${p.toUpperCase()}`;
+                                return (
+                                    <button
+                                        key={p}
+                                        onClick={() => {
+                                            makeMove(pendingPromotion.from, pendingPromotion.to, p);
+                                            setPendingPromotion(null);
+                                        }}
+                                        className="p-3 bg-(--bg-surface-2) hover:bg-(--bg-surface-3) rounded-md border border-(--border-10) transition-colors cursor-pointer"
+                                    >
+                                        <img src={`/pieces/${pieceCode}.svg`} alt={p} className="w-12 h-12" />
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <button
+                            onClick={() => setPendingPromotion(null)}
+                            className="mt-6 w-full py-2 text-sm text-(--text-muted-50) hover:text-(--text-primary) transition-colors cursor-pointer"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
