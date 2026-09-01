@@ -108,8 +108,14 @@ export const GameScreen = () => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const myTimeStr = formatTime(timers?.[playerColor]);
-  const opponentTimeStr = formatTime(timers?.[opponentColor]);
+  const myTimeMs = timers?.[playerColor];
+  const opponentTimeMs = timers?.[opponentColor];
+
+  const myTimeStr = formatTime(myTimeMs);
+  const opponentTimeStr = formatTime(opponentTimeMs);
+
+  const isMyTimeLow = myTimeMs !== undefined && myTimeMs <= 59999;
+  const isOpponentTimeLow = opponentTimeMs !== undefined && opponentTimeMs <= 59999;
 
   return (
     <main className="min-h-[calc(100vh-72px)] bg-(--bg-main) text-(--text-primary) transition-colors duration-200">
@@ -252,7 +258,7 @@ export const GameScreen = () => {
                 <span className="hidden text-[8px] uppercase tracking-[0.25em] text-(--text-muted-15) sm:block">
                   Opponent
                 </span>
-                <span className="font-mono text-lg font-bold text-(--text-muted-75)">
+                <span className={`font-mono text-lg font-bold ${isOpponentTimeLow ? "text-red-500" : "text-(--text-muted-75)"}`}>
                   {opponentTimeStr}
                 </span>
               </div>
@@ -286,7 +292,7 @@ export const GameScreen = () => {
                 <span className="hidden text-[8px] uppercase tracking-[0.25em] text-(--accent-gold)/60 sm:block">
                   Your side
                 </span>
-                <span className="font-mono text-lg font-bold text-(--text-muted-75)">
+                <span className={`font-mono text-lg font-bold ${isMyTimeLow ? "text-red-500" : "text-(--text-muted-75)"}`}>
                   {myTimeStr}
                 </span>
               </div>
