@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { validate } from "../middleware/validate.middleware";
 import { signInInputSchema, signUpInputSchema } from "../types/auth";
 import { authenticate } from "../middleware/auth.middleware";
+import { env } from "../config/env.js";
 
 
 
@@ -62,8 +63,8 @@ router.post("/signup", validate(signUpInputSchema), async (req: Request, res: Re
                 username: user.username,
                 email: user.email,
             },
-            process.env.JWT_SECRET! as string,
-            { expiresIn: process.env.JWT_EXPIRES_IN! as jwt.SignOptions["expiresIn"] }
+            env.JWT_SECRET,
+            { expiresIn: env.JWT_EXPIRES_IN as jwt.SignOptions["expiresIn"] }
         )
 
         return res.status(201).json({
@@ -125,8 +126,8 @@ router.post("/signin", validate(signInInputSchema), async (req: Request, res: Re
                 username: user.username,
                 email: user.email,
             },
-            process.env.JWT_SECRET! as string,
-            { expiresIn: process.env.JWT_EXPIRES_IN! as jwt.SignOptions["expiresIn"] }
+            env.JWT_SECRET,
+            { expiresIn: env.JWT_EXPIRES_IN as jwt.SignOptions["expiresIn"] }
         )
 
         return res.status(200).json({

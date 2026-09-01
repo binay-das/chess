@@ -1,6 +1,7 @@
 import { Socket } from "socket.io";
 import jwt from "jsonwebtoken";
 import type { JwtPayload } from "@repo/types";
+import { env } from "../config/env.js";
 
 export type { JwtPayload };
 
@@ -23,7 +24,7 @@ export function socketAuthMiddleware(socket: Socket, next: (err?: Error) => void
       ? authHeader.slice(7)
       : authHeader;
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET! as string) as JwtPayload;
+    const decoded = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
     socket.data.user = decoded;
 
     next();

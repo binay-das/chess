@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import type { JwtPayload } from "@repo/types";
+import { env } from "../config/env.js";
 
 export type { JwtPayload };
 
@@ -34,7 +35,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+        const decoded = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
         req.user = decoded;
         console.log("Token is verified successfully...");
         next();
