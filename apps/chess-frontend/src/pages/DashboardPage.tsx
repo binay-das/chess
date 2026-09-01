@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/AuthStore";
 import { useGameStore } from "../store/GameStore";
+import { useDashboardStore } from "../store/DashboardStore";
 import { connectSocket, getSocket } from "../services/socket";
 import { JoinRoomModal } from "../components/JoinRoomModal";
 import {
@@ -79,23 +80,6 @@ interface ErrorPayload {
   error?: string;
 }
 
-interface GameHistoryItem {
-  id: string;
-  whitePlayer: { id: string; username: string };
-  blackPlayer: { id: string; username: string };
-  winnerId?: string;
-  result: string;
-  createdAt: string;
-}
-
-interface UserStats {
-  totalGames: number;
-  wins: number;
-  losses: number;
-  draws: number;
-  winRate: number;
-}
-
 export const DashboardPage = () => {
   const { user } = useAuthStore();
 
@@ -111,58 +95,11 @@ export const DashboardPage = () => {
   } = useGameStore();
 
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
-  const [stats, setStats] = useState<UserStats | null>(null);
-  const [recentGames, setRecentGames] = useState<GameHistoryItem[]>([]);
-  const [loadingHistory, setLoadingHistory] = useState(true);
+  const { stats, recentGames, loadingHistory, fetchDashboardData } = useDashboardStore();
 
   useEffect(() => {
-    const loadDashboardData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-
-        const baseUrl = import.meta.env.VITE_API_URL;
-
-        // Fetch Profile & Stats
-        const profileRes = await fetch(`${baseUrl}/users/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (profileRes.ok) {
-          const result = await profileRes.json();
-
-          if (result.data?.stats) {
-            setStats(result.data.stats);
-          }
-        }
-
-        // Fetch Games History
-        const gamesRes = await fetch(`${baseUrl}/games`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (gamesRes.ok) {
-          const result = await gamesRes.json();
-
-          if (result.games) {
-            setRecentGames(result.games);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-      } finally {
-        setLoadingHistory(false);
-      }
-    };
-
-    loadDashboardData();
-  }, []);
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   useEffect(() => {
     if (!user) return;
