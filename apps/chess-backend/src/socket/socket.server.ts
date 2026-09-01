@@ -14,7 +14,7 @@ interface User {
 
 let io: SocketIOServer | null = null;
 
-const users: User[] = [];
+const users = new Map<string, User>();
 
 
 export const initSocketServer = (
@@ -39,37 +39,23 @@ export const initSocketServer = (
         roomHandler(io!, socket);
         gameHandler(io!, socket);
 
-        const existingUser = users.find(
-            (u) => u.userId === userId
-        );
-
-        if (existingUser) {
-            existingUser.socketId = socket.id;
-            existingUser.connectedAt = new Date();
-        } else {
-            users.push({
-                userId,
-                username,
-                email,
-                socketId: socket.id,
-                connectedAt: new Date()
-            })
-        }
+        users.set(userId, {
+            userId,
+            username,
+            email,
+            socketId: socket.id,
+            connectedAt: new Date()
+        });
 
         console.log(`[Socket] User connected: ${username} (${userId}) | Socket ID: ${socket.id}`);
 
-
-
-
         socket.on("disconnect", (reason) => {
-            const user = users.find((u) => u.userId === userId);
-
-            if (user) {
-                user.socketId = "";
-                users.splice(users.findIndex((u) => u.userId === userId), 1);
+            const existingUser = users.get(userId);
+            if (existingUser?.socketId === socket.id) {
+                users.delete(userId);
             }
-            `[Socket] User disconnected: ${username} (${userId}) | Socket ID: ${socket.id} | Reason: ${reason}`
-        })
+            console.log(`[Socket] User disconnected: ${username} (${userId}) | Socket ID: ${socket.id} | Reason: ${reason}`);
+        });
     });
 
 
