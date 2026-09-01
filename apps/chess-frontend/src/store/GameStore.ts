@@ -44,6 +44,7 @@ export interface GameState {
     rematchOfferedBy: { userId: string; username: string } | null;
     invalidMoveError: string | null;
     error: string | null;
+    timers: { white: number; black: number } | null;
 
     // actions
     setRoomState: (roomData: {
@@ -76,6 +77,8 @@ export interface GameState {
     setInvalidMoveError: (msg: string | null) => void;
 
     setError: (error: string | null) => void;
+    
+    updateTimers: (timers: { white: number; black: number }) => void;
 
     resetGame: () => void;
 }
@@ -99,6 +102,7 @@ export const useGameStore = create<GameState>((set) => ({
     rematchOfferedBy: null,
     invalidMoveError: null,
     error: null,
+    timers: null,
 
     setRoomState: ({
         roomCode,
@@ -180,6 +184,12 @@ export const useGameStore = create<GameState>((set) => ({
         })
     },
 
+    updateTimers: (timers) => {
+        set({
+            timers
+        })
+    },
+
     resetGame: () => {
         set({
             roomCode: null,
@@ -196,7 +206,8 @@ export const useGameStore = create<GameState>((set) => ({
             drawOfferedBy: null,
             rematchOfferedBy: null,
             invalidMoveError: null,
-            error: null
+            error: null,
+            timers: null,
         })
     }
 }))

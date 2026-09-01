@@ -91,6 +91,7 @@ export const DashboardPage = () => {
     setDrawOfferedBy,
     setRematchOfferedBy,
     setError,
+    updateTimers,
     error: gameError,
   } = useGameStore();
 
@@ -222,6 +223,10 @@ export const DashboardPage = () => {
       setError(data.error || "An error occurred");
     };
 
+    const onTimeUpdate = (data: { roomCode: string, white: number, black: number }) => {
+      updateTimers({ white: data.white, black: data.black });
+    };
+
     socket.on("room:created", onRoomCreated);
     socket.on("room:joined", onRoomJoined);
     socket.on("room:player_joined", onRoomState);
@@ -230,11 +235,13 @@ export const DashboardPage = () => {
     socket.on("game:start", onGameStarted);
     socket.on("game:moved", onGameMoved);
     socket.on("game:over", onGameOver);
+    socket.on("game:timeout", onGameOver);
     socket.on("game:restored", onGameRestored);
     socket.on("game:draw_offered", onDrawOffered);
     socket.on("game:draw_declined", onDrawDeclined);
     socket.on("game:rematch_offered", onRematchOffered);
     socket.on("game:rematch_declined", onRematchDeclined);
+    socket.on("game:time_update", onTimeUpdate);
     socket.on("room:error", onError);
     socket.on("game:error", onError);
 
@@ -247,11 +254,13 @@ export const DashboardPage = () => {
       socket.off("game:start", onGameStarted);
       socket.off("game:moved", onGameMoved);
       socket.off("game:over", onGameOver);
+      socket.off("game:timeout", onGameOver);
       socket.off("game:restored", onGameRestored);
       socket.off("game:draw_offered", onDrawOffered);
       socket.off("game:draw_declined", onDrawDeclined);
       socket.off("game:rematch_offered", onRematchOffered);
       socket.off("game:rematch_declined", onRematchDeclined);
+      socket.off("game:time_update", onTimeUpdate);
       socket.off("room:error", onError);
       socket.off("game:error", onError);
     };
@@ -263,6 +272,7 @@ export const DashboardPage = () => {
     setDrawOfferedBy,
     setRematchOfferedBy,
     setError,
+    updateTimers
   ]);
 
   useEffect(() => {

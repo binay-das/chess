@@ -34,6 +34,7 @@ export const GameScreen = () => {
     setRematchOfferedBy,
     setInvalidMoveError,
     resetGame,
+    timers,
   } = useGameStore();
 
   const [copied, setCopied] = useState(false);
@@ -97,6 +98,18 @@ export const GameScreen = () => {
   };
 
   const opponentColor = playerColor === "white" ? "black" : "white";
+
+  const formatTime = (ms?: number) => {
+    if (ms === undefined) return "10:00";
+    if (ms <= 0) return "00:00";
+    const totalSeconds = Math.floor(ms / 1000);
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const myTimeStr = formatTime(timers?.[playerColor]);
+  const opponentTimeStr = formatTime(timers?.[opponentColor]);
 
   return (
     <main className="min-h-[calc(100vh-72px)] bg-(--bg-main) text-(--text-primary) transition-colors duration-200">
@@ -235,9 +248,14 @@ export const GameScreen = () => {
                 </div>
               </div>
 
-              <span className="hidden text-[8px] uppercase tracking-[0.25em] text-(--text-muted-15) sm:block">
-                Opponent
-              </span>
+              <div className="flex flex-col items-end gap-1">
+                <span className="hidden text-[8px] uppercase tracking-[0.25em] text-(--text-muted-15) sm:block">
+                  Opponent
+                </span>
+                <span className="font-mono text-lg font-bold text-(--text-muted-75)">
+                  {opponentTimeStr}
+                </span>
+              </div>
             </div>
 
             <div className="border border-(--border-10) bg-(--bg-surface-1) p-2 sm:p-4">
@@ -264,9 +282,14 @@ export const GameScreen = () => {
                 </div>
               </div>
 
-              <span className="hidden text-[8px] uppercase tracking-[0.25em] text-(--accent-gold)/60 sm:block">
-                Your side
-              </span>
+              <div className="flex flex-col items-end gap-1">
+                <span className="hidden text-[8px] uppercase tracking-[0.25em] text-(--accent-gold)/60 sm:block">
+                  Your side
+                </span>
+                <span className="font-mono text-lg font-bold text-(--text-muted-75)">
+                  {myTimeStr}
+                </span>
+              </div>
             </div>
           </section>
 

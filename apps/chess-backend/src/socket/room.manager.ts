@@ -2,7 +2,7 @@ import { Chess } from "chess.js";
 import { generateRoomCode } from "../lib/roomId"
 import type { Room, RoomPlayer } from "../types/room";
 
-const rooms: Map<string, Room> = new Map();
+export const rooms: Map<string, Room> = new Map();
 
 export const createRoom = (hostUserId: string, hostUsername: string, hostSocketId: string) => {
     leaveUserRooms(hostUserId, hostSocketId);
@@ -94,6 +94,11 @@ export const joinRoom = (
             pgn: chess.pgn(),
             turn: "white",
             moveHistory: [],
+            timers: {
+                white: 600 * 1000,
+                black: 600 * 1000,
+                lastMoveTime: Date.now()
+            }
         };
         gameStarted = true;
     }

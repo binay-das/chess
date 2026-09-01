@@ -1,6 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { createRoom, joinRoom, leaveRoom, leaveUserRooms, sanitizeRoom } from "./room.manager";
 import { persistCompletedGame } from "../services/game.service";
+import { startGameTimer, stopGameTimer } from "./timer.manager";
 
 
 export function roomHandler(io: Server, socket: Socket) {
@@ -62,6 +63,7 @@ export function roomHandler(io: Server, socket: Socket) {
             io.to(room?.roomCode as string).emit("room:state", { room: sanitizeRoom(room) });
             if (result.gameStarted && room?.game) {
                 console.log(`[Game] Game started in room ${room?.roomCode as string}! White to move.`);
+                startGameTimer(io, room.roomCode);
                 io.to(room?.roomCode as string).emit("game:started", {
                     roomCode: room?.roomCode as string,
                     fen: room?.game.fen,
@@ -105,6 +107,7 @@ export function roomHandler(io: Server, socket: Socket) {
 
                 // Broadcast Game Over if leave happened during active game
                 if (result.wasActiveGame && result.winnerId) {
+                    stopGameTimer(roomCode);
                     const remainingPlayer = result.room.players.find((p) => p.userId === result.winnerId);
                     io.to(roomCode).emit("game:over", {
                         roomCode,
@@ -148,6 +151,7 @@ export function handleRoomDisconnect(io: Socket, socket: Socket) {
 
             // broadcast game over
             if (result.wasActiveGame && result.winnerId) {
+                stopGameTimer(roomCode);
                 const remainingPlayer = result.room.players.find(
                     (p) => p.userId === result.winnerId
                 )

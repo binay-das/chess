@@ -31,7 +31,12 @@ interface RoomGame {
     winReason?: "checkmate" | "resign" | "disconnect" | "timeout";
     isDraw?: boolean;
     drawReason?: "stalemate" | "threefold" | "insufficient" | "50-move" | "agreement" | "draw";
-
+    timers?: {
+        white: number;
+        black: number;
+        lastMoveTime: number; // timestamp of the last move to calculate elapsed time
+        interval?: NodeJS.Timeout; // reference to the interval ticking down
+    };
 }
 
 interface Room {

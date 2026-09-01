@@ -3,6 +3,7 @@ import { reconnectPlayer, sanitizeRoom, getRoom } from "./room.manager";
 import { persistCompletedGame } from "../services/game.service";
 import { RoomPlayer } from "../types/room";
 import { Chess } from "chess.js";
+import { updateTimerOnMove, stopGameTimer } from "./timer.manager";
 
 export function gameHandler(io: Server, socket: Socket) {
     const { userId, username } = socket.data.user;
@@ -113,6 +114,8 @@ export function gameHandler(io: Server, socket: Socket) {
 
             room.game.moveHistory.push(moveRecord);
 
+            updateTimerOnMove(room.roomCode);
+
             // Check for Game Over conditions (Checkmate, Draw, Stalemate, etc.)
             const isCheckmate = chess.isCheckmate();
             const isDraw = chess.isDraw();
@@ -131,6 +134,7 @@ export function gameHandler(io: Server, socket: Socket) {
             });
 
             if (isCheckmate) {
+                stopGameTimer(room.roomCode);
                 room.status = "finished";
                 room.game.winnerId = userId;
                 room.game.winReason = "checkmate";
@@ -150,6 +154,7 @@ export function gameHandler(io: Server, socket: Socket) {
                     console.error("[GameService] Error persisting checkmate game:", err)
                 );
             } else if (isDraw) {
+                stopGameTimer(room.roomCode);
                 room.status = "finished";
                 room.game.isDraw = true;
 
@@ -204,6 +209,8 @@ export function gameHandler(io: Server, socket: Socket) {
 
 
             const opponent = room.players.find((p: RoomPlayer) => p.userId !== userId);
+
+            stopGameTimer(room.roomCode);
 
             room.status = "finished";
             room.game.winnerId = opponent?.userId;
