@@ -1,17 +1,18 @@
 import { prisma } from "../lib/prisma";
-import { Request, Response, Router } from "express";
+import { Request, Response, NextFunction, Router } from "express";
 import { calculatePlayerStats } from "../lib/playerStats";
 import { authenticate } from "../middleware/auth.middleware";
 
 
 const router: Router = Router();
 
-router.get("/profile", authenticate, async (req: Request, res: Response) => {
+router.get("/profile", authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.user?.userId;
 
         if (!userId) {
             return res.status(401).json({
+                success: false,
                 message: "Unauthorized, userId not found"
             });
         }
@@ -30,6 +31,7 @@ router.get("/profile", authenticate, async (req: Request, res: Response) => {
         });
         if (!user) {
             return res.status(404).json({
+                success: false,
                 message: "User not found",
             });
         }
@@ -37,15 +39,13 @@ router.get("/profile", authenticate, async (req: Request, res: Response) => {
         const stats = await calculatePlayerStats(userId);
 
         return res.status(200).json({
+            success: true,
             message: "User profile fetched successfully",
             data: { user, stats }
-        })
+        });
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({
-            message: "Error fetching user profile",
-        })
+        next(error);
     }
-})
+});
 
 export default router;

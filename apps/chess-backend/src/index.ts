@@ -4,6 +4,7 @@ import cors from "cors";
 import authRouter from "./routes/auth.routes.js";
 import gameRoutes from "./routes/game.routes.js";
 import userRoutes from "./routes/user.routes.js";
+import { errorHandler } from "./middleware/error.middleware.js";
 import { initSocketServer } from "./socket/socket.server.js";
 
 const app = express();
@@ -19,6 +20,8 @@ app.use("/api/users", userRoutes);
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
+
+app.use(errorHandler);
 
 initSocketServer(
   app.listen(PORT, () => {

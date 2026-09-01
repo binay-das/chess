@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import { Request, Response, NextFunction, Router } from "express";
 import { prisma } from "../lib/prisma";
 import { validate } from "../middleware/validate.middleware";
 import { getGameByIdSchema, getGameMovesSchema } from "../types/game";
@@ -8,7 +8,7 @@ import { authenticate } from "../middleware/auth.middleware";
 const router: Router = Router()
 
 
-router.get("/", authenticate, async (req: Request, res: Response) => {
+router.get("/", authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.user!.userId
 
@@ -36,16 +36,11 @@ router.get("/", authenticate, async (req: Request, res: Response) => {
             games
         })
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error",
-            error
-        })
+        next(error);
     }
 })
 
-router.get("/:id", authenticate, validate(getGameByIdSchema), async (req: Request, res: Response) => {
+router.get("/:id", authenticate, validate(getGameByIdSchema), async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.user!.userId;
         const gameId = req.params.id as string;
@@ -88,17 +83,12 @@ router.get("/:id", authenticate, validate(getGameByIdSchema), async (req: Reques
             game
         })
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error",
-            error
-        })
+        next(error);
     }
 })
 
 
-router.get("/:id/moves", authenticate, validate(getGameMovesSchema), async (req: Request, res: Response) => {
+router.get("/:id/moves", authenticate, validate(getGameMovesSchema), async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.user!.userId;
         const gameId = req.params.id as string;
@@ -144,12 +134,7 @@ router.get("/:id/moves", authenticate, validate(getGameMovesSchema), async (req:
             moves
         })
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error",
-            error
-        })
+        next(error);
     }
 })
 

@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { prisma } from "../lib/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -11,7 +11,7 @@ import { authenticate } from "../middleware/auth.middleware";
 
 const router: Router = Router();
 
-router.post("/signup", validate(signUpInputSchema), async (req: Request, res: Response) => {
+router.post("/signup", validate(signUpInputSchema), async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { username, email, password } = req.body;
 
@@ -76,18 +76,12 @@ router.post("/signup", validate(signUpInputSchema), async (req: Request, res: Re
 
 
     } catch (error) {
-        console.log(error);
-
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error",
-            error
-        })
+        next(error);
     }
 })
 
 
-router.post("/signin", validate(signInInputSchema), async (req: Request, res: Response) => {
+router.post("/signin", validate(signInInputSchema), async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email, username, password } = req.body;
         const identifier = email || username;
@@ -148,18 +142,12 @@ router.post("/signin", validate(signInInputSchema), async (req: Request, res: Re
             }
         })
     } catch (error) {
-        console.log(error);
-
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error",
-            error
-        })
+        next(error);
     }
 })
 
 
-router.get("/me", authenticate, async (req: Request, res: Response) => {
+router.get("/me", authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (!req.user) {
             return res.status(401).json({
@@ -190,12 +178,7 @@ router.get("/me", authenticate, async (req: Request, res: Response) => {
             user
         })
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error",
-            error
-        })
+        next(error);
     }
 })
 
