@@ -19,7 +19,7 @@ const INITIAL_PIECES: Record<PieceSymbol, number> = {
 };
 
 export const ChessBoardComponent = () => {
-    const { fen, turn, playerColor, roomCode, status, isCheck } = useGameStore();
+    const { fen, turn, playerColor, roomCode, status, isCheck, moveHistory } = useGameStore();
 
     const game = useMemo(() => {
         try {
@@ -73,6 +73,16 @@ export const ChessBoardComponent = () => {
 
     }, [game]);
 
+    const lastMoveStyles = useMemo(() => {
+        const styles: Record<string, { backgroundColor?: string }> = {};
+        if (moveHistory && moveHistory.length > 0) {
+            const lastMove = moveHistory[moveHistory.length - 1];
+            // Highly visible amber color that works on both light/dark squares
+            styles[lastMove.from] = { backgroundColor: 'rgba(212, 200, 55, 0.8)' }; 
+            styles[lastMove.to] = { backgroundColor: 'rgba(212, 200, 55, 0.8)' };
+        }
+        return styles;
+    }, [moveHistory]);
 
     const getMoveOptions = (square: Square) => {
         const moves = game.moves({
@@ -86,11 +96,11 @@ export const ChessBoardComponent = () => {
             return false;
         }
 
-        const newSquares: Record<string, { background?: string; borderRadius?: string }> = {};
+        const newSquares: Record<string, { backgroundImage?: string; backgroundColor?: string; borderRadius?: string }> = {};
 
         moves.forEach((move) => {
             newSquares[move.to] = {
-                background: game.get(move.to as Square) && game.get(move.to as Square)?.color !== game.get(square)?.color
+                backgroundImage: game.get(move.to as Square) && game.get(move.to as Square)?.color !== game.get(square)?.color
                     ? "radial-gradient(circle, rgba(239, 68, 68, 0.7) 40%, transparent 40%)"
                     : "radial-gradient(circle, rgba(245, 158, 11, 0.6) 25%, transparent 25%)",
                 borderRadius: "50%"
@@ -98,7 +108,7 @@ export const ChessBoardComponent = () => {
         });
 
         newSquares[square] = {
-            background: "rgba(245, 158, 11, 0.2)",
+            backgroundColor: "rgba(245, 158, 11, 0.3)",
         };
 
         setOptionsSquares(newSquares);
@@ -215,7 +225,16 @@ export const ChessBoardComponent = () => {
                     onPieceDrop,
                     onSquareClick,
                     boardOrientation: playerColor,
-                    squareStyles: optionSquares,
+                    squareStyles: (() => {
+                        const styles: Record<string, React.CSSProperties> = { ...lastMoveStyles };
+                        Object.keys(optionSquares).forEach((sq) => {
+                            styles[sq] = {
+                                ...styles[sq],
+                                ...optionSquares[sq]
+                            };
+                        });
+                        return styles;
+                    })(),
                     boardStyle: {
                         borderRadius: "6px",
                         boxShadow: "var(--board-shadow)",
