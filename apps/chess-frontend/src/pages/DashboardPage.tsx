@@ -252,9 +252,8 @@ export const DashboardPage = () => {
       updateTimers({ white: data.white, black: data.black });
     };
 
-    const onMatchFound = (data: { roomCode: string }) => {
+    const onMatchFound = () => {
       setIsFindingMatch(false);
-      socket.emit("room:join", { roomCode: data.roomCode });
     };
 
     socket.on("room:created", onRoomCreated);

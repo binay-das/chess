@@ -1,5 +1,6 @@
-import type { Socket } from "socket.io";
+import type { Server, Socket } from "socket.io";
 import { createRoom, joinRoom } from "./room.manager";
+import { startGameTimer } from "./timer.manager";
 
 // queue of { userId, username, socket }
 interface QueuedPlayer {
@@ -35,7 +36,7 @@ export const leaveQueue = (userId: string) => {
     }
 };
 
-export const processQueue = () => {
+export const processQueue = (io: Server) => {
     // Need at least 2 players
     while (queue.length >= 2) {
         // Pop two players
@@ -51,11 +52,29 @@ export const processQueue = () => {
         // p2 joins the room
         joinRoom(roomCode, p2.userId, p2.username, p2.socket.id);
 
-        // Notify both players
+        // Join both sockets to the Socket.IO room
+        p1.socket.join(roomCode);
+        p2.socket.join(roomCode);
+
+        // Start game timer
+        startGameTimer(io, roomCode);
+
+        // Notify both players match is found
         p1.socket.emit("match:found", { roomCode });
         p2.socket.emit("match:found", { roomCode });
 
-        // They still need to officially 'join' via sockets or client redirection
-        // but the backend room is ready!
+        // Broadcast game:started to both players simultaneously
+        if (room.game) {
+            io.to(roomCode).emit("game:started", {
+                roomCode,
+                fen: room.game.fen,
+                turn: room.game.turn,
+                players: room.players.map((p) => ({
+                    userId: p.userId,
+                    username: p.username,
+                    color: p.color,
+                })),
+            });
+        }
     }
 };

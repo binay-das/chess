@@ -4,7 +4,7 @@ import { joinQueue, leaveQueue, processQueue } from "./matchmaking.manager";
 export function handleMatchmaking(io: Server, socket: Socket) {
     socket.on("queue:join", () => {
         joinQueue(socket);
-        processQueue();
+        processQueue(io);
     });
 
     socket.on("queue:leave", () => {
