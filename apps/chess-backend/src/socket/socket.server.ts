@@ -2,6 +2,7 @@ import { Server as HttpServer } from "http";
 import { Server as SocketIOServer } from "socket.io";
 import { roomHandler } from "./room.handler";
 import { gameHandler } from "./game.handler";
+import { handleMatchmaking } from "./matchmaking.handler";
 import { socketAuthMiddleware } from "./socket.auth";
 
 interface User {
@@ -38,6 +39,7 @@ export const initSocketServer = (
 
         roomHandler(io!, socket);
         gameHandler(io!, socket);
+        handleMatchmaking(io!, socket);
 
         users.set(userId, {
             userId,

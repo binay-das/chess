@@ -97,7 +97,22 @@ export const DashboardPage = () => {
   } = useGameStore();
 
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [isFindingMatch, setIsFindingMatch] = useState(false);
   const { stats, recentGames, loadingHistory, fetchDashboardData } = useDashboardStore();
+
+  const handleFindMatch = () => {
+    const socket = connectSocket();
+    setIsFindingMatch(true);
+    socket.emit("queue:join");
+  };
+
+  const handleCancelMatch = () => {
+    const socket = getSocket();
+    if (socket) {
+      socket.emit("queue:leave");
+    }
+    setIsFindingMatch(false);
+  };
 
   useEffect(() => {
     fetchDashboardData();
@@ -237,6 +252,11 @@ export const DashboardPage = () => {
       updateTimers({ white: data.white, black: data.black });
     };
 
+    const onMatchFound = (data: { roomCode: string }) => {
+      setIsFindingMatch(false);
+      socket.emit("room:join", { roomCode: data.roomCode });
+    };
+
     socket.on("room:created", onRoomCreated);
     socket.on("room:joined", onRoomJoined);
     socket.on("room:player_joined", onRoomState);
@@ -252,6 +272,7 @@ export const DashboardPage = () => {
     socket.on("game:rematch_offered", onRematchOffered);
     socket.on("game:rematch_declined", onRematchDeclined);
     socket.on("game:time_update", onTimeUpdate);
+    socket.on("match:found", onMatchFound);
     socket.on("room:error", onError);
     socket.on("game:error", onError);
 
@@ -271,6 +292,7 @@ export const DashboardPage = () => {
       socket.off("game:rematch_offered", onRematchOffered);
       socket.off("game:rematch_declined", onRematchDeclined);
       socket.off("game:time_update", onTimeUpdate);
+      socket.off("match:found", onMatchFound);
       socket.off("room:error", onError);
       socket.off("game:error", onError);
     };
@@ -419,19 +441,69 @@ export const DashboardPage = () => {
             </div>
           </div>
 
-          <div className="grid gap-px overflow-hidden border border-(--border-8) bg-(--border-8) lg:grid-cols-[1.2fr_1fr]">
+          <div className="grid gap-px overflow-hidden border border-(--border-8) bg-(--border-8) lg:grid-cols-3">
+            {/* Find Quick Match */}
             <div className="group relative flex min-h-75 flex-col justify-between bg-(--bg-surface-1) p-7 sm:p-9">
               <div className="absolute right-8 top-8 text-(--accent-gold)/20 transition-colors group-hover:text-(--accent-gold)/40">
-                <Plus className="h-8 w-8" strokeWidth={1} />
+                <Zap className="h-8 w-8" strokeWidth={1} />
               </div>
 
               <div>
                 <div className="mb-8 flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center border border-(--accent-gold)/25 bg-(--accent-gold)/5">
-                    <Plus className="h-4 w-4 text-(--accent-gold)" />
+                    <Zap className="h-4 w-4 text-(--accent-gold)" />
                   </div>
 
                   <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-(--accent-gold)">
+                    Quick Match
+                  </span>
+                </div>
+
+                <h3 className="font-serif text-3xl tracking-tight text-(--text-heading)">
+                  Find Opponent
+                </h3>
+
+                <p className="mt-3 max-w-md text-sm leading-6 text-(--text-muted-30)">
+                  Jump right into a game with an auto-paired active opponent.
+                </p>
+              </div>
+
+              {isFindingMatch ? (
+                <button
+                  type="button"
+                  onClick={handleCancelMatch}
+                  className="mt-10 flex w-full cursor-pointer items-center justify-between border border-red-500/20 bg-red-500/10 px-5 py-3.5 text-xs font-bold text-red-500 transition-colors hover:bg-red-500/20"
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
+                    Searching... Cancel
+                  </span>
+                  <XCircle className="h-4 w-4" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleFindMatch}
+                  className="group/button mt-10 flex w-full cursor-pointer items-center justify-between border border-(--btn-primary-bg) bg-(--btn-primary-bg) px-5 py-3.5 text-xs font-bold text-(--btn-primary-text) transition-colors hover:bg-(--btn-primary-hover)"
+                >
+                  <span>Find Match</span>
+                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover/button:-translate-y-0.5 group-hover/button:translate-x-0.5" />
+                </button>
+              )}
+            </div>
+
+            <div className="group relative flex min-h-75 flex-col justify-between bg-(--bg-surface-1) p-7 sm:p-9">
+              <div className="absolute right-8 top-8 text-(--text-muted-45)/20 transition-colors group-hover:text-(--text-muted-45)/40">
+                <Plus className="h-8 w-8" strokeWidth={1} />
+              </div>
+
+              <div>
+                <div className="mb-8 flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center border border-(--border-10) bg-(--border-2)">
+                    <Plus className="h-4 w-4 text-(--text-muted-45)" />
+                  </div>
+
+                  <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-(--text-muted-30)">
                     Host match
                   </span>
                 </div>
@@ -448,7 +520,7 @@ export const DashboardPage = () => {
               <button
                 type="button"
                 onClick={handleCreateRoom}
-                className="group/button mt-10 flex w-full cursor-pointer items-center justify-between border border-(--btn-primary-bg) bg-(--btn-primary-bg) px-5 py-3.5 text-xs font-bold text-(--btn-primary-text) transition-colors hover:bg-(--btn-primary-hover)"
+                className="group/button mt-10 flex w-full cursor-pointer items-center justify-between border border-(--border-12) bg-transparent px-5 py-3.5 text-xs font-semibold text-(--text-muted-70) transition-colors hover:border-(--border-20) hover:bg-(--border-5) hover:text-(--text-primary)"
               >
                 <span>Create room</span>
 
@@ -456,7 +528,11 @@ export const DashboardPage = () => {
               </button>
             </div>
 
-            <div className="group flex min-h-75 flex-col justify-between bg-(--bg-surface-4) p-7 sm:p-9">
+            <div className="group flex min-h-75 flex-col justify-between bg-(--bg-surface-1) p-7 sm:p-9">
+              <div className="absolute right-8 top-8 text-(--text-muted-45)/20 transition-colors group-hover:text-(--text-muted-45)/40">
+                <KeyRound className="h-8 w-8" strokeWidth={1} />
+              </div>
+
               <div>
                 <div className="mb-8 flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center border border-(--border-10) bg-(--border-2)">
