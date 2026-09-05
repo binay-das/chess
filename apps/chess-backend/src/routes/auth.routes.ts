@@ -6,13 +6,17 @@ import { validate } from "../middleware/validate.middleware";
 import { signInInputSchema, signUpInputSchema } from "../types/auth";
 import { authenticate } from "../middleware/auth.middleware";
 import { env } from "../config/env.js";
+import { createRateLimiter } from "../middleware/rateLimit.middleware.js";
 
-
-
+const authRateLimiter = createRateLimiter({
+    windowMs: 15 * 60 * 1000,
+    max: 30,
+    message: "Too many authentication attempts. Please try again later."
+});
 
 const router: Router = Router();
 
-router.post("/signup", validate(signUpInputSchema), async (req: Request, res: Response, next: NextFunction) => {
+router.post("/signup", authRateLimiter, validate(signUpInputSchema), async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { username, email, password } = req.body;
 
@@ -82,7 +86,7 @@ router.post("/signup", validate(signUpInputSchema), async (req: Request, res: Re
 })
 
 
-router.post("/signin", validate(signInInputSchema), async (req: Request, res: Response, next: NextFunction) => {
+router.post("/signin", authRateLimiter, validate(signInInputSchema), async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email, username, password } = req.body;
         const identifier = email || username;

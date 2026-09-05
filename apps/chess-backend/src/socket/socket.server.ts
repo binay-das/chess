@@ -4,6 +4,7 @@ import { roomHandler, handleRoomDisconnect } from "./room.handler";
 import { gameHandler } from "./game.handler";
 import { handleMatchmaking } from "./matchmaking.handler";
 import { socketAuthMiddleware } from "./socket.auth";
+import { env } from "../config/env.js";
 
 import type { ConnectedUser } from "@repo/types";
 
@@ -15,10 +16,15 @@ const users = new Map<string, ConnectedUser>();
 export const initSocketServer = (
     server: HttpServer
 ): SocketIOServer => {
+    const allowedOrigins = [
+        env.CLIENT_URL
+    ].filter((url): url is string => Boolean(url));
+
     io = new SocketIOServer(server, {
         cors: {
-            origin: "*",
-            methods: ["GET", "POST"]
+            origin: env.NODE_ENV === "production" && env.CLIENT_URL ? env.CLIENT_URL : allowedOrigins,
+            methods: ["GET", "POST"],
+            credentials: true
         }
     });
 

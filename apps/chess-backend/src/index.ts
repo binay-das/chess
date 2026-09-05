@@ -10,7 +10,16 @@ import { initSocketServer } from "./socket/socket.server.js";
 const app = express();
 const PORT = env.PORT;
 
-app.use(cors());
+const allowedOrigins = [
+  env.CLIENT_URL,
+  "http://localhost:5173",
+  "http://localhost:3000",
+].filter((url): url is string => Boolean(url));
+
+app.use(cors({
+  origin: env.NODE_ENV === "production" && env.CLIENT_URL ? env.CLIENT_URL : allowedOrigins,
+  credentials: true,
+}));
 app.use(express.json());
 
 app.use("/api/auth", authRouter);
