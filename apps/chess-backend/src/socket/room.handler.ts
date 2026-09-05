@@ -130,7 +130,7 @@ export function roomHandler(io: Server, socket: Socket) {
 }
 
 
-export function handleRoomDisconnect(io: Socket, socket: Socket) {
+export function handleRoomDisconnect(io: Server, socket: Socket) {
     const { userId, username } = socket.data.user;
 
     const results = leaveUserRooms(userId, socket.id);

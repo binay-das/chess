@@ -1,6 +1,6 @@
 import { Server as HttpServer } from "http";
 import { Server as SocketIOServer } from "socket.io";
-import { roomHandler } from "./room.handler";
+import { roomHandler, handleRoomDisconnect } from "./room.handler";
 import { gameHandler } from "./game.handler";
 import { handleMatchmaking } from "./matchmaking.handler";
 import { socketAuthMiddleware } from "./socket.auth";
@@ -46,6 +46,7 @@ export const initSocketServer = (
         console.log(`[Socket] User connected: ${username} (${userId}) | Socket ID: ${socket.id}`);
 
         socket.on("disconnect", (reason) => {
+            handleRoomDisconnect(io!, socket);
             const existingUser = users.get(userId);
             if (existingUser?.socketId === socket.id) {
                 users.delete(userId);
