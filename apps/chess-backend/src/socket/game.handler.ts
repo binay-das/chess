@@ -3,7 +3,7 @@ import { reconnectPlayer, sanitizeRoom, getRoom } from "./room.manager";
 import { persistCompletedGame } from "../services/game.service";
 import { RoomPlayer } from "../types/room";
 import { Chess } from "chess.js";
-import { updateTimerOnMove, stopGameTimer } from "./timer.manager";
+import { updateTimerOnMove, stopGameTimer, startGameTimer } from "./timer.manager";
 
 export function gameHandler(io: Server, socket: Socket) {
     const { userId, username } = socket.data.user;
@@ -352,8 +352,15 @@ export function gameHandler(io: Server, socket: Socket) {
                     pgn: "",
                     turn: "white",
                     moveHistory: [],
-                    isDraw: false
+                    isDraw: false,
+                    timers: {
+                        white: 600 * 1000,
+                        black: 600 * 1000,
+                        lastMoveTime: Date.now()
+                    }
                 };
+
+                startGameTimer(io, room.roomCode);
 
                 io.to(room.roomCode).emit("room:state", { room: sanitizeRoom(room) });
                 io.to(room.roomCode).emit("game:started", {
