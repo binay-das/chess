@@ -7,6 +7,12 @@ import { authenticate } from "../middleware/auth.middleware";
 
 const router: Router = Router()
 
+const safeUserSelect = {
+    id: true,
+    username: true,
+    email: true,
+    rating: true,
+};
 
 router.get("/", authenticate, async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -23,9 +29,9 @@ router.get("/", authenticate, async (req: Request, res: Response, next: NextFunc
                 createdAt: "desc"
             },
             include: {
-                whitePlayer: true,
-                blackPlayer: true,
-                winner: true
+                whitePlayer: { select: safeUserSelect },
+                blackPlayer: { select: safeUserSelect },
+                winner: { select: safeUserSelect }
             }
         })
 
@@ -59,9 +65,9 @@ router.get("/:id", authenticate, validate(getGameByIdSchema), async (req: Reques
                 }
             },
             include: {
-                whitePlayer: true,
-                blackPlayer: true,
-                winner: true,
+                whitePlayer: { select: safeUserSelect },
+                blackPlayer: { select: safeUserSelect },
+                winner: { select: safeUserSelect },
                 moves: {
                     orderBy: {
                         moveNumber: "asc"
