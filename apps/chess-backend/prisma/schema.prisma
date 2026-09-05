@@ -27,7 +27,7 @@ model User {
 model Game {
   id String @id @default(cuid())
 
-  roomCode String @unique
+  roomCode String
 
   whitePlayerId String?
   blackPlayerId String?
