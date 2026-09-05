@@ -1,4 +1,4 @@
-import { Color, MoveRecord, WinReason, DrawReason, GameTimers } from "./game";
+import type { Color, MoveRecord, WinReason, DrawReason, GameTimers } from "./game";
 
 export interface RoomPlayer {
     userId: string;

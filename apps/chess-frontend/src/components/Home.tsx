@@ -9,7 +9,7 @@ import {
   Flame,
   Swords,
 } from "lucide-react";
-import type { User, HomeProps, FeatureProps } from "@repo/types";
+import type { HomeProps, FeatureProps } from "@repo/types";
 import { Footer } from "./Footer";
 
 export const Home: React.FC<HomeProps> = ({ user }) => {

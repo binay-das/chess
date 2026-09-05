@@ -9,7 +9,7 @@ import {
   UserPlus,
 } from "lucide-react";
 
-import type { User, SignUpPageProps, SignUpStatProps as StatProps, FormFieldProps } from "@repo/types";
+import type { SignUpPageProps, SignUpStatProps as StatProps, FormFieldProps } from "@repo/types";
 import { signUpApi } from "../api/auth";
 import {
   registerSchema,

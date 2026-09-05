@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Crown, LogOut, Trophy } from "lucide-react";
-import type { User, NavbarProps, NavLinkProps } from "@repo/types";
+import type { NavbarProps, NavLinkProps } from "@repo/types";
 import { ModeToggle } from "./mode-toggle";
 
 export const Navbar: React.FC<NavbarProps> = ({ user, onSignOut }) => {

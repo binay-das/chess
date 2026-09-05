@@ -30,8 +30,6 @@ import type {
   GameRestoredPayload,
   OfferPayload,
   ErrorPayload,
-  RoomPlayer as PlayerInfo,
-  MoveRecord,
   GameOverDetails
 } from "@repo/types";
 

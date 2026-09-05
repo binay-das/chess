@@ -1,5 +1,5 @@
-import { Color, MoveRecord, GameOverDetails } from "./game";
-import { Room, RoomPlayer, RoomGame } from "./room";
+import type { Color, MoveRecord, GameOverDetails } from "./game";
+import type { Room, RoomPlayer, RoomGame } from "./room";
 
 export interface RoomEventPayload {
     message?: string;
